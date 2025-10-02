@@ -14,7 +14,6 @@ namespace FluentCompare.UnitTests.Objects
 
 			// Act
 			var result = new ComparisonBuilder()
-				.Build()
 				.Compare(obj1, obj2);
 
 			// Assert
@@ -31,7 +30,6 @@ namespace FluentCompare.UnitTests.Objects
 			// Act
 			var result = new ComparisonBuilder()
 				.UseReferenceEquality()
-				.Build()
 				.Compare(obj1, obj2);
 
 			// Assert
@@ -47,7 +45,6 @@ namespace FluentCompare.UnitTests.Objects
 
 			// Act
 			var result = new ComparisonBuilder()
-				.Build()
 				.Compare(obj1, obj2);
 
 			// Assert

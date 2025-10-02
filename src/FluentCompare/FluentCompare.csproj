@@ -9,7 +9,7 @@
 		<AssemblyName>FluentCompare</AssemblyName>
 		<PackageId>FluentCompare</PackageId>
 		
-		<Version>0.0.2</Version>
+		<Version>0.0.3</Version>
 		<Authors>Grzegorz Pasterny</Authors>
 		<Description>A fluent API for comparing values, arrays, and complex objects in .NET.</Description>
 		<PackageTags>comparison fluent-api dotnet c#</PackageTags>
