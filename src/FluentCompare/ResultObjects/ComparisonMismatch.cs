@@ -2,6 +2,6 @@
 {
 	public class ComparisonMismatch
 	{
-		public string Message { get; }
+		public string Message { get; internal set; }
 	}
 }

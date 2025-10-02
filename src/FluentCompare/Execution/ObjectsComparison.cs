@@ -1,11 +1,17 @@
-﻿using FluentCompare.Configuration.Models;
+﻿using FluentCompare.Configuration;
 using FluentCompare.ResultObjects;
 
 namespace FluentCompare.Execution
 {
 	public class ObjectsComparison : IExecuteComparison<object>
 	{
-		internal ObjectsComparison(ComplexTypesComparisonMode complexTypesComparisonMode) { }
+		private readonly ComparisonConfiguration _comparisonConfiguration;
+
+		internal ObjectsComparison(
+			ComparisonConfiguration comparisonConfiguration)
+		{
+			_comparisonConfiguration = comparisonConfiguration;
+		}
 
 		public ComparisonResult Compare(params object[] objects)
 		{

@@ -34,6 +34,7 @@ namespace FluentCompare.UnitTests.Integers
 			// Assert
 			result.AllMatched.ShouldBeFalse();
 		}
+
 		[Fact]
 		public void Compare_TwoEqualIntArrays_ReturnsAllMatchingResult()
 		{

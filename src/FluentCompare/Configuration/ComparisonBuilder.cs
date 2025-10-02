@@ -1,5 +1,6 @@
 ﻿using FluentCompare.Configuration.Models;
 using FluentCompare.Execution;
+using FluentCompare.Execution.Int;
 using FluentCompare.ResultObjects;
 
 namespace FluentCompare.Configuration
@@ -22,16 +23,32 @@ namespace FluentCompare.Configuration
 				// TODO: Consider adding Build method to ComparisonBuilder
 				// TODO: Consider creating ObjectsComparisonByReferenceEquality
 				// and ObjectsComparisonByPropertyEquality classes
-				return new ObjectsComparison(_configuration.ComplexTypesComparisonMode)
+				return new ObjectsComparison(_configuration)
 					.Compare(t);
 			}
 			if (typeof(T) == typeof(int))
 			{
-				return new IntComparison()
+				return new IntComparison(_configuration)
 					.Compare((int[])(object)t); // casting complexity O(1) according to chatGPT. TODO: To be confirmed
+			}
+			if (typeof(T) == typeof(int[]))
+			{
+				return new IntArrayComparison(_configuration)
+					.Compare((int[][])(object)t); // casting complexity O(1) according to chatGPT. TODO: To be confirmed
 			}
 
 			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Sets the <paramref name="comparisonType"/>. Default is <see cref="ComparisonType.EqualTo"/>.
+		/// </summary>
+		/// <param name="comparisonType"></param>
+		/// <returns></returns>
+		public ComparisonBuilder UseComparisonType(ComparisonType comparisonType)
+		{
+			_configuration.ComparisonType = comparisonType;
+			return this;
 		}
 
 		/// <summary>

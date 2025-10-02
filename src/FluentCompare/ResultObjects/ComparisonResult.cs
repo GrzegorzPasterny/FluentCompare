@@ -12,5 +12,10 @@
 		{
 			return $"Comparison result [AllMatched={AllMatched}, MismatchedCount={MismatchCount}]";
 		}
+
+		internal void AddMismatch(ComparisonMismatch mismatch)
+		{
+			_mismatches.Add(mismatch);
+		}
 	}
 }
