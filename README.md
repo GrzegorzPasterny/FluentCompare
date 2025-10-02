@@ -4,7 +4,33 @@ Fluent compare is a library to compare 2 (or more) sets of values using Fluent A
 
 ## Usage examples
 
+*Comparison with default configuration (simple version)*
+```
+var result = new ComparisonBuilder()
+    .Compare([1, 2, 3], [1, 2, 3], [1, 2, 3])
+```
 
+*Comparison with default configuration*
+```
+var result = new ComparisonBuilder()
+    .Build()
+    .Compare([1, 2, 3], [1, 2, 3]);
+```
+
+*Comparison with default configuration for 3 arrays*
+```
+var result = new ComparisonBuilder()
+    .Build()
+    .Compare([1, 2, 3], [1, 2, 3], [1, 2, 3])
+```
+
+*Check if every value in first array is greater than corresponding value in second array*
+```
+var result = new ComparisonBuilder()
+    .UseComparisonType(ComparisonType.GreaterThan)
+    .Build()
+    .Compare([2, 3, 4], [1, 2, 3]);
+```
 
 ## Documentation
 
