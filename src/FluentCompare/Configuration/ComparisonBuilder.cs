@@ -1,4 +1,5 @@
-﻿using FluentCompare.Execution;
+﻿using FluentCompare.Configuration.Models;
+using FluentCompare.Execution;
 
 namespace FluentCompare.Configuration
 {
@@ -8,7 +9,21 @@ namespace FluentCompare.Configuration
 
 		public IExecuteComparison<object> Build()
 		{
-			return new ObjectsComparison();
+			// TODO: Consider creating ObjectsComparisonByReferenceEquality
+			// and ObjectsComparisonByPropertyEquality classes
+			return new ObjectsComparison(_configuration.ComplexTypesComparisonMode);
+		}
+
+		public ComparisonBuilder UsePropertyEquality()
+		{
+			_configuration.ComplexTypesComparisonMode = ComplexTypesComparisonMode.PropertyEquality;
+			return this;
+		}
+
+		public ComparisonBuilder UseReferenceEquality()
+		{
+			_configuration.ComplexTypesComparisonMode = ComplexTypesComparisonMode.ReferenceEquality;
+			return this;
 		}
 	}
 }
