@@ -28,18 +28,26 @@ namespace FluentCompare.Configuration
 			if (typeof(T) == typeof(int))
 			{
 				return new IntComparison()
-					.Compare((int[])(object)t);
+					.Compare((int[])(object)t); // casting complexity O(1) according to chatGPT. TODO: To be confirmed
 			}
 
 			throw new NotImplementedException();
 		}
 
+		/// <summary>
+		/// Checks if objects are equivalent by comparing their properties. Default setting.
+		/// </summary>
+		/// <returns></returns>
 		public ComparisonBuilder UsePropertyEquality()
 		{
 			_configuration.ComplexTypesComparisonMode = ComplexTypesComparisonMode.PropertyEquality;
 			return this;
 		}
 
+		/// <summary>
+		/// Checks if objects are equivalent by comparing their references.
+		/// </summary>
+		/// <returns></returns>
 		public ComparisonBuilder UseReferenceEquality()
 		{
 			_configuration.ComplexTypesComparisonMode = ComplexTypesComparisonMode.ReferenceEquality;
