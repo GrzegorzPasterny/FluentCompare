@@ -13,14 +13,12 @@ var result = new ComparisonBuilder()
 *Comparison with default configuration*
 ```
 var result = new ComparisonBuilder()
-    .Build()
     .Compare([1, 2, 3], [1, 2, 3]);
 ```
 
 *Comparison with default configuration for 3 arrays*
 ```
 var result = new ComparisonBuilder()
-    .Build()
     .Compare([1, 2, 3], [1, 2, 3], [1, 2, 3])
 ```
 
@@ -28,7 +26,6 @@ var result = new ComparisonBuilder()
 ```
 var result = new ComparisonBuilder()
     .UseComparisonType(ComparisonType.GreaterThan)
-    .Build()
     .Compare([2, 3, 4], [1, 2, 3]);
 ```
 

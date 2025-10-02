@@ -25,6 +25,11 @@ namespace FluentCompare.Configuration
 				return new ObjectsComparison(_configuration.ComplexTypesComparisonMode)
 					.Compare(t);
 			}
+			if (typeof(T) == typeof(int))
+			{
+				return new IntComparison()
+					.Compare((int[])(object)t);
+			}
 
 			throw new NotImplementedException();
 		}
