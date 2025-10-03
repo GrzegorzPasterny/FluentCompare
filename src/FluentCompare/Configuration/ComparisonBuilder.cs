@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 using FluentCompare.Configuration;
 using FluentCompare.Configuration.Models;
 
@@ -19,7 +21,7 @@ public class ComparisonBuilder
             // TODO: Consider adding Build method to ComparisonBuilder
             // TODO: Consider creating ObjectsComparisonByReferenceEquality
             // and ObjectsComparisonByPropertyEquality classes
-            return new ObjectsComparison(_configuration)
+            return new ObjectComparison(_configuration)
                 .Compare(t);
         }
         if (typeof(T) == typeof(int))
@@ -31,6 +33,53 @@ public class ComparisonBuilder
         {
             return new IntArrayComparison(_configuration)
                 .Compare((int[][])(object)t); // casting complexity O(1) according to chatGPT. TODO: To be confirmed
+        }
+
+        throw new NotImplementedException();
+    }
+
+    /// <summary>
+    /// Builds and executes the comparison for <paramref name="t"/>
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="t1">First array for comparison</param>
+    /// <param name="t2">Second array for comparison</param>
+    /// <returns></returns>
+    /// <exception cref="NotImplementedException"></exception>
+    public ComparisonResult Compare<T>(T t1, T t2,
+        [CallerArgumentExpression(nameof(t1))] string? t1Expr = null,
+        [CallerArgumentExpression(nameof(t2))] string? t2Expr = null)
+    {
+        if (t1 is null)
+            throw new ArgumentNullException(nameof(t1));
+
+        if (t2 is null)
+            throw new ArgumentNullException(nameof(t2));
+
+        string t1ExprName = t1Expr ?? "ArrayOne";
+        string t2ExprName = t1Expr ?? "ArrayTwo";
+
+        if (typeof(T) == typeof(object))
+        {
+            // TODO: Consider adding Build method to ComparisonBuilder
+            // TODO: Consider creating ObjectsComparisonByReferenceEquality
+            // and ObjectsComparisonByPropertyEquality classes
+            return new ObjectComparison(_configuration)
+                .Compare(t1, t2, t1ExprName, t2ExprName);
+        }
+        if (typeof(T) == typeof(int))
+        {
+            int i1 = Unsafe.As<T, int>(ref t1);
+            int i2 = Unsafe.As<T, int>(ref t2);
+            return new IntComparison(_configuration)
+                .Compare(i1, i2, t1ExprName, t2ExprName);
+        }
+        if (typeof(T) == typeof(int[]))
+        {
+            int[] iArr1 = Unsafe.As<T, int[]>(ref t1);
+            int[] iArr2 = Unsafe.As<T, int[]>(ref t2);
+            return new IntArrayComparison(_configuration)
+                .Compare(iArr1, iArr2, t1ExprName, t2ExprName);
         }
 
         throw new NotImplementedException();

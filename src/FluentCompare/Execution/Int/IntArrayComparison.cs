@@ -1,7 +1,8 @@
+
 using FluentCompare.Configuration;
 using FluentCompare.Execution.Int;
 
-public class IntArrayComparison : IntComparisonBase, IExecuteComparison<int[]>
+internal class IntArrayComparison : IntComparisonBase, IExecuteComparison<int[]>
 {
     private readonly ComparisonConfiguration _comparisonConfiguration;
 
@@ -57,4 +58,6 @@ public class IntArrayComparison : IntComparisonBase, IExecuteComparison<int[]>
 
         return result;
     }
+
+    public ComparisonResult Compare(int[] t1, int[] t2, string t1ExprName, string t2ExprName) => throw new NotImplementedException();
 }

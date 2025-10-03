@@ -31,4 +31,6 @@ public class IntComparison : IntComparisonBase, IExecuteComparison<int>
 
         return result;
     }
+
+    public ComparisonResult Compare(int t1, int t2, string t1ExprName, string t2ExprName) => throw new NotImplementedException();
 }
