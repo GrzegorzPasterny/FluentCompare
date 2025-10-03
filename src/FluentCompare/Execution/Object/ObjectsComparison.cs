@@ -1,7 +1,7 @@
 ﻿using FluentCompare.Configuration;
 using FluentCompare.ResultObjects;
 
-namespace FluentCompare.Execution
+namespace FluentCompare.Execution.Object
 {
 	public class ObjectsComparison : IExecuteComparison<object>
 	{
