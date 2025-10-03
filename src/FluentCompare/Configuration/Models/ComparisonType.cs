@@ -1,12 +1,10 @@
-namespace FluentCompare
+
+public enum ComparisonType
 {
-    public enum ComparisonType
-    {
-        EqualTo,
-        NotEqualTo,
-        GreaterThan,
-        LessThan,
-        GreaterThanOrEqualTo,
-        LessThanOrEqualTo,
-    }
+    EqualTo,
+    NotEqualTo,
+    GreaterThan,
+    LessThan,
+    GreaterThanOrEqualTo,
+    LessThanOrEqualTo,
 }

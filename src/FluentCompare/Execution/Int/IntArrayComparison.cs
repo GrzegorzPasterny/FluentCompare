@@ -1,63 +1,60 @@
 using FluentCompare.Configuration;
 using FluentCompare.Execution.Int;
 
-namespace FluentCompare
+public class IntArrayComparison : IntComparisonBase, IExecuteComparison<int[]>
 {
-    public class IntArrayComparison : IntComparisonBase, IExecuteComparison<int[]>
+    private readonly ComparisonConfiguration _comparisonConfiguration;
+
+    internal IntArrayComparison(ComparisonConfiguration comparisonConfiguration)
     {
-        private readonly ComparisonConfiguration _comparisonConfiguration;
+        _comparisonConfiguration = comparisonConfiguration;
+    }
 
-        internal IntArrayComparison(ComparisonConfiguration comparisonConfiguration)
+    public ComparisonResult Compare(params int[][] objects)
+    {
+        var result = new ComparisonResult();
+
+        if (objects == null || objects.Length < 2)
+            return result;
+
+        var first = objects[0];
+        for (int i = 1; i < objects.Length; i++)
         {
-            _comparisonConfiguration = comparisonConfiguration;
-        }
+            var current = objects[i];
 
-        public ComparisonResult Compare(params int[][] objects)
-        {
-            var result = new ComparisonResult();
-
-            if (objects == null || objects.Length < 2)
-                return result;
-
-            var first = objects[0];
-            for (int i = 1; i < objects.Length; i++)
+            if (first == null || current == null)
             {
-                var current = objects[i];
-
-                if (first == null || current == null)
-                {
-                    if (first != current)
-                    {
-                        result.AddMismatch(new ComparisonMismatch
-                        {
-                            Message = $"Array at index 0 and {i} do not match: one is null, the other is not."
-                        });
-                    }
-                    continue;
-                }
-
-                if (first.Length != current.Length)
+                if (first != current)
                 {
                     result.AddMismatch(new ComparisonMismatch
                     {
-                        Message = $"Array length mismatch at index 0 and {i}: {first.Length} vs {current.Length}."
+                        Message = $"Array at index 0 and {i} do not match: one is null, the other is not."
                     });
-                    continue;
                 }
-
-                for (int j = 0; j < first.Length; j++)
-                {
-                    if (!Compare(first[j], current[j], _comparisonConfiguration.ComparisonType))
-                    {
-                        result.AddMismatch(new ComparisonMismatch
-                        {
-                            Message = $"Value mismatch at index {j} of arrays 0 and {i}: {first[j]} vs {current[j]}."
-                        });
-                    }
-                }
+                continue;
             }
 
-            return result;
+            if (first.Length != current.Length)
+            {
+                result.AddMismatch(new ComparisonMismatch
+                {
+                    Message = $"Array length mismatch at index 0 and {i}: {first.Length} vs {current.Length}."
+                });
+                continue;
+            }
+
+            for (int j = 0; j < first.Length; j++)
+            {
+                if (!Compare(first[j], current[j], _comparisonConfiguration.ComparisonType))
+                {
+                    result.AddMismatch(new ComparisonMismatch
+                    {
+                        Message = $"Value mismatch at index {j} of arrays 0 and {i}: {first[j]} vs {current[j]}."
+                    });
+                }
+            }
         }
+
+        return result;
     }
 }
