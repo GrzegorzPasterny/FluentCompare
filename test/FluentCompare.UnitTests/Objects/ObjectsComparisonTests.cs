@@ -1,54 +1,53 @@
-﻿using FluentCompare.Configuration;
-using Shouldly;
+﻿using Shouldly;
 
 namespace FluentCompare.UnitTests.Objects
 {
-	public class ObjectsComparisonTests
-	{
-		[Fact]
-		public void Compare_TwoEquivalentAnonymousTypes_WithDefaultConfig_ReturnsAllMatchingResult()
-		{
-			// Arrange
-			var obj1 = new { Name = "Test", Value = 123 };
-			var obj2 = new { Name = "Test", Value = 123 };
+    public class ObjectsComparisonTests
+    {
+        [Fact]
+        public void Compare_TwoEquivalentAnonymousTypes_WithDefaultConfig_ReturnsAllMatchingResult()
+        {
+            // Arrange
+            var obj1 = new { Name = "Test", Value = 123 };
+            var obj2 = new { Name = "Test", Value = 123 };
 
-			// Act
-			var result = new ComparisonBuilder()
-				.Compare(obj1, obj2);
+            // Act
+            var result = new ComparisonBuilder()
+                .Compare(obj1, obj2);
 
-			// Assert
-			result.AllMatched.ShouldBeTrue(); // default behavior checks for equivalency
-		}
+            // Assert
+            result.AllMatched.ShouldBeTrue(); // default behavior checks for equivalency
+        }
 
-		[Fact]
-		public void Compare_TwoEquivalentAnonymousTypes_WithReferenceEqualityConfig_ReturnsNotMatchingResult()
-		{
-			// Arrange
-			var obj1 = new { Name = "Test", Value = 123 };
-			var obj2 = new { Name = "Test", Value = 123 };
+        [Fact]
+        public void Compare_TwoEquivalentAnonymousTypes_WithReferenceEqualityConfig_ReturnsNotMatchingResult()
+        {
+            // Arrange
+            var obj1 = new { Name = "Test", Value = 123 };
+            var obj2 = new { Name = "Test", Value = 123 };
 
-			// Act
-			var result = new ComparisonBuilder()
-				.UseReferenceEquality()
-				.Compare(obj1, obj2);
+            // Act
+            var result = new ComparisonBuilder()
+                .UseReferenceEquality()
+                .Compare(obj1, obj2);
 
-			// Assert
-			result.AllMatched.ShouldBeFalse();
-		}
+            // Assert
+            result.AllMatched.ShouldBeFalse();
+        }
 
-		[Fact]
-		public void Compare_TwoNonEquivalentAnonymousTypes_WithDefaultConfiguration_ReturnsNotEqualResult()
-		{
-			// Arrange
-			var obj1 = new { Name = "Test", Value = 123 };
-			var obj2 = new { Name = "Test", Value = 456 };
+        [Fact]
+        public void Compare_TwoNonEquivalentAnonymousTypes_WithDefaultConfiguration_ReturnsNotEqualResult()
+        {
+            // Arrange
+            var obj1 = new { Name = "Test", Value = 123 };
+            var obj2 = new { Name = "Test", Value = 456 };
 
-			// Act
-			var result = new ComparisonBuilder()
-				.Compare(obj1, obj2);
+            // Act
+            var result = new ComparisonBuilder()
+                .Compare(obj1, obj2);
 
-			// Assert
-			result.AllMatched.ShouldBeFalse();
-		}
-	}
+            // Assert
+            result.AllMatched.ShouldBeFalse();
+        }
+    }
 }

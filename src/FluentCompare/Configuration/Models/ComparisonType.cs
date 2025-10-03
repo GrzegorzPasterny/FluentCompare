@@ -1,12 +1,12 @@
-﻿namespace FluentCompare.Configuration.Models
+namespace FluentCompare
 {
-	public enum ComparisonType
-	{
-		EqualTo,
-		NotEqualTo,
-		GreaterThan,
-		LessThan,
-		GreaterThanOrEqualTo,
-		LessThanOrEqualTo,
-	}
+    public enum ComparisonType
+    {
+        EqualTo,
+        NotEqualTo,
+        GreaterThan,
+        LessThan,
+        GreaterThanOrEqualTo,
+        LessThanOrEqualTo,
+    }
 }

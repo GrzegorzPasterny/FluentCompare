@@ -1,8 +1,8 @@
-﻿namespace FluentCompare.Configuration.Models
+namespace FluentCompare
 {
-	internal enum ComplexTypesComparisonMode
-	{
-		ReferenceEquality,
-		PropertyEquality
-	}
+    internal enum ComplexTypesComparisonMode
+    {
+        ReferenceEquality,
+        PropertyEquality
+    }
 }

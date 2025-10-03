@@ -1,7 +1,7 @@
-﻿namespace FluentCompare.ResultObjects
+namespace FluentCompare
 {
-	public class ComparisonMismatch
-	{
-		public string Message { get; internal set; }
-	}
+    public class ComparisonMismatch
+    {
+        public string Message { get; internal set; }
+    }
 }

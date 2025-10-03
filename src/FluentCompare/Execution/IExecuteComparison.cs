@@ -1,9 +1,7 @@
-﻿using FluentCompare.ResultObjects;
-
-namespace FluentCompare.Execution
+namespace FluentCompare
 {
-	public interface IExecuteComparison<T>
-	{
-		ComparisonResult Compare(params T[] objects);
-	}
+    public interface IExecuteComparison<T>
+    {
+        ComparisonResult Compare(params T[] objects);
+    }
 }
