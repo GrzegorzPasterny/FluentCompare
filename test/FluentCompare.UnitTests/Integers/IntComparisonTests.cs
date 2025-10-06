@@ -62,6 +62,8 @@ namespace FluentCompare.UnitTests.Integers
 
             // Assert
             result.AllMatched.ShouldBeFalse();
+            result.Mismatches.First().Message.ShouldContain($"{nameof(array1)}");
+            result.Mismatches.First().Message.ShouldContain($"{nameof(array2)}");
         }
 
         [Fact]

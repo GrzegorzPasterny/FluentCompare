@@ -1,4 +1,3 @@
-
 using FluentCompare.Configuration;
 using FluentCompare.Execution.Int;
 
@@ -59,5 +58,22 @@ internal class IntArrayComparison : IntComparisonBase, IExecuteComparison<int[]>
         return result;
     }
 
-    public ComparisonResult Compare(int[] t1, int[] t2, string t1ExprName, string t2ExprName) => throw new NotImplementedException();
+    public ComparisonResult Compare(int[] intArr1, int[] intArr2, string intArr1ExprName, string intArr2ExprName)
+    {
+        var result = new ComparisonResult();
+
+        for (int i = 0; i < intArr1.Length; i++)
+        {
+            if (!Compare(intArr1[i], intArr2[i], _comparisonConfiguration.ComparisonType))
+            {
+                result.AddMismatch(new ComparisonMismatch
+                {
+                    Message = $"Value mismatch at index {i} of arrays {intArr1ExprName} and {intArr2ExprName}: " +
+                    $"{intArr1[i]} vs {intArr2[i]}."
+                });
+            }
+        }
+
+        return result;
+    }
 }
