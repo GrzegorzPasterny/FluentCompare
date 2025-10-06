@@ -7,8 +7,30 @@ public class DoubleComparisonBuilder : IComparisonBuilder<double>
         _configuration = configuration;
     }
 
-    public ComparisonResult Compare(params double[] t) => throw new NotImplementedException();
-    public ComparisonResult Compare(double t1, double t2, string? t1Expr = null, string? t2Expr = null) => throw new NotImplementedException();
+    public ComparisonResult Compare(params double[] d)
+    {
+        return new DoubleComparison(_configuration)
+            .Compare(d);
+    }
+
+    public ComparisonResult Compare(params double[][] d)
+    {
+        return new DoubleArrayComparison(_configuration)
+            .Compare(d);
+    }
+
+    public ComparisonResult Compare(double d1, double d2, string? d1Expr = null, string? d2Expr = null)
+    {
+        return new DoubleComparison(_configuration)
+            .Compare(d1, d2, d1Expr ?? "double1", d2Expr ?? "double2");
+    }
+
+    public ComparisonResult Compare(
+        double[] tArr1, double[] tArr2, string? tArr1Expr = null, string? tArr2Expr = null)
+    {
+        return new DoubleArrayComparison(_configuration)
+            .Compare(tArr1, tArr2, tArr1Expr ?? "doubleArray1", tArr2Expr ?? "doubleArray2");
+    }
 
     public DoubleComparisonBuilder WithPrecision(int precision)
     {
