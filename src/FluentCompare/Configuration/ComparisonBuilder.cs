@@ -1,11 +1,8 @@
 using System.Runtime.CompilerServices;
 
-using FluentCompare.Configuration;
-using FluentCompare.Configuration.Models;
-
 public class ComparisonBuilder
 {
-    private ComparisonConfiguration _configuration = new();
+    public ComparisonConfiguration Configuration = new();
 
     /// <summary>
     /// Builds and executes the comparison for <paramref name="t"/>
@@ -21,17 +18,17 @@ public class ComparisonBuilder
             // TODO: Consider adding Build method to ComparisonBuilder
             // TODO: Consider creating ObjectsComparisonByReferenceEquality
             // and ObjectsComparisonByPropertyEquality classes
-            return new ObjectComparison(_configuration)
+            return new ObjectComparison(Configuration)
                 .Compare(t);
         }
         if (typeof(T) == typeof(int))
         {
-            return new IntComparison(_configuration)
+            return new IntComparison(Configuration)
                 .Compare((int[])(object)t); // casting complexity O(1) according to chatGPT. TODO: To be confirmed
         }
         if (typeof(T) == typeof(int[]))
         {
-            return new IntArrayComparison(_configuration)
+            return new IntArrayComparison(Configuration)
                 .Compare((int[][])(object)t); // casting complexity O(1) according to chatGPT. TODO: To be confirmed
         }
 
@@ -64,27 +61,34 @@ public class ComparisonBuilder
             // TODO: Consider adding Build method to ComparisonBuilder
             // TODO: Consider creating ObjectsComparisonByReferenceEquality
             // and ObjectsComparisonByPropertyEquality classes
-            return new ObjectComparison(_configuration)
+            return new ObjectComparison(Configuration)
                 .Compare(t1, t2, t1ExprName, t2ExprName);
         }
         if (typeof(T) == typeof(int))
         {
             int i1 = Unsafe.As<T, int>(ref t1);
             int i2 = Unsafe.As<T, int>(ref t2);
-            return new IntComparison(_configuration)
+            return new IntComparison(Configuration)
                 .Compare(i1, i2, t1ExprName, t2ExprName);
         }
         if (typeof(T) == typeof(int[]))
         {
             int[] iArr1 = Unsafe.As<T, int[]>(ref t1);
             int[] iArr2 = Unsafe.As<T, int[]>(ref t2);
-            return new IntArrayComparison(_configuration)
+            return new IntArrayComparison(Configuration)
                 .Compare(iArr1, iArr2, t1ExprName, t2ExprName);
         }
 
         throw new NotImplementedException();
     }
 
+    public ComparisonBuilder Configure(Action<ComparisonConfiguration> configure)
+    {
+        configure(Configuration);
+        return this;
+    }
+
+    // TODO: All of the configuration methods can be in a partial class
     /// <summary>
     /// Sets the <paramref name="comparisonType"/>. Default is <see cref="ComparisonType.EqualTo"/>.
     /// </summary>
@@ -92,7 +96,7 @@ public class ComparisonBuilder
     /// <returns></returns>
     public ComparisonBuilder UseComparisonType(ComparisonType comparisonType)
     {
-        _configuration.ComparisonType = comparisonType;
+        Configuration.ComparisonType = comparisonType;
         return this;
     }
 
@@ -102,7 +106,7 @@ public class ComparisonBuilder
     /// <returns></returns>
     public ComparisonBuilder UsePropertyEquality()
     {
-        _configuration.ComplexTypesComparisonMode = ComplexTypesComparisonMode.PropertyEquality;
+        Configuration.ComplexTypesComparisonMode = ComplexTypesComparisonMode.PropertyEquality;
         return this;
     }
 
@@ -112,7 +116,7 @@ public class ComparisonBuilder
     /// <returns></returns>
     public ComparisonBuilder UseReferenceEquality()
     {
-        _configuration.ComplexTypesComparisonMode = ComplexTypesComparisonMode.ReferenceEquality;
+        Configuration.ComplexTypesComparisonMode = ComplexTypesComparisonMode.ReferenceEquality;
         return this;
     }
 }

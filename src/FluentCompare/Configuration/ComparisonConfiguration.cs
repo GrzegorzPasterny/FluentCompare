@@ -1,12 +1,8 @@
-using FluentCompare.Configuration.Models;
-
-namespace FluentCompare.Configuration;
-
-internal class ComparisonConfiguration
+public class ComparisonConfiguration
 {
-    internal ComparisonType ComparisonType { get; set; }
+    public ComparisonType ComparisonType { get; set; }
         = ComparisonType.EqualTo;
 
-    internal ComplexTypesComparisonMode ComplexTypesComparisonMode { get; set; }
+    public ComplexTypesComparisonMode ComplexTypesComparisonMode { get; set; }
         = ComplexTypesComparisonMode.PropertyEquality;
 }
