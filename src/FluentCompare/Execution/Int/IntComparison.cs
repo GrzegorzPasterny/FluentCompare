@@ -32,5 +32,18 @@ public class IntComparison : IntComparisonBase, IExecuteComparison<int>
         return result;
     }
 
-    public ComparisonResult Compare(int t1, int t2, string t1ExprName, string t2ExprName) => throw new NotImplementedException();
+    public ComparisonResult Compare(int i1, int i2, string t1ExprName, string t2ExprName)
+    {
+        var result = new ComparisonResult();
+
+        if (!Compare(i1, i2, _comparisonConfiguration.ComparisonType))
+        {
+            result.AddMismatch(new ComparisonMismatch
+            {
+                Message = $"Comparison failed between {t1ExprName} and {t2ExprName} using {_comparisonConfiguration.ComparisonType}."
+            });
+        }
+
+        return result;
+    }
 }

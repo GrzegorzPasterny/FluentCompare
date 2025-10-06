@@ -57,7 +57,7 @@ public class ComparisonBuilder
             throw new ArgumentNullException(nameof(t2));
 
         string t1ExprName = t1Expr ?? "ArrayOne";
-        string t2ExprName = t1Expr ?? "ArrayTwo";
+        string t2ExprName = t2Expr ?? "ArrayTwo";
 
         if (typeof(T) == typeof(object))
         {
