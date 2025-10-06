@@ -1,4 +1,3 @@
-using FluentCompare.Configuration;
 using FluentCompare.Execution.Int;
 
 internal class IntArrayComparison : IntComparisonBase, IExecuteComparison<int[]>

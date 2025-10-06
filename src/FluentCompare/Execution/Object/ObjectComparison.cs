@@ -1,5 +1,3 @@
-using FluentCompare.Configuration;
-
 public class ObjectComparison : IExecuteComparison<object>
 {
     private readonly ComparisonConfiguration _comparisonConfiguration;

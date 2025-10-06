@@ -1,4 +1,3 @@
-using FluentCompare.Configuration;
 using FluentCompare.Execution.Int;
 
 public class IntComparison : IntComparisonBase, IExecuteComparison<int>
