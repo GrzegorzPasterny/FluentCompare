@@ -1,6 +1,6 @@
 public class DoubleComparisonBase
 {
-    private bool Compare(double valueA, double valueB, ComparisonType comparisonType, int precision)
+    internal bool Compare(double valueA, double valueB, ComparisonType comparisonType, int precision)
     {
         double roundedA = Math.Round(valueA, precision);
         double roundedB = Math.Round(valueB, precision);
