@@ -1,4 +1,3 @@
-﻿using Shouldly;
 
 namespace FluentCompare.UnitTests.Objects
 {

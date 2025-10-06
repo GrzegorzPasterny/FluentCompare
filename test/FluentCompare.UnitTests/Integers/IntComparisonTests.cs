@@ -1,5 +1,3 @@
-﻿using Shouldly;
-
 namespace FluentCompare.UnitTests.Integers
 {
     public class IntComparisonTests
