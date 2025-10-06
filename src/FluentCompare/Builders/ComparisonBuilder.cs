@@ -31,6 +31,16 @@ public class ComparisonBuilder
             return new IntArrayComparison(Configuration)
                 .Compare((int[][])(object)t); // casting complexity O(1) according to chatGPT. TODO: To be confirmed
         }
+        if (typeof(T) == typeof(double))
+        {
+            return new DoubleComparison(Configuration)
+                .Compare((double[])(object)t); // casting complexity O(1) according to chatGPT. TODO: To be confirmed
+        }
+        if (typeof(T) == typeof(double[]))
+        {
+            return new DoubleArrayComparison(Configuration)
+                .Compare((double[][])(object)t); // casting complexity O(1) according to chatGPT. TODO: To be confirmed
+        }
 
         throw new NotImplementedException();
     }
@@ -66,20 +76,45 @@ public class ComparisonBuilder
         }
         if (typeof(T) == typeof(int))
         {
-            int i1 = Unsafe.As<T, int>(ref t1);
-            int i2 = Unsafe.As<T, int>(ref t2);
+            int o1 = Unsafe.As<T, int>(ref t1);
+            int o2 = Unsafe.As<T, int>(ref t2);
             return new IntComparison(Configuration)
-                .Compare(i1, i2, t1ExprName, t2ExprName);
+                .Compare(o1, o2, t1ExprName, t2ExprName);
         }
         if (typeof(T) == typeof(int[]))
         {
-            int[] iArr1 = Unsafe.As<T, int[]>(ref t1);
-            int[] iArr2 = Unsafe.As<T, int[]>(ref t2);
+            int[] oArr1 = Unsafe.As<T, int[]>(ref t1);
+            int[] oArr2 = Unsafe.As<T, int[]>(ref t2);
             return new IntArrayComparison(Configuration)
-                .Compare(iArr1, iArr2, t1ExprName, t2ExprName);
+                .Compare(oArr1, oArr2, t1ExprName, t2ExprName);
+        }
+        if (typeof(T) == typeof(double))
+        {
+            var o1 = Unsafe.As<T, double>(ref t1);
+            var o2 = Unsafe.As<T, double>(ref t2);
+            return new DoubleComparison(Configuration)
+                .Compare(o1, o2, t1ExprName, t2ExprName);
+        }
+        if (typeof(T) == typeof(double[]))
+        {
+            var oArr1 = Unsafe.As<T, double[]>(ref t1);
+            var oArr2 = Unsafe.As<T, double[]>(ref t2);
+            return new DoubleArrayComparison(Configuration)
+                .Compare(oArr1, oArr2, t1ExprName, t2ExprName);
         }
 
         throw new NotImplementedException();
+    }
+
+    public ComparisonBuilder UseConfiguration(ComparisonConfiguration configuration)
+    {
+        Configuration = configuration;
+        return this;
+    }
+
+    public DoubleComparisonBuilder ForDouble()
+    {
+        return new DoubleComparisonBuilder(Configuration);
     }
 
     public ComparisonBuilder Configure(Action<ComparisonConfiguration> configure)

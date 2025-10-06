@@ -1,3 +1,4 @@
+
 public class ComparisonConfiguration
 {
     public ComparisonType ComparisonType { get; set; }
@@ -5,4 +6,7 @@ public class ComparisonConfiguration
 
     public ComplexTypesComparisonMode ComplexTypesComparisonMode { get; set; }
         = ComplexTypesComparisonMode.PropertyEquality;
+
+    public DoubleComparisonConfiguration DoubleConfiguration { get; set; }
+        = new DoubleComparisonConfiguration();
 }
