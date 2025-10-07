@@ -25,6 +25,10 @@ public static class ComparisonErrors
     internal static ComparisonError InputArrayLengthsDiffer(int t1Length, int t2Length, string t1ArrExprName, string t2ArrExprName, Type type)
         => new(InputArrayLengthsDifferCode, $"Array lengths differ " +
             $"[{t1ArrExprName} length = {t1Length}, {t2ArrExprName} length = {t2Length}, Type = {type.Name}]");
+    internal static ComparisonError InputArrayLengthsDiffer(int arr1Length, int arr2Length, int arr1index, int arr2index, Type type)
+        => new(InputArrayLengthsDifferCode, $"Array lengths differ " +
+            $"[Array[{arr1index}] length = {arr1Length}, Array[{arr2index}] length = {arr2Length}, Type = {type.Name}]");
+
 }
 
 /// <summary>

@@ -38,7 +38,7 @@ public class DoubleComparison : DoubleComparisonBase, IExecuteComparison<double>
             bool matched = Compare(doubles[i], doubles[i + 1], comparisonType, precision);
             if (!matched)
             {
-                result.AddMismatch(ComparisonMismatches.Doubles.ValuesNotMatching(doubles[i], doubles[i + 1], precision));
+                result.AddMismatch(ComparisonMismatches.Doubles.MismatchDetected(doubles[i], doubles[i + 1], precision));
             }
         }
 
@@ -61,7 +61,7 @@ public class DoubleComparison : DoubleComparisonBase, IExecuteComparison<double>
         bool matched = Compare(d1, d2, comparisonType, precision);
         if (!matched)
         {
-            result.AddMismatch(ComparisonMismatches.Doubles.ValuesNotMatching(d1, d2, d1ExprName, d2ExprName, precision));
+            result.AddMismatch(ComparisonMismatches.Doubles.MismatchDetected(d1, d2, d1ExprName, d2ExprName, precision));
         }
 
         return result;

@@ -16,40 +16,36 @@ internal class IntArrayComparison : IntComparisonBase, IExecuteComparison<int[]>
         if (ints == null || ints.Length < 2)
             return result;
 
+        // All arrays are compared against the first one
         var first = ints[0];
+
         for (int i = 1; i < ints.Length; i++)
         {
             var current = ints[i];
 
-            if (first == null || current == null)
+            if (first == null)
             {
-                if (first != current)
-                {
-                    result.AddMismatch(new ComparisonMismatch
-                    {
-                        Message = $"Array at index 0 and {i} do not match: one is null, the other is not."
-                    });
-                }
-                continue;
+                result.AddMismatch(ComparisonMismatches.NullPassedAsArgument(0, typeof(int[])));
+                return result;
+            }
+
+            if (current == null)
+            {
+                result.AddMismatch(ComparisonMismatches.NullPassedAsArgument(i, typeof(int[])));
+                return result;
             }
 
             if (first.Length != current.Length)
             {
-                result.AddMismatch(new ComparisonMismatch
-                {
-                    Message = $"Array length mismatch at index 0 and {i}: {first.Length} vs {current.Length}."
-                });
-                continue;
+                result.AddError(ComparisonErrors.InputArrayLengthsDiffer(first.Length, current.Length, 0, i, typeof(int[])));
+                return result;
             }
 
             for (int j = 0; j < first.Length; j++)
             {
                 if (!Compare(first[j], current[j], _comparisonConfiguration.ComparisonType))
                 {
-                    result.AddMismatch(new ComparisonMismatch
-                    {
-                        Message = $"Value mismatch at index {j} of arrays 0 and {i}: {first[j]} vs {current[j]}."
-                    });
+                    result.AddMismatch(ComparisonMismatches<int>.MismatchDetected(first[j], current[j], j, 0, i, i => i.ToString()));
                 }
             }
         }

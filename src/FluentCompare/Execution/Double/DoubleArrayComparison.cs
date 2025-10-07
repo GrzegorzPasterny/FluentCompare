@@ -77,7 +77,7 @@ internal class DoubleArrayComparison : DoubleComparisonBase, IExecuteComparison<
 
             if (!matched)
             {
-                result.AddMismatch(ComparisonMismatches.Doubles.ValuesNotMatching(
+                result.AddMismatch(ComparisonMismatches.Doubles.MismatchDetected(
                     dArr1[i], dArr2[i], dArr1ExprName, dArr2ExprName, i, _configuration.DoubleConfiguration.Precision));
             }
         }

@@ -18,6 +18,17 @@ namespace FluentCompare.UnitTests.Integers
         }
 
         [Fact]
+        public void Compare_TwoDifferentIntegers_WithoutVariableNames_ReturnsAllMatchingResult()
+        {
+            // Act
+            var result = new ComparisonBuilder()
+                .Compare(0, 1);
+
+            // Assert
+            result.AllMatched.ShouldBeFalse();
+        }
+
+        [Fact]
         public void Compare_TwoDifferentIntegers_ReturnsNotMatchingResult()
         {
             // Arrange
