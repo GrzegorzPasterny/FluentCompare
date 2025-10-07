@@ -9,17 +9,17 @@ internal class IntArrayComparison : IntComparisonBase, IExecuteComparison<int[]>
         _comparisonConfiguration = comparisonConfiguration;
     }
 
-    public ComparisonResult Compare(params int[][] objects)
+    public ComparisonResult Compare(params int[][] ints)
     {
         var result = new ComparisonResult();
 
-        if (objects == null || objects.Length < 2)
+        if (ints == null || ints.Length < 2)
             return result;
 
-        var first = objects[0];
-        for (int i = 1; i < objects.Length; i++)
+        var first = ints[0];
+        for (int i = 1; i < ints.Length; i++)
         {
-            var current = objects[i];
+            var current = ints[i];
 
             if (first == null || current == null)
             {

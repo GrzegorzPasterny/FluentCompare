@@ -10,9 +10,16 @@ internal class DoubleArrayComparison : DoubleComparisonBase, IExecuteComparison<
     public ComparisonResult Compare(params double[][] doubleArrays)
     {
         var result = new ComparisonResult();
-        if (doubleArrays == null || doubleArrays.Length < 2)
+
+        if (doubleArrays == null)
         {
-            result.AddError(new ComparisonError("At least two arrays are required for comparison."));
+            result.AddError(ComparisonErrors.NullPassedAsArgument(typeof(double[])));
+            return result;
+        }
+
+        if (doubleArrays.Length < 2)
+        {
+            result.AddError(ComparisonErrors.NotEnoughObjectToCompare(doubleArrays.Length, typeof(double[])));
             return result;
         }
 
@@ -29,45 +36,49 @@ internal class DoubleArrayComparison : DoubleComparisonBase, IExecuteComparison<
         return result;
     }
 
-    public ComparisonResult Compare(double[] t1, double[] t2, string t1ExprName, string t2ExprName)
+    public ComparisonResult Compare(double[] dArr1, double[] dArr2, string dArr1ExprName, string dArr2ExprName)
     {
         var result = new ComparisonResult();
 
-        if (ReferenceEquals(t1, t2))
+        if (ReferenceEquals(dArr1, dArr2))
         {
             return result;
         }
 
-        if (t1 == null || t2 == null)
+        if (dArr1 == null)
         {
-            result.AddError(new ComparisonError($"{t1ExprName} or {t2ExprName} is null."));
-
+            result.AddError(ComparisonErrors.NullPassedAsArgument(dArr1ExprName, typeof(double[])));
             return result;
         }
 
-        if (t1.Length != t2.Length)
+        if (dArr2 == null)
         {
-            result.AddWarning(new ComparisonError($"Array lengths differ: {t1ExprName}.Length={t1.Length}, {t2ExprName}.Length={t2.Length}."));
-
-            // TODO: Perform the comparison
+            result.AddError(ComparisonErrors.NullPassedAsArgument(dArr2ExprName, typeof(double[])));
             return result;
         }
 
-        for (int i = 0; i < t1.Length; i++)
+        if (dArr1.Length != dArr2.Length)
+        {
+            // TODO: Make it configurable to add warning, or error
+            result.AddWarning(ComparisonErrors.InputArrayLengthsDiffer(dArr1.Length, dArr2.Length, dArr1ExprName, dArr2ExprName, typeof(double[])));
+
+            // TODO: Perform the comparison in case of warning
+            return result;
+        }
+
+        for (int i = 0; i < dArr1.Length; i++)
         {
             bool matched = Compare(
-                t1[i],
-                t2[i],
+                dArr1[i],
+                dArr2[i],
                 _configuration.ComparisonType,
                 _configuration.DoubleConfiguration.Precision
             );
 
             if (!matched)
             {
-                result.AddMismatch(new ComparisonMismatch
-                {
-                    Message = $"Mismatch at index {i}: {t1ExprName}[{i}]={t1[i]}, {t2ExprName}[{i}]={t2[i]}."
-                });
+                result.AddMismatch(ComparisonMismatches.Doubles.ValuesNotMatching(
+                    dArr1[i], dArr2[i], dArr1ExprName, dArr2ExprName, i, _configuration.DoubleConfiguration.Precision));
             }
         }
 

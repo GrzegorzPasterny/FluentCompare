@@ -38,33 +38,30 @@ public class DoubleComparison : DoubleComparisonBase, IExecuteComparison<double>
             bool matched = Compare(doubles[i], doubles[i + 1], comparisonType, precision);
             if (!matched)
             {
-                result.AddMismatch(ComparisonMismatches<double>.ValuesNotMatching(doubles[i], doubles[i + 1], precision));
+                result.AddMismatch(ComparisonMismatches.Doubles.ValuesNotMatching(doubles[i], doubles[i + 1], precision));
             }
         }
 
         return result;
     }
 
-    public ComparisonResult Compare(double t1, double t2, string t1ExprName, string t2ExprName)
+    public ComparisonResult Compare(double d1, double d2, string d1ExprName, string d2ExprName)
     {
         var result = new ComparisonResult();
         var comparisonType = _configuration.ComparisonType;
 
         if (_configuration.DoubleConfiguration is null)
         {
-            result.AddError(new ComparisonError("Double comparison configuration is missing"));
+            result.AddError(ComparisonErrors.ConfigurationIsMissing(typeof(double)));
             return result;
         }
 
         var precision = _configuration.DoubleConfiguration.Precision;
 
-        bool matched = Compare(t1, t2, comparisonType, precision);
+        bool matched = Compare(d1, d2, comparisonType, precision);
         if (!matched)
         {
-            result.AddMismatch(new ComparisonMismatch
-            {
-                Message = $"Comparison failed between {t1ExprName} ({t1}) and {t2ExprName} ({t2}) with type {comparisonType} and precision {precision}."
-            });
+            result.AddMismatch(ComparisonMismatches.Doubles.ValuesNotMatching(d1, d2, d1ExprName, d2ExprName, precision));
         }
 
         return result;
