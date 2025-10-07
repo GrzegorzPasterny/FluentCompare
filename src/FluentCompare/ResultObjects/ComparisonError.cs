@@ -1,10 +1,12 @@
 public class ComparisonError
 {
+    public string Code { get; }
     public string Message { get; }
     public Exception? Exception { get; }
 
-    public ComparisonError(string message, Exception? exception = null)
+    internal ComparisonError(string code, string message, Exception? exception = null)
     {
+        Code = code;
         Message = message;
         Exception = exception;
     }
@@ -12,7 +14,7 @@ public class ComparisonError
     public override string ToString()
     {
         return Exception == null
-            ? $"Comparison error: {Message}"
-            : $"Comparison error: {Message}. Exception: {Exception.Message}";
+            ? $"{Code}: {Message}"
+            : $"{Code}: {Message}. Exception: {Exception.Message}";
     }
 }

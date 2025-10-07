@@ -7,13 +7,19 @@ public class DoubleComparison : DoubleComparisonBase, IExecuteComparison<double>
         _configuration = configuration;
     }
 
-    public ComparisonResult Compare(params double[] objects)
+    public ComparisonResult Compare(params double[] doubles)
     {
         var result = new ComparisonResult();
 
-        if (objects == null || objects.Length < 2)
+        if (doubles == null)
         {
-            result.AddError(new ComparisonError("At least two double values are required for comparison."));
+            result.AddError(ComparisonErrors.NullPassedAsArgument(typeof(double)));
+            return result;
+        }
+
+        if (doubles.Length < 2)
+        {
+            result.AddError(ComparisonErrors.NotEnoughObjectToCompare(doubles.Length, typeof(double)));
             return result;
         }
 
@@ -21,21 +27,18 @@ public class DoubleComparison : DoubleComparisonBase, IExecuteComparison<double>
 
         if (_configuration.DoubleConfiguration is null)
         {
-            result.AddError(new ComparisonError("Double comparison configuration is missing"));
+            result.AddError(ComparisonErrors.ConfigurationIsMissing(typeof(double)));
             return result;
         }
 
         var precision = _configuration.DoubleConfiguration.Precision;
 
-        for (int i = 0; i < objects.Length - 1; i++)
+        for (int i = 0; i < doubles.Length - 1; i++)
         {
-            bool matched = Compare(objects[i], objects[i + 1], comparisonType, precision);
+            bool matched = Compare(doubles[i], doubles[i + 1], comparisonType, precision);
             if (!matched)
             {
-                result.AddMismatch(new ComparisonMismatch
-                {
-                    Message = $"Comparison failed between objects[{i}] ({objects[i]}) and objects[{i + 1}] ({objects[i + 1]}) with type {comparisonType} and precision {precision}."
-                });
+                result.AddMismatch(ComparisonMismatches<double>.ValuesNotMatching(doubles[i], doubles[i + 1], precision));
             }
         }
 
