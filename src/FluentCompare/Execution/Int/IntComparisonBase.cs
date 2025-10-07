@@ -22,4 +22,6 @@ public abstract class IntComparisonBase
                 throw new ArgumentOutOfRangeException();
         }
     }
+
+    internal Func<int, string> _toStringFunc = i => i.ToString();
 }

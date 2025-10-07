@@ -12,19 +12,25 @@ public class IntComparison : IntComparisonBase, IExecuteComparison<int>
     public ComparisonResult Compare(params int[] ints)
     {
         var result = new ComparisonResult();
-        if (ints == null || ints.Length < 2)
+
+        if (ints == null)
         {
+            result.AddError(ComparisonErrors.NullPassedAsArgument(typeof(int)));
             return result;
         }
 
-        for (int i = 0; i < ints.Length - 1; i++)
+        if (ints.Length < 2)
         {
-            if (!Compare(ints[i], ints[i + 1], _comparisonConfiguration.ComparisonType))
+            result.AddError(ComparisonErrors.NotEnoughObjectToCompare(ints.Length, typeof(int)));
+            return result;
+        }
+
+        int first = ints[0];
+        for (int i = 1; i <= ints.Length; i++)
+        {
+            if (!Compare(first, ints[i], _comparisonConfiguration.ComparisonType))
             {
-                result.AddMismatch(new ComparisonMismatch
-                {
-                    Message = $"Comparison failed between {ints[i]} and {ints[i + 1]} using {_comparisonConfiguration.ComparisonType}."
-                });
+                result.AddMismatch(ComparisonMismatches<int>.MismatchDetected(first, ints[i], i, _comparisonConfiguration.ComparisonType, _toStringFunc));
             }
         }
 
@@ -37,10 +43,7 @@ public class IntComparison : IntComparisonBase, IExecuteComparison<int>
 
         if (!Compare(i1, i2, _comparisonConfiguration.ComparisonType))
         {
-            result.AddMismatch(new ComparisonMismatch
-            {
-                Message = $"Comparison failed between {t1ExprName} and {t2ExprName} using {_comparisonConfiguration.ComparisonType}."
-            });
+            result.AddMismatch(ComparisonMismatches<int>.MismatchDetected(i1, i2, t1ExprName, t2ExprName, _comparisonConfiguration.ComparisonType, _toStringFunc));
         }
 
         return result;

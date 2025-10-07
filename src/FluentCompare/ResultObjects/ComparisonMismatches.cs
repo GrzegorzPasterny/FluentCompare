@@ -7,14 +7,32 @@ public static class ComparisonMismatches<T>
     public static string Namespace = $"FluentCompare.Mismatch.{typeof(T).Name}";
 
     public static string MismatchDetectedCode => $"{Namespace}.{nameof(MismatchDetected)}";
-    internal static ComparisonMismatch MismatchDetected(T v1, T v2, int indexInArrays, int arr1Index, int arr2Index, Func<T, string> toStringFunc)
+    internal static ComparisonMismatch MismatchDetected(T v1, T v2, int index, ComparisonType comparisonType, Func<T, string> toStringFunc)
+        => new(MismatchDetectedCode, $"Mismatch detected " +
+            $"[{typeof(T).Name}FirstValue = {toStringFunc(v1)}, " +
+            $"{typeof(T).Name}ValueAtIndex[{index}] = {toStringFunc(v2)}, ComparisonType = {comparisonType}]");
+    internal static ComparisonMismatch MismatchDetected(T v1, T v2, string t1ExprName, string t2ExprName, ComparisonType comparisonType, Func<T, string> toStringFunc)
+         => new(MismatchDetectedCode, $"Mismatch detected " +
+            $"[{typeof(T).Name}FirstValue = {toStringFunc(v1)}, " +
+            $"{typeof(T).Name}SecondValue = {toStringFunc(v2)}, ComparisonType = {comparisonType}]");
+    internal static ComparisonMismatch MismatchDetected(T v1, T v2, int indexInArrays, int arr1Index, int arr2Index, ComparisonType comparisonType, Func<T, string> toStringFunc)
         => new(MismatchDetectedCode,
             $"Mismatch detected " +
             $"[{typeof(T).Name}Array[{arr1Index}][{indexInArrays}] = {toStringFunc(v1)}, " +
-            $"{typeof(T).Name}Array[{arr2Index}][{indexInArrays}] = {toStringFunc(v2)}]",
+            $"{typeof(T).Name}Array[{arr2Index}][{indexInArrays}] = {toStringFunc(v2)}, ComparisonType = {comparisonType}]",
             verboseMessage:
             $"Mismatch detected between array {arr1Index} and array {arr2Index} at element index {indexInArrays}. " +
-            $"Expected both values to be equal. " +
+            $"Expected both values to be {comparisonType}. " +
+            $"Left value: {toStringFunc(v1)} ({typeof(T).Name}) | " +
+            $"Right value: {toStringFunc(v2)} ({typeof(T).Name}). ");
+    internal static ComparisonMismatch MismatchDetected(T v1, T v2, int indexInArrays, string intArr1ExprName, string intArr2ExprName, ComparisonType comparisonType, Func<T, string> toStringFunc)
+        => new(MismatchDetectedCode,
+            $"Mismatch detected " +
+            $"[{intArr1ExprName}[{indexInArrays}] = {toStringFunc(v1)}, " +
+            $"{intArr2ExprName}[{indexInArrays}] = {toStringFunc(v2)}, ComparisonType = {comparisonType}]",
+            verboseMessage:
+            $"Mismatch detected between array {intArr1ExprName} and array {intArr2ExprName} at element index {indexInArrays}. " +
+            $"Expected both values to be {comparisonType}. " +
             $"Left value: {toStringFunc(v1)} ({typeof(T).Name}) | " +
             $"Right value: {toStringFunc(v2)} ({typeof(T).Name}). ");
 }

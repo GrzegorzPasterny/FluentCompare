@@ -45,7 +45,8 @@ internal class IntArrayComparison : IntComparisonBase, IExecuteComparison<int[]>
             {
                 if (!Compare(first[j], current[j], _comparisonConfiguration.ComparisonType))
                 {
-                    result.AddMismatch(ComparisonMismatches<int>.MismatchDetected(first[j], current[j], j, 0, i, i => i.ToString()));
+                    result.AddMismatch(ComparisonMismatches<int>.MismatchDetected(
+                        first[j], current[j], j, 0, i, _comparisonConfiguration.ComparisonType, _toStringFunc));
                 }
             }
         }
@@ -61,11 +62,8 @@ internal class IntArrayComparison : IntComparisonBase, IExecuteComparison<int[]>
         {
             if (!Compare(intArr1[i], intArr2[i], _comparisonConfiguration.ComparisonType))
             {
-                result.AddMismatch(new ComparisonMismatch
-                {
-                    Message = $"Value mismatch at index {i} of arrays {intArr1ExprName} and {intArr2ExprName}: " +
-                    $"{intArr1[i]} vs {intArr2[i]}."
-                });
+                result.AddMismatch(ComparisonMismatches<int>.MismatchDetected(
+                    intArr1[i], intArr2[i], i, intArr1ExprName, intArr2ExprName, _comparisonConfiguration.ComparisonType, _toStringFunc));
             }
         }
 
