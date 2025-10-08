@@ -58,6 +58,13 @@ internal class IntArrayComparison : IntComparisonBase, IExecuteComparison<int[]>
     {
         var result = new ComparisonResult();
 
+        if (intArr1.Length != intArr2.Length)
+        {
+            result.AddError(ComparisonErrors.InputArrayLengthsDiffer(
+                intArr1.Length, intArr2.Length, intArr1ExprName, intArr2ExprName, typeof(int[])));
+            return result;
+        }
+
         for (int i = 0; i < intArr1.Length; i++)
         {
             if (!Compare(intArr1[i], intArr2[i], _comparisonConfiguration.ComparisonType))

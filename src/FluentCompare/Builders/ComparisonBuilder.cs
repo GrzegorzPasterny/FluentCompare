@@ -63,21 +63,34 @@ public class ComparisonBuilder
         if (t2 is null)
             throw new ArgumentNullException(nameof(t2));
 
-        string t1ExprName = t1Expr ?? "ArrayOne";
-        string t2ExprName = t2Expr ?? "ArrayTwo";
-
         if (typeof(T) == typeof(object))
         {
             // TODO: Consider adding Build method to ComparisonBuilder
             // TODO: Consider creating ObjectsComparisonByReferenceEquality
             // and ObjectsComparisonByPropertyEquality classes
+            string t1ExprName = t1Expr ?? "ObjectOne";
+            string t2ExprName = t2Expr ?? "ObjectTwo";
+
             return new ObjectComparison(Configuration)
                 .Compare(t1, t2, t1ExprName, t2ExprName);
+        }
+        if (typeof(T) == typeof(object[]))
+        {
+            object[] oArr1 = Unsafe.As<T, object[]>(ref t1);
+            object[] oArr2 = Unsafe.As<T, object[]>(ref t2);
+            string t1ExprName = t1Expr ?? "ArrayOne";
+            string t2ExprName = t2Expr ?? "ArrayTwo";
+
+            return new ObjectArrayComparison(Configuration)
+                .Compare(oArr1, oArr2, t1ExprName, t2ExprName);
         }
         if (typeof(T) == typeof(int))
         {
             int o1 = Unsafe.As<T, int>(ref t1);
             int o2 = Unsafe.As<T, int>(ref t2);
+            string t1ExprName = t1Expr ?? "IntOne";
+            string t2ExprName = t2Expr ?? "IntTwo";
+
             return new IntComparison(Configuration)
                 .Compare(o1, o2, t1ExprName, t2ExprName);
         }
@@ -85,6 +98,9 @@ public class ComparisonBuilder
         {
             int[] oArr1 = Unsafe.As<T, int[]>(ref t1);
             int[] oArr2 = Unsafe.As<T, int[]>(ref t2);
+            string t1ExprName = t1Expr ?? "IntArrayOne";
+            string t2ExprName = t2Expr ?? "IntArrayTwo";
+
             return new IntArrayComparison(Configuration)
                 .Compare(oArr1, oArr2, t1ExprName, t2ExprName);
         }
@@ -92,6 +108,9 @@ public class ComparisonBuilder
         {
             var o1 = Unsafe.As<T, double>(ref t1);
             var o2 = Unsafe.As<T, double>(ref t2);
+            string t1ExprName = t1Expr ?? "DoubleOne";
+            string t2ExprName = t2Expr ?? "DoubleTwo";
+
             return new DoubleComparison(Configuration)
                 .Compare(o1, o2, t1ExprName, t2ExprName);
         }
@@ -99,6 +118,9 @@ public class ComparisonBuilder
         {
             var oArr1 = Unsafe.As<T, double[]>(ref t1);
             var oArr2 = Unsafe.As<T, double[]>(ref t2);
+            string t1ExprName = t1Expr ?? "DoubleArrayOne";
+            string t2ExprName = t2Expr ?? "DoubleArrayTwo";
+
             return new DoubleArrayComparison(Configuration)
                 .Compare(oArr1, oArr2, t1ExprName, t2ExprName);
         }

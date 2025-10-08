@@ -1,6 +1,12 @@
-namespace FluentCompare.Execution.Object;
-internal class ObjectArrayComparison : IExecuteComparison<int[]>
+internal class ObjectArrayComparison : IExecuteComparison<object[]>
 {
-    public ComparisonResult Compare(params int[][] objects) => throw new NotImplementedException();
-    public ComparisonResult Compare(int[] t1, int[] t2, string t1ExprName, string t2ExprName) => throw new NotImplementedException();
+    private ComparisonConfiguration _configuration;
+
+    public ObjectArrayComparison(ComparisonConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
+
+    public ComparisonResult Compare(params object[][] objects) => throw new NotImplementedException();
+    public ComparisonResult Compare(object[] t1, object[] t2, string t1ExprName, string t2ExprName) => throw new NotImplementedException();
 }
