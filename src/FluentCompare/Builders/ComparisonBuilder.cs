@@ -46,22 +46,33 @@ public class ComparisonBuilder
     }
 
     /// <summary>
-    /// Builds and executes the comparison for <paramref name="t"/>
+    /// Builds and executes the comparison between <paramref name="t1"/> and <paramref name="t2"/>
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    /// <param name="t1">First array for comparison</param>
-    /// <param name="t2">Second array for comparison</param>
+    /// <param name="t1">First object for comparison</param>
+    /// <param name="t2">Second object for comparison</param>
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
     public ComparisonResult Compare<T>(T t1, T t2,
         [CallerArgumentExpression(nameof(t1))] string? t1Expr = null,
         [CallerArgumentExpression(nameof(t2))] string? t2Expr = null)
     {
-        if (t1 is null)
-            throw new ArgumentNullException(nameof(t1));
+        if (t1 is null || t2 is null)
+        {
+            ComparisonResult result = new();
 
-        if (t2 is null)
-            throw new ArgumentNullException(nameof(t2));
+            if (t1 is null)
+            {
+                result.AddError(ComparisonErrors.NullPassedAsArgument("First object", typeof(T)));
+                return result;
+            }
+
+            if (t2 is null)
+            {
+                result.AddError(ComparisonErrors.NullPassedAsArgument("Second object", typeof(T)));
+                return result;
+            }
+        }
 
         if (typeof(T) == typeof(object))
         {

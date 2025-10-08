@@ -1,6 +1,8 @@
 
 public class ComparisonResult
 {
+    internal ComparisonResult() { }
+
     // TODO: Hide the results when comparison was not successful
     private readonly List<ComparisonMismatch> _mismatches = new();
     public IReadOnlyList<ComparisonMismatch> Mismatches => _mismatches;

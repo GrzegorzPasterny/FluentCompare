@@ -103,8 +103,7 @@ namespace FluentCompare.UnitTests.Integers
         {
             // Act
             var result = new ComparisonBuilder()
-            .Compare<int[]>([1, 2, 3, 4, 5], [1, 2, 3, 4, 6]); // '<int[]>' is needed only because there is overload with 'params T[]'
-                                                               // TODO: Consider removing 'params T[]' overload
+                .Compare<int[]>([1, 2, 3, 4, 5], [1, 2, 3, 4, 6]);
 
             // Assert
             result.WasSuccessful.ShouldBeTrue();
@@ -125,9 +124,8 @@ namespace FluentCompare.UnitTests.Integers
             .Compare<int[]>([1, 2, 3, 4, 5], null);
 
             // Assert
-            result.WasSuccessful.ShouldBeTrue();
-            result.AllMatched.ShouldBeFalse();
-            result.MismatchCount.ShouldBe(1);
+            result.WasSuccessful.ShouldBeFalse();
+            result.ErrorCount.ShouldBe(1);
             result.Mismatches.First().Code.ShouldBe(ComparisonMismatches<int>.MismatchDetectedCode);
             // Those messages contain the array values, because there are no variable names.
             // TODO: Consider improving the message formatting for anonymous arrays
