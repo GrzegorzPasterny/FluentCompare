@@ -29,6 +29,17 @@ public static class ComparisonErrors
         => new(InputArrayLengthsDifferCode, $"Array lengths differ " +
             $"[Array[{arr1index}] length = {arr1Length}, Array[{arr2index}] length = {arr2Length}, Type = {type.Name}]");
 
+    public static class Object
+    {
+        public static string Namespace = "FluentCompare.Error.Object";
+
+        public static string BothObjectsAreNullCode => $"{Namespace}.{nameof(BothObjectsAreNull)}";
+        internal static ComparisonError BothObjectsAreNull(object? o1, object? o2, int o1Index, int o2Index)
+            => new(BothObjectsAreNullCode, $"One of the objects is null while the other is not " +
+                $"[Object1Index = {o1Index}, Object2Index = {o2Index}, " +
+                $"Object1 = {o1 ?? "null"}, Object2 = {o2 ?? "null"}]");
+
+    }
 }
 
 /// <summary>
