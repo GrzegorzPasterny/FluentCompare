@@ -38,4 +38,26 @@ public class ComparisonResult
     {
         _warnings.Add(error);
     }
+
+    internal void AddMismatches(IReadOnlyList<ComparisonMismatch> mismatches)
+    {
+        _mismatches.AddRange(mismatches);
+    }
+
+    internal void AddWarnings(IReadOnlyList<ComparisonError> warnings)
+    {
+        _warnings.AddRange(warnings);
+    }
+
+    internal void AddErrors(IReadOnlyList<ComparisonError> errors)
+    {
+        _errors.AddRange(errors);
+    }
+
+    internal void AddComparisonResult(ComparisonResult results)
+    {
+        AddMismatches(results.Mismatches);
+        AddErrors(results.Errors);
+        AddWarnings(results.Warnings);
+    }
 }

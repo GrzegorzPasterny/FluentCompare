@@ -69,6 +69,9 @@ public static class ComparisonMismatches
 
     }
 
+    /// <summary>
+    /// Object-related comparison mismatches repository
+    /// </summary>
     public static class Object
     {
         public static string Namespace = "FluentCompare.Mismatch.Object";
@@ -77,6 +80,9 @@ public static class ComparisonMismatches
         internal static ComparisonMismatch MismatchDetectedByReference(object o1, object o2, int o1Index, int o2Index)
             => new(MismatchDetectedByReferenceCode,
                 $"Mismatch detected by reference [Object1Index = {o1Index}, Object2Index = {o2Index}, Object1 = {o1}, Object2 = {o2}]");
+        internal static ComparisonMismatch MismatchDetectedByReference(object o1, object o2, string o1ExprName, string o2ExprName)
+            => new(MismatchDetectedByReferenceCode,
+                $"Mismatch detected by reference [Object1: Name = {o1ExprName} Value = {o1}, Object2: Name = {o2ExprName} Value = {o2}]");
 
         public static string MismatchDetectedByNullCode => $"{Namespace}.{nameof(MismatchDetectedByNull)}";
         internal static ComparisonMismatch MismatchDetectedByNull(object? o1, object? o2, int o1Index, int o2Index)
@@ -93,6 +99,13 @@ public static class ComparisonMismatches
                 $"Mismatch detected by type [Object1Index = {o1Index}, Object2Index = {o2Index}, Object1Type = {o1Type.Name}, Object2Type = {o2Type.Name}]",
                 verboseMessage:
                 $"Type mismatch detected between objects at index {o1Index} and {o2Index}. " +
+                $"Left value: {o1} (Type: {o1Type.FullName}) | " +
+                $"Right value: {o2} (Type: {o2Type.FullName}).");
+        internal static ComparisonMismatch MismatchDetectedByType(object o1, object o2, string o1ExprName, string o2ExprName, Type o1Type, Type o2Type)
+            => new(MismatchDetectedByTypeCode,
+                $"Mismatch detected by type [Object1: Name = {o1ExprName} Type = {o1Type.Name} Value = {o1}, Object2: Name = {o2ExprName} Type =  {o2Type.Name} Value = {o2}]",
+                verboseMessage:
+                $"Type mismatch detected between objects {o1ExprName} and {o2ExprName}. " +
                 $"Left value: {o1} (Type: {o1Type.FullName}) | " +
                 $"Right value: {o2} (Type: {o2Type.FullName}).");
     }

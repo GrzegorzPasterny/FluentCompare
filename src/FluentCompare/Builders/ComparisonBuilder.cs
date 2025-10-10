@@ -2,7 +2,17 @@ using System.Runtime.CompilerServices;
 
 public class ComparisonBuilder
 {
-    public ComparisonConfiguration Configuration = new();
+    public ComparisonConfiguration Configuration;
+
+    public ComparisonBuilder()
+    {
+        Configuration = new();
+    }
+
+    public ComparisonBuilder(ComparisonConfiguration configuration)
+    {
+        Configuration = configuration ?? new();
+    }
 
     /// <summary>
     /// Builds and executes the comparison for <paramref name="t"/>
