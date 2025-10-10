@@ -118,12 +118,27 @@ public class ObjectComparison : IExecuteComparison<object>
                 }
 
                 // Check for primitive, enum, or string types
-                if (type1.IsPrimitive)
+                if (type1.IsPrimitive || type1.IsEnum || type1 == typeof(string))
                 {
-                    var results = new ComparisonBuilder(_comparisonConfiguration)
-                        .Compare(t1, t2, t1ExprName, t2ExprName);
+                    var compareMethod = typeof(ComparisonBuilder)
+                        .GetMethods()
+                        .Where(m => m.Name == nameof(Compare))
+                        .Where(m => m.IsGenericMethodDefinition)
+                        .First(m =>
+                        {
+                            var p = m.GetParameters();
+                            return p.Length >= 2 && p[0].ParameterType.IsGenericParameter && p[1].ParameterType.IsGenericParameter;
+                        });
 
-                    result.AddComparisonResult(results);
+                    // Dynamically call the generic Compare<T> with the real type
+                    var method = compareMethod.MakeGenericMethod(type1);
+
+                    var subResult = (ComparisonResult)method.Invoke(
+                        new ComparisonBuilder(_comparisonConfiguration),
+                        new object?[] { t1, t2, t1ExprName, t2ExprName }
+                    )!;
+
+                    result.AddComparisonResult(subResult);
                     break;
                 }
 

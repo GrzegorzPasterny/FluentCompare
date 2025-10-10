@@ -1,7 +1,7 @@
 
 namespace FluentCompare.UnitTests.Objects
 {
-    public class ObjectsComparisonTests
+    public class AnonymousObjectsComparisonTests
     {
         [Fact]
         public void Compare_TwoEquivalentAnonymousTypes_WithDefaultConfig_ReturnsAllMatchingResult()
