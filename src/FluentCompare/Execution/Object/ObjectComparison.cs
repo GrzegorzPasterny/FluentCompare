@@ -28,11 +28,7 @@ public class ObjectComparison : IExecuteComparison<object>
             switch (_comparisonConfiguration.ComplexTypesComparisonMode)
             {
                 case ComplexTypesComparisonMode.ReferenceEquality:
-                    if (!ReferenceEquals(firstObj, currentObj))
-                    {
-                        result.AddMismatch(ComparisonMismatches.Object.MismatchDetectedByReference(
-                            firstObj, currentObj, 0, i));
-                    }
+                    CompareObjectsByReference(firstObj, currentObj, 0, i, result);
                     break;
 
                 case ComplexTypesComparisonMode.PropertyEquality:
@@ -62,20 +58,7 @@ public class ObjectComparison : IExecuteComparison<object>
                     }
 
                     // For complex types, compare properties recursively
-                    var properties = type1.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-                    foreach (var prop in properties)
-                    {
-                        var val1 = prop.GetValue(firstObj);
-                        var val2 = prop.GetValue(currentObj);
-
-                        // Recursively compare property values
-                        var propResult = Compare(val1, val2, prop.Name, prop.Name);
-                        if (!propResult.AllMatched)
-                        {
-                            result.AddMismatches(propResult.Mismatches);
-                            result.AddErrors(propResult.Errors);
-                        }
-                    }
+                    CompareObjectsPropertiesRecursively(firstObj, currentObj, result, type1);
                     break;
             }
         }
@@ -97,15 +80,10 @@ public class ObjectComparison : IExecuteComparison<object>
             return result;
         }
 
-        // Use the configured comparison mode for complex types
         switch (_comparisonConfiguration.ComplexTypesComparisonMode)
         {
             case ComplexTypesComparisonMode.ReferenceEquality:
-                if (!ReferenceEquals(t1, t2))
-                {
-                    result.AddMismatch(ComparisonMismatches.Object.MismatchDetectedByReference(
-                        t1, t2, t1ExprName, t2ExprName));
-                }
+                CompareObjectsByReference(t1, t2, t1ExprName, t2ExprName, result);
                 break;
             case ComplexTypesComparisonMode.PropertyEquality:
                 var type1 = t1.GetType();
@@ -117,47 +95,84 @@ public class ObjectComparison : IExecuteComparison<object>
                     break;
                 }
 
-                // Check for primitive, enum, or string types
-                if (type1.IsPrimitive || type1.IsEnum || type1 == typeof(string))
+                if (IsPrimitiveEnumOrString(type1))
                 {
-                    var compareMethod = typeof(ComparisonBuilder)
-                        .GetMethods()
-                        .Where(m => m.Name == nameof(Compare))
-                        .Where(m => m.IsGenericMethodDefinition)
-                        .First(m =>
-                        {
-                            var p = m.GetParameters();
-                            return p.Length >= 2 && p[0].ParameterType.IsGenericParameter && p[1].ParameterType.IsGenericParameter;
-                        });
-
-                    // Dynamically call the generic Compare<T> with the real type
-                    var method = compareMethod.MakeGenericMethod(type1);
-
-                    var subResult = (ComparisonResult)method.Invoke(
-                        new ComparisonBuilder(_comparisonConfiguration),
-                        new object?[] { t1, t2, t1ExprName, t2ExprName }
-                    )!;
-
-                    result.AddComparisonResult(subResult);
+                    CompareObjectsWhenPrimitive(t1, t2, t1ExprName, t2ExprName, result, type1);
                     break;
                 }
 
-                // For complex types, compare properties recursively
-                var properties = type1.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-                foreach (var prop in properties)
-                {
-                    var val1 = prop.GetValue(t1);
-                    var val2 = prop.GetValue(t2);
-                    // Recursively compare property values
-                    var propResult = Compare(val1, val2, $"{t1ExprName}.{prop.Name}", $"{t2ExprName}.{prop.Name}");
-                    if (!propResult.AllMatched)
-                    {
-                        result.AddMismatches(propResult.Mismatches);
-                        result.AddErrors(propResult.Errors);
-                    }
-                }
+                CompareObjectsPropertiesRecursively(t1, t2, result, type1, t1ExprName, t2ExprName);
                 break;
         }
         return result;
+    }
+
+    private void CompareObjectsPropertiesRecursively(object t1, object t2, ComparisonResult result, Type type1, string? t1ExprName = null, string? t2ExprName = null)
+    {
+        var properties = type1.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+        foreach (var prop in properties)
+        {
+            var val1 = prop.GetValue(t1);
+            var val2 = prop.GetValue(t2);
+            ComparisonResult propResult;
+
+            if (t1ExprName is null || t2ExprName is null)
+            {
+                propResult = Compare(val1, val2, prop.Name, prop.Name);
+            }
+            else
+            {
+                propResult = Compare(val1, val2, $"{t1ExprName}.{prop.Name}", $"{t2ExprName}.{prop.Name}");
+            }
+
+            if (!propResult.AllMatched)
+            {
+                result.AddMismatches(propResult.Mismatches);
+                result.AddErrors(propResult.Errors);
+            }
+        }
+    }
+
+    private void CompareObjectsWhenPrimitive(object t1, object t2, string t1ExprName, string t2ExprName, ComparisonResult result, Type type1)
+    {
+        var compareMethod = typeof(ComparisonBuilder)
+                                .GetMethods()
+                                .Where(m => m.Name == nameof(Compare))
+                                .Where(m => m.IsGenericMethodDefinition)
+                                .First(m =>
+                                {
+                                    var p = m.GetParameters();
+                                    return p.Length >= 2 && p[0].ParameterType.IsGenericParameter && p[1].ParameterType.IsGenericParameter;
+                                });
+
+        // Dynamically call the generic Compare<T> with the real type
+        var method = compareMethod.MakeGenericMethod(type1);
+
+        var subResult = (ComparisonResult)method.Invoke(
+            new ComparisonBuilder(_comparisonConfiguration),
+            new object?[] { t1, t2, t1ExprName, t2ExprName }
+        )!;
+
+        result.AddComparisonResult(subResult);
+    }
+
+    private static bool IsPrimitiveEnumOrString(Type type1) => type1.IsPrimitive || type1.IsEnum || type1 == typeof(string);
+
+    private static void CompareObjectsByReference(object t1, object t2, string t1ExprName, string t2ExprName, ComparisonResult result)
+    {
+        if (!ReferenceEquals(t1, t2))
+        {
+            result.AddMismatch(ComparisonMismatches.Object.MismatchDetectedByReference(
+                t1, t2, t1ExprName, t2ExprName));
+        }
+    }
+
+    private void CompareObjectsByReference(object? firstObj, object currentObj, int v, int i, ComparisonResult result)
+    {
+        if (!ReferenceEquals(firstObj, currentObj))
+        {
+            result.AddMismatch(ComparisonMismatches.Object.MismatchDetectedByReference(
+                firstObj, currentObj, 0, i));
+        }
     }
 }
