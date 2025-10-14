@@ -1,9 +1,10 @@
 
+using System.Text;
+
 public class ComparisonResult
 {
     internal ComparisonResult() { }
 
-    // TODO: Hide the results when comparison was not successful
     private readonly List<ComparisonMismatch> _mismatches = new();
     public IReadOnlyList<ComparisonMismatch> Mismatches => _mismatches;
 
@@ -21,38 +22,33 @@ public class ComparisonResult
 
     public override string ToString()
     {
-        return $"Comparison result [AllMatched={AllMatched}, MismatchedCount={MismatchCount}]";
+        if (!AllMatched)
+        {
+            StringBuilder stringBuilder = new();
+            if (!WasSuccessful)
+            {
+                _errors.ForEach(e => stringBuilder.AppendLine(e.ToString()));
+                return stringBuilder.ToString();
+            }
+
+            _mismatches.ForEach(m => stringBuilder.AppendLine(m.ToString()));
+            return stringBuilder.ToString();
+        }
+
+        return $"[WasSuccessful={WasSuccessful}, AllMatched={AllMatched}]";
     }
 
-    internal void AddMismatch(ComparisonMismatch mismatch)
-    {
-        _mismatches.Add(mismatch);
-    }
+    internal void AddMismatch(ComparisonMismatch mismatch) => _mismatches.Add(mismatch);
 
-    internal void AddError(ComparisonError error)
-    {
-        _errors.Add(error);
-    }
+    internal void AddError(ComparisonError error) => _errors.Add(error);
 
-    internal void AddWarning(ComparisonError error)
-    {
-        _warnings.Add(error);
-    }
+    internal void AddWarning(ComparisonError error) => _warnings.Add(error);
 
-    internal void AddMismatches(IReadOnlyList<ComparisonMismatch> mismatches)
-    {
-        _mismatches.AddRange(mismatches);
-    }
+    internal void AddMismatches(IReadOnlyList<ComparisonMismatch> mismatches) => _mismatches.AddRange(mismatches);
 
-    internal void AddWarnings(IReadOnlyList<ComparisonError> warnings)
-    {
-        _warnings.AddRange(warnings);
-    }
+    internal void AddWarnings(IReadOnlyList<ComparisonError> warnings) => _warnings.AddRange(warnings);
 
-    internal void AddErrors(IReadOnlyList<ComparisonError> errors)
-    {
-        _errors.AddRange(errors);
-    }
+    internal void AddErrors(IReadOnlyList<ComparisonError> errors) => _errors.AddRange(errors);
 
     internal void AddComparisonResult(ComparisonResult results)
     {
