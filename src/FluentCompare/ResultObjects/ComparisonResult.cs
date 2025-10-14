@@ -13,7 +13,7 @@ public class ComparisonResult
     private readonly List<ComparisonError> _warnings = new();
     public IReadOnlyList<ComparisonError> Warnings => _warnings;
 
-    public bool AllMatched => _mismatches.Count == 0;
+    public bool AllMatched => WasSuccessful && _mismatches.Count == 0;
     public int MismatchCount => _mismatches.Count;
 
     public bool WasSuccessful => _errors.Count == 0;

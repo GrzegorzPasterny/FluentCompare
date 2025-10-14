@@ -37,4 +37,19 @@ public class ClassComparisonTests
         if (expectedResult == false)
             result.Mismatches.ShouldContain(m => m.Code == errorCode);
     }
+
+    [Fact]
+    public void CompareClasses_WhenOneOfTheClassIsNull_ReturnsExpectedResult()
+    {
+        // Arrange
+        ClassWithIntProperty obj1 = new(1);
+        ClassWithIntProperty obj2 = null;
+        // Act
+        var result = new ComparisonBuilder()
+            .Compare(obj1, obj2);
+        // Assert
+        result.WasSuccessful.ShouldBeFalse();
+        result.AllMatched.ShouldBeFalse();
+        result.Errors.ShouldContain(m => m.Code == ComparisonErrors.NullPassedAsArgumentCode);
+    }
 }

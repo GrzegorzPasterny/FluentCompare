@@ -9,17 +9,22 @@
 		<AssemblyName>FluentCompare</AssemblyName>
 		<PackageId>FluentCompare</PackageId>
 		
-		<Version>0.0.3</Version>
+		<Version>0.1.0</Version>
 		<Authors>Grzegorz Pasterny</Authors>
 		<Description>A fluent API for comparing values, arrays, and complex objects in .NET.</Description>
 		<PackageTags>comparison fluent-api dotnet c#</PackageTags>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 		<RepositoryUrl>https://github.com/GrzegorzPasterny/FluentCompare</RepositoryUrl>
 		<PackageProjectUrl>https://github.com/GrzegorzPasterny/FluentCompare</PackageProjectUrl>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
+	<ItemGroup>
+		<None Include="..\..\README.md" Pack="true" PackagePath="\"/>
+	</ItemGroup>
+	
 </Project>
