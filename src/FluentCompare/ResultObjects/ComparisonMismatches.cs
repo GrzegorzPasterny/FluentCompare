@@ -80,6 +80,9 @@ public static class ComparisonMismatches
         internal static ComparisonMismatch MismatchDetectedByReference(object o1, object o2, int o1Index, int o2Index)
             => new(MismatchDetectedByReferenceCode,
                 $"Mismatch detected by reference [Object1Index = {o1Index}, Object2Index = {o2Index}, Object1 = {o1}, Object2 = {o2}]");
+        internal static ComparisonMismatch MismatchDetectedByReference(object o1, object o2, int indexInArray)
+            => new(MismatchDetectedByReferenceCode,
+                $"Mismatch detected by reference [ObjectsIndex = {indexInArray}, Object1 = {o1}, Object2 = {o2}]");
         internal static ComparisonMismatch MismatchDetectedByReference(object o1, object o2, string o1ExprName, string o2ExprName)
             => new(MismatchDetectedByReferenceCode,
                 $"Mismatch detected by reference [Object1: Name = {o1ExprName} Value = {o1}, Object2: Name = {o2ExprName} Value = {o2}]");

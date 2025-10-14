@@ -4,7 +4,8 @@
 public class ComparisonConfiguration
 {
     /// <summary>
-    /// The type of comparison to perform. Defaults to EqualTo.
+    /// The type of comparison to perform on primitive types. Defaults to EqualTo.
+    /// Complex types are compared according to the <see cref="ComplexTypesComparisonMode"/> setting.
     /// </summary>
     public ComparisonType ComparisonType { get; set; }
         = ComparisonType.EqualTo;

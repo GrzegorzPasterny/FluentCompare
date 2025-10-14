@@ -32,6 +32,10 @@ public class ObjectComparison : IExecuteComparison<object>
                     break;
 
                 case ComplexTypesComparisonMode.PropertyEquality:
+                    if (ReferenceEquals(firstObj, currentObj))
+                    {
+                        return result;
+                    }
                     if (firstObj == null && currentObj == null)
                     {
                         result.AddWarning(ComparisonErrors.Object.BothObjectsAreNull(firstObj, currentObj, 0, i));
@@ -69,6 +73,10 @@ public class ObjectComparison : IExecuteComparison<object>
     public ComparisonResult Compare(object t1, object t2, string t1ExprName, string t2ExprName)
     {
         var result = new ComparisonResult();
+        if (ReferenceEquals(t1, t2))
+        {
+            return result;
+        }
         if (t1 == null)
         {
             result.AddError(ComparisonErrors.NullPassedAsArgument(t1ExprName, typeof(object)));
@@ -107,6 +115,31 @@ public class ObjectComparison : IExecuteComparison<object>
         return result;
     }
 
+    private void CompareObjectsWhenPrimitive(object t1, object t2, string t1ExprName, string t2ExprName, ComparisonResult result, Type type1)
+    {
+        var compareMethod = typeof(ComparisonBuilder)
+                                .GetMethods()
+                                .Where(m => m.Name == nameof(Compare))
+                                .Where(m => m.IsGenericMethodDefinition)
+                                .First(m =>
+                                {
+                                    var p = m.GetParameters();
+                                    return p.Length >= 2 && p[0].ParameterType.IsGenericParameter && p[1].ParameterType.IsGenericParameter;
+                                });
+
+        // Dynamically call the generic Compare<T> with the real type
+        var method = compareMethod.MakeGenericMethod(type1);
+
+        var subResult = (ComparisonResult)method.Invoke(
+            new ComparisonBuilder(_comparisonConfiguration),
+            new object?[] { t1, t2, t1ExprName, t2ExprName }
+        )!;
+
+        result.AddComparisonResult(subResult);
+    }
+
+    private static bool IsPrimitiveEnumOrString(Type type1) => type1.IsPrimitive || type1.IsEnum || type1 == typeof(string);
+
     private void CompareObjectsPropertiesRecursively(object t1, object t2, ComparisonResult result, Type type1, string? t1ExprName = null, string? t2ExprName = null)
     {
         var properties = type1.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
@@ -132,31 +165,6 @@ public class ObjectComparison : IExecuteComparison<object>
             }
         }
     }
-
-    private void CompareObjectsWhenPrimitive(object t1, object t2, string t1ExprName, string t2ExprName, ComparisonResult result, Type type1)
-    {
-        var compareMethod = typeof(ComparisonBuilder)
-                                .GetMethods()
-                                .Where(m => m.Name == nameof(Compare))
-                                .Where(m => m.IsGenericMethodDefinition)
-                                .First(m =>
-                                {
-                                    var p = m.GetParameters();
-                                    return p.Length >= 2 && p[0].ParameterType.IsGenericParameter && p[1].ParameterType.IsGenericParameter;
-                                });
-
-        // Dynamically call the generic Compare<T> with the real type
-        var method = compareMethod.MakeGenericMethod(type1);
-
-        var subResult = (ComparisonResult)method.Invoke(
-            new ComparisonBuilder(_comparisonConfiguration),
-            new object?[] { t1, t2, t1ExprName, t2ExprName }
-        )!;
-
-        result.AddComparisonResult(subResult);
-    }
-
-    private static bool IsPrimitiveEnumOrString(Type type1) => type1.IsPrimitive || type1.IsEnum || type1 == typeof(string);
 
     private static void CompareObjectsByReference(object t1, object t2, string t1ExprName, string t2ExprName, ComparisonResult result)
     {
