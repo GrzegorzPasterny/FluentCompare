@@ -31,7 +31,7 @@ public class DoubleComparison : DoubleComparisonBase, IExecuteComparison<double>
             return result;
         }
 
-        var precision = _configuration.DoubleConfiguration.Precision;
+        var precision = _configuration.DoubleConfiguration.RoundingPrecision;
 
         for (int i = 0; i < doubles.Length - 1; i++)
         {
@@ -56,7 +56,7 @@ public class DoubleComparison : DoubleComparisonBase, IExecuteComparison<double>
             return result;
         }
 
-        var precision = _configuration.DoubleConfiguration.Precision;
+        var precision = _configuration.DoubleConfiguration.RoundingPrecision;
 
         bool matched = Compare(d1, d2, comparisonType, precision);
         if (!matched)

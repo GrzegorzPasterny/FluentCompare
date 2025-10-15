@@ -32,10 +32,21 @@ public class DoubleComparisonBuilder : IComparisonBuilder<double>
             .Compare(tArr1, tArr2, tArr1Expr ?? "doubleArray1", tArr2Expr ?? "doubleArray2");
     }
 
-    public DoubleComparisonBuilder WithPrecision(int precision)
+    public DoubleComparisonBuilder WithPrecision(int roundingPrecision)
     {
-        _configuration.DoubleConfiguration.Precision = precision;
+        _configuration.DoubleConfiguration.RoundingPrecision = roundingPrecision;
         return this;
     }
 
+    public DoubleComparisonBuilder WithPrecision(double epsilonPrecision)
+    {
+        _configuration.DoubleConfiguration.EpsilonPrecision = epsilonPrecision;
+        return this;
+    }
+
+    public DoubleComparisonBuilder UseToleranceMethod(DoubleToleranceMethods doubleToleranceMethod)
+    {
+        _configuration.DoubleConfiguration.DoubleToleranceMethod = doubleToleranceMethod;
+        return this;
+    }
 }

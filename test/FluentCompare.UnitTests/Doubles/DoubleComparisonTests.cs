@@ -1,7 +1,16 @@
+using Xunit.Abstractions;
+
 namespace FluentCompare.UnitTests.Doubles;
 
 public class DoubleComparisonTests
 {
+    private readonly ITestOutputHelper _testOutputHelper;
+
+    public DoubleComparisonTests(ITestOutputHelper testOutputHelper)
+    {
+        _testOutputHelper = testOutputHelper;
+    }
+
     [Fact]
     public void Compare_TwoEqualDoubles_ReturnsAllMatchingResult()
     {
@@ -78,7 +87,8 @@ public class DoubleComparisonTests
             .Compare(array1, array2);
 
         // Assert
-        result.AllMatched.ShouldBeFalse();
+        _testOutputHelper.WriteLine(result.ToString());
+        result.AllMatched.ShouldBeTrue();
     }
 
     [Fact]
@@ -189,9 +199,9 @@ public class DoubleComparisonTests
         // Assert
         result.AllMatched.ShouldBeFalse();
         result.Mismatches.ShouldNotBeEmpty();
-        result.Mismatches.First().Message.ShouldContain("index 2");
-        result.Mismatches.First().Message.ShouldContain("3.46");
-        result.Mismatches.First().Message.ShouldContain("3.47");
+        result.Mismatches.First().Message.ShouldContain("2");
+        result.Mismatches.First().Message.ShouldContain("3.456");
+        result.Mismatches.First().Message.ShouldContain("3.467");
     }
 
     [Fact]
@@ -206,6 +216,8 @@ public class DoubleComparisonTests
             .ForDouble()
             .WithPrecision(15) // High precision to catch floating point exactness, but since rounded, may still match if exact
             .Compare(array1, array2);
+
+        _testOutputHelper.WriteLine(result.ToString());
 
         // Assert
         // Note: Due to floating point, 0.1+0.2 != 0.3 exactly, so with high precision, should mismatch

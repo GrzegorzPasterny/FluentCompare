@@ -72,13 +72,13 @@ internal class DoubleArrayComparison : DoubleComparisonBase, IExecuteComparison<
                 dArr1[i],
                 dArr2[i],
                 _configuration.ComparisonType,
-                _configuration.DoubleConfiguration.Precision
+                _configuration.DoubleConfiguration.RoundingPrecision
             );
 
             if (!matched)
             {
                 result.AddMismatch(ComparisonMismatches.Doubles.MismatchDetected(
-                    dArr1[i], dArr2[i], dArr1ExprName, dArr2ExprName, i, _configuration.DoubleConfiguration.Precision));
+                    dArr1[i], dArr2[i], dArr1ExprName, dArr2ExprName, i, _configuration.DoubleConfiguration.RoundingPrecision));
             }
         }
 
