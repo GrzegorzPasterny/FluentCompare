@@ -59,8 +59,8 @@ public class ClassArrayComparisonTests
                 null
             },
             false,
-            false,
-            ComparisonErrors.NullPassedAsArgumentCode
+            true,
+            ComparisonMismatches.Object.MismatchDetectedByNullCode
         };
         yield return new object[]
         {
@@ -79,14 +79,17 @@ public class ClassArrayComparisonTests
     [Theory]
     [MemberData(nameof(CompareClassArray_WithDefaultConfiguration_ReturnsExpectedResult_DataSource))]
     public void CompareClassArray_WithDefaultConfiguration_ReturnsExpectedResult
-        (object obj1, object obj2, bool mismatchExpectedResult, bool errorExpectedResult, string errorCode)
+        (object[] obj1, object[] obj2, bool mismatchExpectedResult, bool errorExpectedResult, string errorCode)
     {
         // Act
         var result = new ComparisonBuilder()
             .Compare(obj1, obj2);
 
+        _testOutputHelper.WriteLine(result.ToString());
+
         // Assert
         result.WasSuccessful.ShouldBe(errorExpectedResult);
+
         if (errorExpectedResult is false)
         {
             result.Errors.ShouldContain(e => e.Code == errorCode);
@@ -97,7 +100,5 @@ public class ClassArrayComparisonTests
             if (mismatchExpectedResult == false)
                 result.Mismatches.ShouldContain(m => m.Code == errorCode);
         }
-
-        _testOutputHelper.WriteLine(result.ToString());
     }
 }
