@@ -1,6 +1,6 @@
 public class DoubleComparisonBase
 {
-    internal bool Compare(double valueA, double valueB, ComparisonType comparisonType, int precision)
+    internal bool CompareWithRounding(double valueA, double valueB, ComparisonType comparisonType, int precision)
     {
         double roundedA = Math.Round(valueA, precision);
         double roundedB = Math.Round(valueB, precision);
@@ -19,6 +19,28 @@ public class DoubleComparisonBase
                 return roundedA >= roundedB;
             case ComparisonType.LessThanOrEqualTo:
                 return roundedA <= roundedB;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
+    internal bool CompareWithEpsilon(double valueA, double valueB, ComparisonType comparisonType, double epsilon)
+    {
+        double diff = valueA - valueB;
+        switch (comparisonType)
+        {
+            case ComparisonType.EqualTo:
+                return Math.Abs(diff) < epsilon;
+            case ComparisonType.NotEqualTo:
+                return Math.Abs(diff) >= epsilon;
+            case ComparisonType.GreaterThan:
+                return diff > epsilon;
+            case ComparisonType.LessThan:
+                return diff < -epsilon;
+            case ComparisonType.GreaterThanOrEqualTo:
+                return diff > -epsilon;
+            case ComparisonType.LessThanOrEqualTo:
+                return diff < epsilon;
             default:
                 throw new ArgumentOutOfRangeException();
         }

@@ -31,14 +31,30 @@ public class DoubleComparison : DoubleComparisonBase, IExecuteComparison<double>
             return result;
         }
 
-        var precision = _configuration.DoubleConfiguration.RoundingPrecision;
-
         for (int i = 0; i < doubles.Length - 1; i++)
         {
-            bool matched = Compare(doubles[i], doubles[i + 1], comparisonType, precision);
-            if (!matched)
+            bool matched;
+
+            switch (_configuration.DoubleConfiguration.DoubleToleranceMethod)
             {
-                result.AddMismatch(ComparisonMismatches.Doubles.MismatchDetected(doubles[i], doubles[i + 1], precision));
+                case DoubleToleranceMethods.Rounding:
+                    matched = CompareWithRounding(doubles[i], doubles[i + 1], comparisonType, _configuration.DoubleConfiguration.RoundingPrecision);
+                    if (!matched)
+                    {
+                        result.AddMismatch(ComparisonMismatches.Doubles.MismatchDetected(
+                            doubles[i], doubles[i + 1], _configuration.DoubleConfiguration.RoundingPrecision));
+                    }
+                    break;
+                case DoubleToleranceMethods.Epsilon:
+                    matched = CompareWithEpsilon(doubles[i], doubles[i + 1], comparisonType, _configuration.DoubleConfiguration.EpsilonPrecision);
+                    if (!matched)
+                    {
+                        result.AddMismatch(ComparisonMismatches.Doubles.MismatchDetected(
+                            doubles[i], doubles[i + 1], _configuration.DoubleConfiguration.EpsilonPrecision));
+                    }
+                    break;
+                default:
+                    throw new NotImplementedException();
             }
         }
 
@@ -58,7 +74,7 @@ public class DoubleComparison : DoubleComparisonBase, IExecuteComparison<double>
 
         var precision = _configuration.DoubleConfiguration.RoundingPrecision;
 
-        bool matched = Compare(d1, d2, comparisonType, precision);
+        bool matched = CompareWithEpsilon(d1, d2, comparisonType, precision);
         if (!matched)
         {
             result.AddMismatch(ComparisonMismatches.Doubles.MismatchDetected(d1, d2, d1ExprName, d2ExprName, precision));

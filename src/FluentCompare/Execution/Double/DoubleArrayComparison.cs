@@ -68,7 +68,7 @@ internal class DoubleArrayComparison : DoubleComparisonBase, IExecuteComparison<
 
         for (int i = 0; i < dArr1.Length; i++)
         {
-            bool matched = Compare(
+            bool matched = CompareWithEpsilon(
                 dArr1[i],
                 dArr2[i],
                 _configuration.ComparisonType,
