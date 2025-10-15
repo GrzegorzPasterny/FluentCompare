@@ -74,6 +74,28 @@ public class ClassArrayComparisonTests
             false,
             ComparisonErrors.NullPassedAsArgumentCode
         };
+        yield return new object[]
+        {
+            new ClassWithIntProperty[]
+            {
+                new ClassWithIntProperty(1),
+                new ClassWithIntProperty(2)
+            },
+            new ClassWithNestedClassWithIntProperty[]
+            {
+                new ClassWithNestedClassWithIntProperty()
+                {
+                    ClassWithIntProperty = new ClassWithIntProperty(1)
+                },
+                new ClassWithNestedClassWithIntProperty()
+                {
+                    ClassWithIntProperty = new ClassWithIntProperty(2)
+                }
+            },
+            false,
+            true,
+            ComparisonMismatches.Object.MismatchDetectedByTypeCode
+        };
     }
 
     [Theory]
