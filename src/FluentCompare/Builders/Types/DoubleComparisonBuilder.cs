@@ -35,18 +35,20 @@ public class DoubleComparisonBuilder : IComparisonBuilder<double>
     public DoubleComparisonBuilder WithPrecision(int roundingPrecision)
     {
         _configuration.DoubleConfiguration.RoundingPrecision = roundingPrecision;
+        _configuration.DoubleConfiguration.ToleranceMethod = DoubleToleranceMethods.Rounding;
         return this;
     }
 
     public DoubleComparisonBuilder WithPrecision(double epsilonPrecision)
     {
         _configuration.DoubleConfiguration.EpsilonPrecision = epsilonPrecision;
+        _configuration.DoubleConfiguration.ToleranceMethod = DoubleToleranceMethods.Epsilon;
         return this;
     }
 
     public DoubleComparisonBuilder UseToleranceMethod(DoubleToleranceMethods doubleToleranceMethod)
     {
-        _configuration.DoubleConfiguration.DoubleToleranceMethod = doubleToleranceMethod;
+        _configuration.DoubleConfiguration.ToleranceMethod = doubleToleranceMethod;
         return this;
     }
 }

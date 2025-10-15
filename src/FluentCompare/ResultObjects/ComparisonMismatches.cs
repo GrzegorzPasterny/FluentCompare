@@ -59,16 +59,26 @@ public static class ComparisonMismatches
         public static string MismatchDetectedCode => $"{Namespace}.{nameof(MismatchDetected)}";
         internal static ComparisonMismatch MismatchDetected(double d1, double d2, int precision, DoubleToleranceMethods doubleToleranceMethods)
             => new(MismatchDetectedCode,
-                $"Mismatch detected [Double1 = {d1}, Double2 = {d2}, Precision = {precision}, ToleranceMethod = {doubleToleranceMethods}]");
+                $"Mismatch detected [Double1 = {d1}, Double2 = {d2}, RoundingPrecision = {precision}, ToleranceMethod = {doubleToleranceMethods}]");
         internal static ComparisonMismatch MismatchDetected(double d1, double d2, double precision, DoubleToleranceMethods doubleToleranceMethods)
             => new(MismatchDetectedCode,
-                $"Mismatch detected [Double1 = {d1}, Double2 = {d2}, Precision = {precision}, ToleranceMethod = {doubleToleranceMethods}]");
-        internal static ComparisonMismatch MismatchDetected(double d1, double d2, string d1ExprName, string d2ExprName, int precision)
+                $"Mismatch detected [Double1 = {d1}, Double2 = {d2}, EpsilonPrecision = {precision}, ToleranceMethod = {doubleToleranceMethods}]");
+        internal static ComparisonMismatch MismatchDetected(
+            double d1, double d2, string d1ExprName, string d2ExprName, int precision, DoubleToleranceMethods doubleToleranceMethods)
              => new(MismatchDetectedCode,
-                $"Mismatch detected [{d1ExprName} = {d1}, {d2ExprName} = {d2}, Precision = {precision}]");
-        internal static ComparisonMismatch MismatchDetected(double d1, double d2, string d1ArrExprName, string d2ArrExprName, int index, int precision)
+                $"Mismatch detected [{d1ExprName} = {d1}, {d2ExprName} = {d2}, RoundingPrecision = {precision}, ToleranceMethod = {doubleToleranceMethods}]");
+        internal static ComparisonMismatch MismatchDetected(
+            double d1, double d2, string d1ExprName, string d2ExprName, double precision, DoubleToleranceMethods doubleToleranceMethods)
+             => new(MismatchDetectedCode,
+                $"Mismatch detected [{d1ExprName} = {d1}, {d2ExprName} = {d2}, EpsilonPrecision = {precision}, ToleranceMethod = {doubleToleranceMethods}]");
+        internal static ComparisonMismatch MismatchDetected(
+            double d1, double d2, string d1ArrExprName, string d2ArrExprName, int index, int precision, DoubleToleranceMethods doubleToleranceMethods)
             => new(MismatchDetectedCode,
-                $"Mismatch detected [{d1ArrExprName}[{index}] = {d1}, {d2ArrExprName}[{index}] = {d2}, Precision = {precision}]");
+                $"Mismatch detected [{d1ArrExprName}[{index}] = {d1}, {d2ArrExprName}[{index}] = {d2}, RoundingPrecision = {precision}, ToleranceMethod = {doubleToleranceMethods}]");
+        internal static ComparisonMismatch MismatchDetected(
+            double d1, double d2, string d1ArrExprName, string d2ArrExprName, int index, double precision, DoubleToleranceMethods doubleToleranceMethods)
+            => new(MismatchDetectedCode,
+                $"Mismatch detected [{d1ArrExprName}[{index}] = {d1}, {d2ArrExprName}[{index}] = {d2}, EpsilonPrecision = {precision}, ToleranceMethod = {doubleToleranceMethods}]");
 
     }
 

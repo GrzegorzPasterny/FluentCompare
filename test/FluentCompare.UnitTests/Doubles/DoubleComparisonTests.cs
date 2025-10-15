@@ -214,7 +214,7 @@ public class DoubleComparisonTests
         // Act
         var result = new ComparisonBuilder()
             .ForDouble()
-            .WithPrecision(15) // High precision to catch floating point exactness, but since rounded, may still match if exact
+            .WithPrecision(1e-15) // High precision to catch floating point exactness
             .Compare(array1, array2);
 
         _testOutputHelper.WriteLine(result.ToString());
