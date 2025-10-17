@@ -68,6 +68,8 @@ internal class DoubleArrayComparison : DoubleComparisonBase, IExecuteComparison<
 
         for (int i = 0; i < dArr1.Length; i++)
         {
+            Compare(dArr1[i], dArr2[i], dArr1ExprName, dArr2ExprName, i, _configuration.ComparisonType, result);
+
             bool matched = CompareWithEpsilon(
                 dArr1[i],
                 dArr2[i],
@@ -77,13 +79,35 @@ internal class DoubleArrayComparison : DoubleComparisonBase, IExecuteComparison<
 
             if (!matched)
             {
-                result.AddMismatch(ComparisonMismatches.Doubles.MismatchDetected(
-                    dArr1[i], dArr2[i], dArr1ExprName, dArr2ExprName, i,
-                    _configuration.DoubleConfiguration.RoundingPrecision,
-                    _configuration.DoubleConfiguration.ToleranceMethod));
+
             }
         }
 
         return result;
+    }
+
+    private void Compare(double d1, double d2, string dArr1ExprName, string dArr2ExprName, int index, ComparisonType comparisonType, ComparisonResult result)
+    {
+        bool matched;
+
+        switch (_configuration.DoubleConfiguration.ToleranceMethod)
+        {
+            case DoubleToleranceMethods.Rounding:
+                matched = CompareWithRounding(d1, d2, comparisonType, _configuration.DoubleConfiguration.RoundingPrecision);
+                break;
+            case DoubleToleranceMethods.Epsilon:
+                matched = CompareWithEpsilon(d1, d2, comparisonType, _configuration.DoubleConfiguration.EpsilonPrecision);
+                break;
+            default:
+                throw new NotImplementedException();
+        }
+
+        if (!matched)
+        {
+            result.AddMismatch(ComparisonMismatches.Doubles.MismatchDetected(
+                d1, d2, dArr1ExprName, dArr2ExprName, index,
+                _configuration.DoubleConfiguration.RoundingPrecision,
+                _configuration.DoubleConfiguration.ToleranceMethod));
+        }
     }
 }

@@ -23,14 +23,6 @@ public class ComparisonBuilder
     /// <exception cref="NotImplementedException"></exception>
     public ComparisonResult Compare<T>(params T[] t)
     {
-        if (typeof(T) == typeof(object))
-        {
-            // TODO: Consider adding Build method to ComparisonBuilder
-            // TODO: Consider creating ObjectsComparisonByReferenceEquality
-            // and ObjectsComparisonByPropertyEquality classes
-            return new ObjectComparison(Configuration)
-                .Compare(t);
-        }
         if (typeof(T) == typeof(int))
         {
             return new IntComparison(Configuration)
@@ -50,6 +42,19 @@ public class ComparisonBuilder
         {
             return new DoubleArrayComparison(Configuration)
                 .Compare((double[][])(object)t); // casting complexity O(1) according to chatGPT. TODO: To be confirmed
+        }
+        if (typeof(T) == typeof(object[]))
+        {
+            return new ObjectArrayComparison(Configuration)
+                .Compare((object[][])(object)t); // casting complexity O(1) according to chatGPT. TODO: To be confirmed
+        }
+        if (typeof(T) == typeof(object))
+        {
+            // TODO: Consider adding Build method to ComparisonBuilder
+            // TODO: Consider creating ObjectsComparisonByReferenceEquality
+            // and ObjectsComparisonByPropertyEquality classes
+            return new ObjectComparison(Configuration)
+                .Compare(t);
         }
 
         throw new NotImplementedException();
@@ -71,40 +76,25 @@ public class ComparisonBuilder
         {
             ComparisonResult result = new();
 
+            if (t1 is null && t2 is null)
+            {
+                result.AddWarning(ComparisonErrors.BothObjectsAreNull());
+                return result;
+            }
+
             if (t1 is null)
             {
-                result.AddError(ComparisonErrors.NullPassedAsArgument("First object", typeof(T)));
+                result.AddMismatch(ComparisonMismatches.NullPassedAsArgument(1, typeof(T)));
                 return result;
             }
 
             if (t2 is null)
             {
-                result.AddError(ComparisonErrors.NullPassedAsArgument("Second object", typeof(T)));
+                result.AddMismatch(ComparisonMismatches.NullPassedAsArgument(2, typeof(T)));
                 return result;
             }
         }
 
-        if (typeof(T) == typeof(object))
-        {
-            // TODO: Consider adding Build method to ComparisonBuilder
-            // TODO: Consider creating ObjectsComparisonByReferenceEquality
-            // and ObjectsComparisonByPropertyEquality classes
-            string t1ExprName = t1Expr ?? "ObjectOne";
-            string t2ExprName = t2Expr ?? "ObjectTwo";
-
-            return new ObjectComparison(Configuration)
-                .Compare(t1, t2, t1ExprName, t2ExprName);
-        }
-        if (typeof(T) == typeof(object[]))
-        {
-            object[] oArr1 = Unsafe.As<T, object[]>(ref t1);
-            object[] oArr2 = Unsafe.As<T, object[]>(ref t2);
-            string t1ExprName = t1Expr ?? "ArrayOne";
-            string t2ExprName = t2Expr ?? "ArrayTwo";
-
-            return new ObjectArrayComparison(Configuration)
-                .Compare(oArr1, oArr2, t1ExprName, t2ExprName);
-        }
         if (typeof(T) == typeof(int))
         {
             int o1 = Unsafe.As<T, int>(ref t1);
@@ -144,6 +134,27 @@ public class ComparisonBuilder
 
             return new DoubleArrayComparison(Configuration)
                 .Compare(oArr1, oArr2, t1ExprName, t2ExprName);
+        }
+        if (typeof(T) == typeof(object[]))
+        {
+            object[] oArr1 = Unsafe.As<T, object[]>(ref t1);
+            object[] oArr2 = Unsafe.As<T, object[]>(ref t2);
+            string t1ExprName = t1Expr ?? "ArrayOne";
+            string t2ExprName = t2Expr ?? "ArrayTwo";
+
+            return new ObjectArrayComparison(Configuration)
+                .Compare(oArr1, oArr2, t1ExprName, t2ExprName);
+        }
+        if (typeof(T) == typeof(object)) // TODO: maybe make it a default case
+        {
+            // TODO: Consider adding Build method to ComparisonBuilder
+            // TODO: Consider creating ObjectsComparisonByReferenceEquality
+            // and ObjectsComparisonByPropertyEquality classes
+            string t1ExprName = t1Expr ?? "ObjectOne";
+            string t2ExprName = t2Expr ?? "ObjectTwo";
+
+            return new ObjectComparison(Configuration)
+                .Compare(t1, t2, t1ExprName, t2ExprName);
         }
 
         throw new NotImplementedException();

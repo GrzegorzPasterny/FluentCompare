@@ -1,4 +1,4 @@
-public class DoubleComparisonBuilder : IComparisonBuilder<double>
+public class DoubleComparisonBuilder : ComparisonBuilder, IComparisonBuilder<double>
 {
     private ComparisonConfiguration _configuration;
 

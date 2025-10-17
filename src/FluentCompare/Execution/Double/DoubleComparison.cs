@@ -47,22 +47,18 @@ public class DoubleComparison : DoubleComparisonBase, IExecuteComparison<double>
         {
             case DoubleToleranceMethods.Rounding:
                 matched = CompareWithRounding(d1, d2, comparisonType, _configuration.DoubleConfiguration.RoundingPrecision);
-                if (!matched)
-                {
-                    result.AddMismatch(ComparisonMismatches.Doubles.MismatchDetected(
-                        d1, d2, _configuration.DoubleConfiguration.RoundingPrecision, _configuration.DoubleConfiguration.ToleranceMethod));
-                }
                 break;
             case DoubleToleranceMethods.Epsilon:
                 matched = CompareWithEpsilon(d1, d2, comparisonType, _configuration.DoubleConfiguration.EpsilonPrecision);
-                if (!matched)
-                {
-                    result.AddMismatch(ComparisonMismatches.Doubles.MismatchDetected(
-                        d1, d2, _configuration.DoubleConfiguration.EpsilonPrecision, _configuration.DoubleConfiguration.ToleranceMethod));
-                }
                 break;
             default:
                 throw new NotImplementedException();
+        }
+
+        if (!matched)
+        {
+            result.AddMismatch(ComparisonMismatches.Doubles.MismatchDetected(
+                d1, d2, _configuration.DoubleConfiguration.EpsilonPrecision, _configuration.DoubleConfiguration.ToleranceMethod));
         }
     }
 

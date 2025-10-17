@@ -116,7 +116,7 @@ public class DoubleComparisonTests
     {
         // Arrange
         double dbl1 = 1.234;
-        double dbl2 = 1.245; // 1.23 vs 1.25 at precision 2
+        double dbl2 = 1.245;
 
         // Act
         var result = new ComparisonBuilder()
@@ -126,8 +126,8 @@ public class DoubleComparisonTests
 
         // Assert
         result.AllMatched.ShouldBeFalse();
-        result.Mismatches.First().Message.ShouldContain("1.23");
-        result.Mismatches.First().Message.ShouldContain("1.25");
+        result.Mismatches.First().Message.ShouldContain("1.234");
+        result.Mismatches.First().Message.ShouldContain("1.245");
     }
 
     [Fact]
@@ -135,7 +135,7 @@ public class DoubleComparisonTests
     {
         // Arrange
         double dbl1 = 1.234;
-        double dbl2 = 1.2341; // At precision 3: both 1.234
+        double dbl2 = 1.2341;
 
         // Act
         var result = new ComparisonBuilder()
@@ -152,7 +152,7 @@ public class DoubleComparisonTests
     {
         // Arrange
         double dbl1 = 1.234;
-        double dbl2 = 1.235; // At precision 3: 1.234 vs 1.235
+        double dbl2 = 1.235;
 
         // Act
         var result = new ComparisonBuilder()
@@ -171,7 +171,7 @@ public class DoubleComparisonTests
     {
         // Arrange
         double[] array1 = { 1.234, 2.345, 3.456 };
-        double[] array2 = { 1.2345, 2.3456, 3.4567 }; // All round to same at precision 2: 1.23, 2.35, 3.46
+        double[] array2 = { 1.2345, 2.3456, 3.4567 };
 
         // Act
         var result = new ComparisonBuilder()
@@ -188,7 +188,7 @@ public class DoubleComparisonTests
     {
         // Arrange
         double[] array1 = { 1.234, 2.345, 3.456 };
-        double[] array2 = { 1.2345, 2.3456, 3.467 }; // Last rounds to 3.47
+        double[] array2 = { 1.2345, 2.3456, 3.467 };
 
         // Act
         var result = new ComparisonBuilder()
@@ -214,7 +214,7 @@ public class DoubleComparisonTests
         // Act
         var result = new ComparisonBuilder()
             .ForDouble()
-            .WithPrecision(1e-15) // High precision to catch floating point exactness
+            .WithPrecision(1e-17)
             .Compare(array1, array2);
 
         _testOutputHelper.WriteLine(result.ToString());
@@ -251,11 +251,11 @@ public class DoubleComparisonTests
 
         // Act
         var result = new ComparisonBuilder()
-            .ForDouble()
             .Compare(array1, array2);
 
         // Assert
         result.AllMatched.ShouldBeFalse();
+        result.MismatchCount.ShouldBe(1);
         result.Mismatches.First().Message.ShouldContain("null");
     }
 }
