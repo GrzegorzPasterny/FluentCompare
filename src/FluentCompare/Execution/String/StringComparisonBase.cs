@@ -1,8 +1,9 @@
 internal class StringComparisonBase
 {
-    private bool Compare(
+    internal bool Compare(
         string stringA, string stringB,
-        System.StringComparison stringComparison, ComparisonType comparisonType)
+        ComparisonType comparisonType,
+        System.StringComparison stringComparison)
     {
         int comparisonResult = string.Compare(stringA, stringB, stringComparison);
 

@@ -28,7 +28,12 @@ public static class ComparisonErrors
     internal static ComparisonError InputArrayLengthsDiffer(int arr1Length, int arr2Length, int arr1index, int arr2index, Type type)
         => new(InputArrayLengthsDifferCode, $"Array lengths differ " +
             $"[Array[{arr1index}] length = {arr1Length}, Array[{arr2index}] length = {arr2Length}, Type = {type.Name}]");
-    internal static ComparisonError BothObjectsAreNull() => throw new NotImplementedException();
+
+    public static string BothObjectsAreNullCode => $"{Namespace}.{nameof(BothObjectsAreNull)}";
+    internal static ComparisonError BothObjectsAreNull()
+         => new(BothObjectsAreNullCode, $"Both objects in comparison are null");
+    internal static ComparisonError BothObjectsAreNull(string t1ExprName, string t2ExprName)
+         => new(BothObjectsAreNullCode, $"Both {t1ExprName} and {t2ExprName} are null");
 
     public static class Object
     {

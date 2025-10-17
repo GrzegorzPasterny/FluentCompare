@@ -48,6 +48,7 @@ public static class ComparisonMismatches
     internal static ComparisonMismatch NullPassedAsArgument(int index, Type type)
         => new(NullPassedAsArgumentCode,
             $"Null value was provided for comparison [ArgumentIndex = {index}, Type = {type.Name}]");
+    internal static ComparisonMismatch NullPassedAsArgument(string t1ExprName, string t2ExprName, Type type) => throw new NotImplementedException();
 
     /// <summary>
     /// Double-related comparison mismatches repository
