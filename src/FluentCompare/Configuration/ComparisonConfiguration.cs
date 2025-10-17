@@ -34,4 +34,7 @@ public class ComparisonConfiguration
     /// </summary>
     public DoubleComparisonConfiguration DoubleConfiguration { get; set; }
         = new DoubleComparisonConfiguration();
+
+    public StringComparisonConfiguration StringConfiguration { get; set; }
+        = new StringComparisonConfiguration();
 }

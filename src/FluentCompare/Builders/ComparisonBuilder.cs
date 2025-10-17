@@ -23,6 +23,11 @@ public class ComparisonBuilder
     /// <exception cref="NotImplementedException"></exception>
     public ComparisonResult Compare<T>(params T[] t)
     {
+        if (typeof(T) == typeof(string))
+        {
+            return new StringComparison(Configuration)
+                .Compare((string[])(object)t); // casting complexity O(1) according to chatGPT. TODO: To be confirmed
+        }
         if (typeof(T) == typeof(int))
         {
             return new IntComparison(Configuration)
@@ -95,6 +100,16 @@ public class ComparisonBuilder
             }
         }
 
+        if (typeof(T) == typeof(string))
+        {
+            string s1 = Unsafe.As<T, string>(ref t1);
+            string s2 = Unsafe.As<T, string>(ref t2);
+            string t1ExprName = t1Expr ?? "StringOne";
+            string t2ExprName = t2Expr ?? "StringTwo";
+
+            return new StringComparison(Configuration)
+                .Compare(s1, s2, t1ExprName, t2ExprName);
+        }
         if (typeof(T) == typeof(int))
         {
             int o1 = Unsafe.As<T, int>(ref t1);
@@ -236,6 +251,17 @@ public class ComparisonBuilder
     public ComparisonBuilder UseReferenceEquality()
     {
         Configuration.ComplexTypesComparisonMode = ComplexTypesComparisonMode.ReferenceEquality;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the string comparison type. Default is <see cref="System.StringComparison.Ordinal"/>.
+    /// </summary>
+    /// <param name="stringComparison"></param>
+    /// <returns></returns>
+    public ComparisonBuilder UseStringComparisonType(System.StringComparison stringComparison)
+    {
+        Configuration.StringConfiguration.StringComparisonType = stringComparison;
         return this;
     }
 }
