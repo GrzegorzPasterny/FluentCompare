@@ -1,8 +1,17 @@
 
+using Xunit.Abstractions;
+
 namespace FluentCompare.UnitTests.Objects
 {
     public class AnonymousObjectsComparisonTests
     {
+        private readonly ITestOutputHelper _testOutputHelper;
+
+        public AnonymousObjectsComparisonTests(ITestOutputHelper testOutputHelper)
+        {
+            _testOutputHelper = testOutputHelper;
+        }
+
         [Fact]
         public void Compare_TwoEquivalentAnonymousTypes_WithDefaultConfig_ReturnsAllMatchingResult()
         {
@@ -21,14 +30,10 @@ namespace FluentCompare.UnitTests.Objects
         [Fact]
         public void Compare_TwoEquivalentAnonymousTypes_WithReferenceEqualityConfig_ReturnsNotMatchingResult()
         {
-            // Arrange
-            var obj1 = new { Name = "Test", Value = 123 };
-            var obj2 = new { Name = "Test", Value = 123 };
-
             // Act
             var result = new ComparisonBuilder()
                 .UseReferenceEquality()
-                .Compare(obj1, obj2);
+                .Compare(new { Name = "Test", Value = 123 }, new { Name = "Test", Value = 123 });
 
             // Assert
             result.AllMatched.ShouldBeFalse();
@@ -47,6 +52,10 @@ namespace FluentCompare.UnitTests.Objects
 
             // Assert
             result.AllMatched.ShouldBeFalse();
+            result.Mismatches.Count.ShouldBe(1);
+            _testOutputHelper.WriteLine(result.ToString());
+            result.Mismatches.First().Message.ShouldContain(nameof(obj1));
+            result.Mismatches.First().Message.ShouldContain(nameof(obj2));
         }
 
         [Fact]
@@ -63,10 +72,15 @@ namespace FluentCompare.UnitTests.Objects
 
             // Act
             var result = new ComparisonBuilder()
-                .Compare(obj1, obj2);
+                .Compare(objArr1, objArr2);
 
             // Assert
             result.AllMatched.ShouldBeFalse();
+            result.Mismatches.Count.ShouldBe(1);
+            _testOutputHelper.WriteLine(result.ToString());
+            result.Mismatches.First().Code.ShouldBe(ComparisonMismatches<object>.MismatchDetectedCode);
+            result.Mismatches.First().Message.ShouldContain(nameof(objArr1));
+            result.Mismatches.First().Message.ShouldContain(nameof(objArr2));
         }
 
         [Fact]
@@ -80,14 +94,14 @@ namespace FluentCompare.UnitTests.Objects
 
             // Act
             var result = new ComparisonBuilder()
-                .Compare(obj1, obj2);
+                .Compare([obj1, obj2], [obj1, obj2]);
 
             // Assert
             result.AllMatched.ShouldBeTrue();
         }
 
         [Fact]
-        public void Compare_TwoSameAnonymousTypeArrays_WithReferenceComparison_ReturnsAllMatchingResult()
+        public void Compare_TwoSameAnonymousTypeArrays_WithReferenceComparison_ReturnsNotMatchingResult()
         {
             // Arrange
             var obj1 = new { Name = "Test", Value = 123 };
@@ -98,10 +112,15 @@ namespace FluentCompare.UnitTests.Objects
             // Act
             var result = new ComparisonBuilder()
                 .UseReferenceEquality()
-                .Compare(obj1, obj2);
+                .Compare(objArr1, objArr2);
 
             // Assert
-            result.AllMatched.ShouldBeTrue();
+            result.AllMatched.ShouldBeFalse();
+            result.MismatchCount.ShouldBe(1);
+            _testOutputHelper.WriteLine(result.ToString());
+            result.Mismatches.First().Code.ShouldBe(ComparisonMismatches.Object.MismatchDetectedByReferenceCode);
+            result.Mismatches.First().Message.ShouldContain(nameof(objArr1));
+            result.Mismatches.First().Message.ShouldContain(nameof(objArr2));
         }
     }
 }

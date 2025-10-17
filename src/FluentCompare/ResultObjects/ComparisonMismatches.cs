@@ -13,8 +13,8 @@ public static class ComparisonMismatches<T>
             $"{typeof(T).Name}ValueAtIndex[{index}] = {toStringFunc(v2)}, ComparisonType = {comparisonType}]");
     internal static ComparisonMismatch MismatchDetected(T v1, T v2, string t1ExprName, string t2ExprName, ComparisonType comparisonType, Func<T, string> toStringFunc)
          => new(MismatchDetectedCode, $"Mismatch detected " +
-            $"[{typeof(T).Name}FirstValue = {toStringFunc(v1)}, " +
-            $"{typeof(T).Name}SecondValue = {toStringFunc(v2)}, ComparisonType = {comparisonType}]");
+            $"{t1ExprName} [{typeof(T).Name}] = {toStringFunc(v1)}, " +
+            $"{t2ExprName} [{typeof(T).Name}] = {toStringFunc(v2)}, ComparisonType = {comparisonType}]");
     internal static ComparisonMismatch MismatchDetected(T v1, T v2, int indexInArrays, int arr1Index, int arr2Index, ComparisonType comparisonType, Func<T, string> toStringFunc)
         => new(MismatchDetectedCode,
             $"Mismatch detected " +
@@ -98,7 +98,8 @@ public static class ComparisonMismatches
                 $"Mismatch detected by reference [ObjectsIndex = {indexInArray}, Object1 = {o1}, Object2 = {o2}]");
         internal static ComparisonMismatch MismatchDetectedByReference(object o1, object o2, string o1ExprName, string o2ExprName)
             => new(MismatchDetectedByReferenceCode,
-                $"Mismatch detected by reference [Object1: Name = {o1ExprName} Value = {o1}, Object2: Name = {o2ExprName} Value = {o2}]");
+                $"Mismatch detected by reference [Object1: Name = {o1ExprName} ToString() = {o1}, Object2: Name = {o2ExprName} ToString() = {o2}]");
+        // Is it possible to know if ToString was overridden? If not, then ToString looks more like a type
 
         public static string MismatchDetectedByNullCode => $"{Namespace}.{nameof(MismatchDetectedByNull)}";
         internal static ComparisonMismatch MismatchDetectedByNull(object? o1, object? o2, int o1Index, int o2Index)

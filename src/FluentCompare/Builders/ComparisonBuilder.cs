@@ -156,8 +156,38 @@ public class ComparisonBuilder
             return new ObjectComparison(Configuration)
                 .Compare(t1, t2, t1ExprName, t2ExprName);
         }
+        else
+        {
+            string t1ExprName = t1Expr ?? "ObjectOne";
+            string t2ExprName = t2Expr ?? "ObjectTwo";
+
+            return new ObjectComparison(Configuration)
+                .Compare(t1, t2, t1ExprName, t2ExprName);
+        }
 
         throw new NotImplementedException();
+    }
+
+    public ComparisonResult Compare(object o1, object o2,
+        [CallerArgumentExpression(nameof(o1))] string? o1Expr = null,
+        [CallerArgumentExpression(nameof(o2))] string? o2Expr = null)
+    {
+        string t1ExprName = o1Expr ?? "ObjectOne";
+        string t2ExprName = o2Expr ?? "ObjectTwo";
+
+        return new ObjectComparison(Configuration)
+            .Compare(o1, o2, t1ExprName, t2ExprName);
+    }
+
+    public ComparisonResult Compare(object[] o1Arr, object[] o2Arr,
+        [CallerArgumentExpression(nameof(o1Arr))] string? o1ArrExpr = null,
+        [CallerArgumentExpression(nameof(o2Arr))] string? o2ArrExpr = null)
+    {
+        string t1ExprName = o1ArrExpr ?? "ObjectOne";
+        string t2ExprName = o2ArrExpr ?? "ObjectTwo";
+
+        return new ObjectArrayComparison(Configuration)
+            .Compare(o1Arr, o2Arr, t1ExprName, t2ExprName);
     }
 
     public ComparisonBuilder UseConfiguration(ComparisonConfiguration configuration)
