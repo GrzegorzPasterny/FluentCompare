@@ -33,6 +33,26 @@ public class ComparisonBuilder
             return new StringArrayComparison(Configuration)
                 .Compare((string[][])(object)t); // casting complexity O(1) according to chatGPT. TODO: To be confirmed
         }
+        if (typeof(T) == typeof(bool))
+        {
+            return new BoolComparison(Configuration)
+                .Compare((bool[])(object)t); // casting complexity O(1) according to chatGPT. TODO: To be confirmed
+        }
+        if (typeof(T) == typeof(bool[]))
+        {
+            return new BoolArrayComparison(Configuration)
+                .Compare((bool[][])(object)t); // casting complexity O(1) according to chatGPT. TODO: To be confirmed
+        }
+        if (typeof(T) == typeof(byte))
+        {
+            return new ByteComparison(Configuration)
+                .Compare((byte[])(object)t); // casting complexity O(1) according to chatGPT. TODO: To be confirmed
+        }
+        if (typeof(T) == typeof(byte[]))
+        {
+            return new ByteArrayComparison(Configuration)
+                .Compare((byte[][])(object)t); // casting complexity O(1) according to chatGPT. TODO: To be confirmed
+        }
         if (typeof(T) == typeof(int))
         {
             return new IntComparison(Configuration)
@@ -124,6 +144,46 @@ public class ComparisonBuilder
 
             return new StringArrayComparison(Configuration)
                 .Compare(sArr1, sArr2, t1ExprName, t2ExprName);
+        }
+        if (typeof(T) == typeof(bool))
+        {
+            bool s1 = Unsafe.As<T, bool>(ref t1);
+            bool s2 = Unsafe.As<T, bool>(ref t2);
+            string t1ExprName = t1Expr ?? "BoolOne";
+            string t2ExprName = t2Expr ?? "BoolTwo";
+
+            return new BoolComparison(Configuration)
+                .Compare(s1, s2, t1ExprName, t2ExprName);
+        }
+        if (typeof(T) == typeof(bool[]))
+        {
+            bool[] s1 = Unsafe.As<T, bool[]>(ref t1);
+            bool[] s2 = Unsafe.As<T, bool[]>(ref t2);
+            string t1ExprName = t1Expr ?? "BoolArrayOne";
+            string t2ExprName = t2Expr ?? "BoolArrayTwo";
+
+            return new BoolArrayComparison(Configuration)
+                .Compare(s1, s2, t1ExprName, t2ExprName);
+        }
+        if (typeof(T) == typeof(byte))
+        {
+            byte s1 = Unsafe.As<T, byte>(ref t1);
+            byte s2 = Unsafe.As<T, byte>(ref t2);
+            string t1ExprName = t1Expr ?? "ByteOne";
+            string t2ExprName = t2Expr ?? "ByteTwo";
+
+            return new ByteComparison(Configuration)
+                .Compare(s1, s2, t1ExprName, t2ExprName);
+        }
+        if (typeof(T) == typeof(byte[]))
+        {
+            byte[] s1 = Unsafe.As<T, byte[]>(ref t1);
+            byte[] s2 = Unsafe.As<T, byte[]>(ref t2);
+            string t1ExprName = t1Expr ?? "ByteArrayOne";
+            string t2ExprName = t2Expr ?? "ByteArrayTwo";
+
+            return new ByteArrayComparison(Configuration)
+                .Compare(s1, s2, t1ExprName, t2ExprName);
         }
         if (typeof(T) == typeof(int))
         {
