@@ -7,23 +7,23 @@ internal class StringArrayComparison : StringComparisonBase, IExecuteComparison<
         _comparisonConfiguration = comparisonConfiguration;
     }
 
-    public ComparisonResult Compare(params string[][] objects)
+    public ComparisonResult Compare(params string[][] strings)
     {
         var result = new ComparisonResult();
-        if (objects == null)
+        if (strings == null)
         {
             result.AddError(ComparisonErrors.NullPassedAsArgument(typeof(string[])));
             return result;
         }
-        if (objects.Length < 2)
+        if (strings.Length < 2)
         {
-            result.AddError(ComparisonErrors.NotEnoughObjectToCompare(objects.Length, typeof(string[])));
+            result.AddError(ComparisonErrors.NotEnoughObjectToCompare(strings.Length, typeof(string[])));
             return result;
         }
-        var first = objects[0];
-        for (int i = 1; i < objects.Length; i++)
+        var first = strings[0];
+        for (int i = 1; i < strings.Length; i++)
         {
-            result.AddComparisonResult(Compare(first, objects[i], $"strings[0]", $"strings[{i}]"));
+            result.AddComparisonResult(Compare(first, strings[i], $"strings[0]", $"strings[{i}]"));
         }
         return result;
     }
@@ -31,6 +31,11 @@ internal class StringArrayComparison : StringComparisonBase, IExecuteComparison<
     public ComparisonResult Compare(string[] sArr1, string[] sArr2, string sArr1ExprName, string sArr2ExprName)
     {
         var result = new ComparisonResult();
+
+        if (sArr1 is null && sArr2 is null)
+        {
+            result.AddWarning(ComparisonErrors.BothObjectsAreNull(sArr1ExprName, sArr2ExprName));
+        }
 
         if (ReferenceEquals(sArr1, sArr2))
         {

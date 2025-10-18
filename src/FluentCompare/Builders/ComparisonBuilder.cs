@@ -28,6 +28,11 @@ public class ComparisonBuilder
             return new StringComparison(Configuration)
                 .Compare((string[])(object)t); // casting complexity O(1) according to chatGPT. TODO: To be confirmed
         }
+        if (typeof(T) == typeof(string[]))
+        {
+            return new StringArrayComparison(Configuration)
+                .Compare((string[][])(object)t); // casting complexity O(1) according to chatGPT. TODO: To be confirmed
+        }
         if (typeof(T) == typeof(int))
         {
             return new IntComparison(Configuration)
@@ -109,6 +114,16 @@ public class ComparisonBuilder
 
             return new StringComparison(Configuration)
                 .Compare(s1, s2, t1ExprName, t2ExprName);
+        }
+        if (typeof(T) == typeof(string[]))
+        {
+            string[] sArr1 = Unsafe.As<T, string[]>(ref t1);
+            string[] sArr2 = Unsafe.As<T, string[]>(ref t2);
+            string t1ExprName = t1Expr ?? "StringArrayOne";
+            string t2ExprName = t2Expr ?? "StringArrayTwo";
+
+            return new StringArrayComparison(Configuration)
+                .Compare(sArr1, sArr2, t1ExprName, t2ExprName);
         }
         if (typeof(T) == typeof(int))
         {
