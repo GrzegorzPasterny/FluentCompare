@@ -34,6 +34,8 @@ public static class ComparisonErrors
          => new(BothObjectsAreNullCode, $"Both objects in comparison are null");
     internal static ComparisonError BothObjectsAreNull(string t1ExprName, string t2ExprName)
          => new(BothObjectsAreNullCode, $"Both {t1ExprName} and {t2ExprName} are null");
+    internal static ComparisonError BothObjectsAreNull(int i, Type type)
+         => new(BothObjectsAreNullCode, $"Objects of type {type.Name} at index 0 and {i} are null");
 
     public static class Object
     {

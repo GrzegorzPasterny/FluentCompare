@@ -69,18 +69,6 @@ internal class DoubleArrayComparison : DoubleComparisonBase, IExecuteComparison<
         for (int i = 0; i < dArr1.Length; i++)
         {
             Compare(dArr1[i], dArr2[i], dArr1ExprName, dArr2ExprName, i, _configuration.ComparisonType, result);
-
-            bool matched = CompareWithEpsilon(
-                dArr1[i],
-                dArr2[i],
-                _configuration.ComparisonType,
-                _configuration.DoubleConfiguration.RoundingPrecision
-            );
-
-            if (!matched)
-            {
-
-            }
         }
 
         return result;
