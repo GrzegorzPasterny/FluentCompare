@@ -35,7 +35,7 @@ public class ComparisonResult
             return stringBuilder.ToString();
         }
 
-        return $"[WasSuccessful={WasSuccessful}, AllMatched={AllMatched}]";
+        return $"[WasSuccessful={WasSuccessful}, AllMatched={AllMatched}, WarningsCount={Warnings.Count}]";
     }
 
     internal void AddMismatch(ComparisonMismatch mismatch) => _mismatches.Add(mismatch);
