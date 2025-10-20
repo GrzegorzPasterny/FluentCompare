@@ -1,7 +1,5 @@
 using AnyDiff;
 
-using FluentCompare.Tests.Shared.Models;
-
 using Xunit.Abstractions;
 
 namespace FluentCompare.SolutionComparison.Tests.AnyDiffTests;
@@ -14,22 +12,9 @@ public class AnyDiffTests
         _testOutputHelper = testOutputHelper;
     }
 
-    public static IEnumerable<object[]> PerformObjectComparison_UsingAnyDiff_CompareWithFluentCompare_DataSource()
-    {
-        yield return new object[]
-        {
-            new int[] { 1, 2, 3 },
-            new int[] { 1, 3, 3 }
-        };
-        yield return new object[]
-        {
-            new ClassWithIntProperty(1),
-            new ClassWithIntProperty(2)
-        };
-    }
-
     [Theory]
-    [MemberData(nameof(PerformObjectComparison_UsingAnyDiff_CompareWithFluentCompare_DataSource))]
+    [MemberData(nameof(TestsDataSource.PerformObjectComparison_DataSource),
+        MemberType = typeof(TestsDataSource))]
     public void PerformObjectComparison_UsingAnyDiff_CompareWithFluentCompare(object obj1, object obj2)
     {
         ICollection<Difference> differences = AnyDiff.AnyDiff.Diff(obj1, obj2);
@@ -52,6 +37,10 @@ public class AnyDiffTests
                 $"{nameof(Difference.Delta)} = {difference.Delta}, " +
                 $"{nameof(Difference.ArrayIndex)} = {difference.ArrayIndex}]");
         }
+
+        _testOutputHelper.WriteLine(string.Empty);
+        _testOutputHelper.WriteLine("===========================");
+        _testOutputHelper.WriteLine(string.Empty);
 
         _testOutputHelper.WriteLine("Comparison result using FluentCompare:");
         _testOutputHelper.WriteLine(comparisonResult.ToString());

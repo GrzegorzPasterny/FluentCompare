@@ -248,14 +248,8 @@ public class ComparisonBuilder
         }
         else
         {
-            string t1ExprName = t1Expr ?? "ObjectOne";
-            string t2ExprName = t2Expr ?? "ObjectTwo";
-
-            return new ObjectComparison(Configuration)
-                .Compare(t1, t2, t1ExprName, t2ExprName);
+            throw new NotImplementedException();
         }
-
-        throw new NotImplementedException();
     }
 
     public ComparisonResult Compare(object o1, object o2,
