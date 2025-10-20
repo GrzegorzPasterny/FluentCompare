@@ -14,28 +14,27 @@ public class AnyDiffTests
         _testOutputHelper = testOutputHelper;
     }
 
-    [Fact]
-    public void PerformIntArrayComparison_UsingAnyDiff_CompareWithFluentCompare_AnyDiffFailsToFindMismatch()
+    public static IEnumerable<object[]> PerformObjectComparison_UsingAnyDiff_CompareWithFluentCompare_DataSource()
     {
-        var object1 = new int[] { 1, 2, 3 };
-        var object2 = new int[] { 1, 3, 3 };
-
-        ICollection<Difference> differences = AnyDiff.AnyDiff.Diff(object1, object2);
-        var comparisonResult = new ComparisonBuilder()
-            .Compare(object1, object2);
-
-        PrintResults(differences, comparisonResult);
+        yield return new object[]
+        {
+            new int[] { 1, 2, 3 },
+            new int[] { 1, 3, 3 }
+        };
+        yield return new object[]
+        {
+            new ClassWithIntProperty(1),
+            new ClassWithIntProperty(2)
+        };
     }
 
-    [Fact]
-    public void PerformClassWithIntComparison_UsingAnyDiff_CompareWithFluentCompare()
+    [Theory]
+    [MemberData(nameof(PerformObjectComparison_UsingAnyDiff_CompareWithFluentCompare_DataSource))]
+    public void PerformObjectComparison_UsingAnyDiff_CompareWithFluentCompare(object obj1, object obj2)
     {
-        var object1 = new ClassWithIntProperty(1);
-        var object2 = new ClassWithIntProperty(2);
-
-        ICollection<Difference> differences = AnyDiff.AnyDiff.Diff(object1, object2);
+        ICollection<Difference> differences = AnyDiff.AnyDiff.Diff(obj1, obj2);
         var comparisonResult = new ComparisonBuilder()
-            .Compare(object1, object2);
+            .Compare(obj1, obj2);
 
         PrintResults(differences, comparisonResult);
     }

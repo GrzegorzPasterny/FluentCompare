@@ -160,8 +160,7 @@ public class ObjectComparison : IExecuteComparison<object>
 
             if (!propResult.AllMatched)
             {
-                result.AddMismatches(propResult.Mismatches);
-                result.AddErrors(propResult.Errors);
+                result.AddComparisonResult(propResult);
             }
         }
     }
