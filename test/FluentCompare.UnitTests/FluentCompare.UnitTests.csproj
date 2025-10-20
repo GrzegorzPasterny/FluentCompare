@@ -25,4 +25,6 @@
     <ProjectReference Include="..\..\src\FluentCompare\FluentCompare.csproj" />
   </ItemGroup>
 
+  <Import Project="..\FluentCompare.Tests.Shared\FluentCompare.Tests.Shared.projitems" Label="Shared" />
+
 </Project>

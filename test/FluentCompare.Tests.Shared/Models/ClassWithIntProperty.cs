@@ -1,4 +1,4 @@
-namespace FluentCompare.UnitTests.Objects.Models;
+namespace FluentCompare.Tests.Shared.Models;
 public class ClassWithIntProperty
 {
     public ClassWithIntProperty(int id)

@@ -1,4 +1,4 @@
-using FluentCompare.UnitTests.Objects.Models;
+using FluentCompare.Tests.Shared.Models;
 
 using Xunit.Abstractions;
 
