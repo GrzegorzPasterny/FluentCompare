@@ -53,8 +53,8 @@ namespace FluentCompare.UnitTests.Integers
         public void Compare_TwoEqualIntArrays_ReturnsAllMatchingResult()
         {
             // Arrange
-            int[] array1 = { 1, 2, 3, 4, 5 };
-            int[] array2 = { 1, 2, 3, 4, 5 };
+            object array1 = new int[] { 1, 2, 3, 4, 5 };
+            object array2 = new int[] { 1, 2, 3, 4, 5 };
 
             // Act
             var result = new ComparisonBuilder()
