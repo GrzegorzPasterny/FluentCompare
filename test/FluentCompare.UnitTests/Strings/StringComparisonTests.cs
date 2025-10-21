@@ -13,7 +13,7 @@ public class StringComparisonTests
     private ComparisonBuilder CreateBuilder(ComparisonType comparisonType = ComparisonType.EqualTo,
                                             StringComparison stringComparison = StringComparison.Ordinal)
     {
-        return new ComparisonBuilder()
+        return ComparisonBuilder.Create()
             .UseComparisonType(comparisonType)
             .UseStringComparisonType(stringComparison);
     }

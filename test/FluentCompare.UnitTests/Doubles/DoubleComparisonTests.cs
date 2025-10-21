@@ -19,7 +19,7 @@ public class DoubleComparisonTests
         double dbl2 = 42.0;
 
         // Act
-        var result = new ComparisonBuilder()
+        var result = ComparisonBuilder.Create()
             .Compare(dbl1, dbl2);
 
         // Assert
@@ -34,7 +34,7 @@ public class DoubleComparisonTests
         double dbl2 = 43.0;
 
         // Act
-        var result = new ComparisonBuilder()
+        var result = ComparisonBuilder.Create()
             .Compare(dbl1, dbl2);
 
         // Assert
@@ -51,7 +51,7 @@ public class DoubleComparisonTests
         double[] array2 = { 1.0, 2.0, 3.0, 4.0, 5.0 };
 
         // Act
-        var result = new ComparisonBuilder()
+        var result = ComparisonBuilder.Create()
         .Compare(array1, array2);
 
         // Assert
@@ -66,7 +66,7 @@ public class DoubleComparisonTests
         double[] array2 = { 1.0, 2.0, 3.0, 4.0, 6.0 };
 
         // Act
-        var result = new ComparisonBuilder()
+        var result = ComparisonBuilder.Create()
             .Compare(array1, array2);
 
         // Assert
@@ -83,7 +83,7 @@ public class DoubleComparisonTests
         double[] array2 = { 1.0, 2.0, 3.0, 4.0 };
 
         // Act
-        var result = new ComparisonBuilder()
+        var result = ComparisonBuilder.Create()
             .Compare(array1, array2);
 
         // Assert
@@ -102,7 +102,7 @@ public class DoubleComparisonTests
         dbl2 = 1.2345; // Both round to 1.23 at precision 2
 
         // Act
-        var result = new ComparisonBuilder()
+        var result = ComparisonBuilder.Create()
             .ForDouble()
             .WithPrecision(2)
             .Compare(dbl1, dbl2);
@@ -119,7 +119,7 @@ public class DoubleComparisonTests
         double dbl2 = 1.245;
 
         // Act
-        var result = new ComparisonBuilder()
+        var result = ComparisonBuilder.Create()
             .ForDouble()
             .WithPrecision(2)
             .Compare(dbl1, dbl2);
@@ -138,7 +138,7 @@ public class DoubleComparisonTests
         double dbl2 = 1.2341;
 
         // Act
-        var result = new ComparisonBuilder()
+        var result = ComparisonBuilder.Create()
             .ForDouble()
             .WithPrecision(3)
             .Compare(dbl1, dbl2);
@@ -155,7 +155,7 @@ public class DoubleComparisonTests
         double dbl2 = 1.235;
 
         // Act
-        var result = new ComparisonBuilder()
+        var result = ComparisonBuilder.Create()
             .ForDouble()
             .WithPrecision(3)
             .Compare(dbl1, dbl2);
@@ -174,7 +174,7 @@ public class DoubleComparisonTests
         double[] array2 = { 1.2345, 2.3456, 3.4567 };
 
         // Act
-        var result = new ComparisonBuilder()
+        var result = ComparisonBuilder.Create()
             .ForDouble()
             .WithPrecision(2)
             .Compare(array1, array2);
@@ -191,7 +191,7 @@ public class DoubleComparisonTests
         double[] array2 = { 1.2345, 2.3456, 3.467 };
 
         // Act
-        var result = new ComparisonBuilder()
+        var result = ComparisonBuilder.Create()
             .ForDouble()
             .WithPrecision(2)
             .Compare(array1, array2);
@@ -212,7 +212,7 @@ public class DoubleComparisonTests
         double[] array2 = { 0.3 };
 
         // Act
-        var result = new ComparisonBuilder()
+        var result = ComparisonBuilder.Create()
             .ForDouble()
             .WithPrecision(1e-17)
             .Compare(array1, array2);
@@ -234,7 +234,7 @@ public class DoubleComparisonTests
 
         // Act
         // Note: This tests if single vs array of one, but based on Compare overloads, may need adjustment; assuming array compare
-        var result = new ComparisonBuilder()
+        var result = ComparisonBuilder.Create()
             .ForDouble()
             .Compare(array1, new[] { dbl1 });
 
@@ -250,7 +250,7 @@ public class DoubleComparisonTests
         double[] array2 = null;
 
         // Act
-        var result = new ComparisonBuilder()
+        var result = ComparisonBuilder.Create()
             .Compare(array1, array2);
 
         // Assert

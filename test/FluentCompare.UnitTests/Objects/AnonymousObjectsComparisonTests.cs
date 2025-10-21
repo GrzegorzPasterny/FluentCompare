@@ -20,7 +20,7 @@ namespace FluentCompare.UnitTests.Objects
             var obj2 = new { Name = "Test", Value = 123 };
 
             // Act
-            var result = new ComparisonBuilder()
+            var result = ComparisonBuilder.Create()
                 .Compare(obj1, obj2);
 
             // Assert
@@ -31,7 +31,7 @@ namespace FluentCompare.UnitTests.Objects
         public void Compare_TwoEquivalentAnonymousTypes_WithReferenceEqualityConfig_ReturnsNotMatchingResult()
         {
             // Act
-            var result = new ComparisonBuilder()
+            var result = ComparisonBuilder.Create()
                 .UseReferenceEquality()
                 .Compare(new { Name = "Test", Value = 123 }, new { Name = "Test", Value = 123 });
 
@@ -47,7 +47,7 @@ namespace FluentCompare.UnitTests.Objects
             var obj2 = new { Name = "Test", Value = 456 };
 
             // Act
-            var result = new ComparisonBuilder()
+            var result = ComparisonBuilder.Create()
                 .Compare(obj1, obj2);
 
             // Assert
@@ -71,7 +71,7 @@ namespace FluentCompare.UnitTests.Objects
             var objArr2 = new[] { obj3, obj4 };
 
             // Act
-            var result = new ComparisonBuilder()
+            var result = ComparisonBuilder.Create()
                 .Compare(objArr1, objArr2);
 
             // Assert
@@ -93,7 +93,7 @@ namespace FluentCompare.UnitTests.Objects
             var objArr2 = new[] { obj1, obj2 };
 
             // Act
-            var result = new ComparisonBuilder()
+            var result = ComparisonBuilder.Create()
                 .Compare([obj1, obj2], [obj1, obj2]);
 
             // Assert
@@ -110,7 +110,7 @@ namespace FluentCompare.UnitTests.Objects
             var objArr2 = new[] { obj1, obj2 };
 
             // Act
-            var result = new ComparisonBuilder()
+            var result = ComparisonBuilder.Create()
                 .UseReferenceEquality()
                 .Compare(objArr1, objArr2);
 

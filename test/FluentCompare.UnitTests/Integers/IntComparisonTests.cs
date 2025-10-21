@@ -10,7 +10,7 @@ namespace FluentCompare.UnitTests.Integers
             int int2 = 42;
 
             // Act
-            var result = new ComparisonBuilder()
+            var result = ComparisonBuilder.Create()
                 .Compare(int1, int2);
 
             // Assert
@@ -21,7 +21,7 @@ namespace FluentCompare.UnitTests.Integers
         public void Compare_TwoDifferentIntegers_WithoutVariableNames_ReturnsAllMatchingResult()
         {
             // Act
-            var result = new ComparisonBuilder()
+            var result = ComparisonBuilder.Create()
                 .Compare(0, 1);
 
             // Assert
@@ -38,7 +38,7 @@ namespace FluentCompare.UnitTests.Integers
             int int2 = 43;
 
             // Act
-            var result = new ComparisonBuilder()
+            var result = ComparisonBuilder.Create()
                 .Compare(int1, int2);
 
             // Assert
@@ -57,7 +57,7 @@ namespace FluentCompare.UnitTests.Integers
             object array2 = new int[] { 1, 2, 3, 4, 5 };
 
             // Act
-            var result = new ComparisonBuilder()
+            var result = ComparisonBuilder.Create()
             .Compare(array1, array2);
 
             // Assert
@@ -72,7 +72,7 @@ namespace FluentCompare.UnitTests.Integers
             int[] array2 = { 1, 2, 3, 4, 6 };
 
             // Act
-            var result = new ComparisonBuilder()
+            var result = ComparisonBuilder.Create()
             .Compare(array1, array2);
 
             // Assert
@@ -89,7 +89,7 @@ namespace FluentCompare.UnitTests.Integers
             int[] array2 = { 1, 2, 3, 4 };
 
             // Act
-            var result = new ComparisonBuilder()
+            var result = ComparisonBuilder.Create()
             .Compare(array1, array2);
 
             // Assert
@@ -102,7 +102,7 @@ namespace FluentCompare.UnitTests.Integers
         public void Compare_TwoDifferentAnonymousIntArrays_ReturnsNotMatchingResult()
         {
             // Act
-            var result = new ComparisonBuilder()
+            var result = ComparisonBuilder.Create()
                 .Compare<int[]>([1, 2, 3, 4, 5], [1, 2, 3, 4, 6]);
 
             // Assert
@@ -120,7 +120,7 @@ namespace FluentCompare.UnitTests.Integers
         public void Compare_TwoIntArrays_OneArrayIsNull_ReturnsNotMatchingResult()
         {
             // Act
-            var result = new ComparisonBuilder()
+            var result = ComparisonBuilder.Create()
             .Compare<int[]>([1, 2, 3, 4, 5], null);
 
             // Assert

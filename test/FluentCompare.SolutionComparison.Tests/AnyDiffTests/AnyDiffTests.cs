@@ -18,7 +18,7 @@ public class AnyDiffTests
     public void PerformObjectComparison_UsingAnyDiff_CompareWithFluentCompare(object obj1, object obj2)
     {
         ICollection<Difference> differences = AnyDiff.AnyDiff.Diff(obj1, obj2);
-        var comparisonResult = new ComparisonBuilder()
+        var comparisonResult = ComparisonBuilder.Create()
             .Compare(obj1, obj2);
 
         PrintResults(differences, comparisonResult);

@@ -21,7 +21,7 @@ public class CompareNetObjectsTests
         KellermanSoftware.CompareNetObjects.ComparisonResult comparisonResultNetObjects =
             compareLogic.Compare(obj1, obj2);
 
-        var comparisonResult = new ComparisonBuilder()
+        var comparisonResult = ComparisonBuilder.Create()
             .Compare(obj1, obj2);
 
         PrintResults(comparisonResultNetObjects, comparisonResult);

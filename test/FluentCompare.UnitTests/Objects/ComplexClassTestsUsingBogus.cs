@@ -18,7 +18,7 @@ public class ComplexClassTestsUsingBogus
         var obj2 = TestDataGenerator.CreateClassWithAllSupportedTypes();
 
         // Act
-        var result = new ComparisonBuilder()
+        var result = ComparisonBuilder.Create()
             .Compare(obj1, obj2);
 
         // Assert

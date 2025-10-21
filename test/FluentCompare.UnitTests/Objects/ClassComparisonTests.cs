@@ -99,7 +99,7 @@ public class ClassComparisonTests
         (object obj1, object obj2, bool mismatchExpectedResult, bool errorExpectedResult, string errorCode)
     {
         // Act
-        var result = new ComparisonBuilder()
+        var result = ComparisonBuilder.Create()
             .Compare(obj1, obj2);
 
         // Assert
