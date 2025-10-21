@@ -9,6 +9,7 @@
     <Import_RootNamespace>FluentCompare.Tests.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ClassWithAllSupportedTypes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ClassWithIntProperty.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ClassWithNestedClassWithIntProperty.cs" />
   </ItemGroup>

@@ -87,7 +87,7 @@ public class ComparisonBuilder
                 .Compare(t);
         }
 
-        throw new NotImplementedException();
+        throw new NotImplementedException(typeof(T).Name);
     }
 
     /// <summary>
@@ -248,7 +248,7 @@ public class ComparisonBuilder
         }
         else
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException(typeof(T).Name);
         }
     }
 
