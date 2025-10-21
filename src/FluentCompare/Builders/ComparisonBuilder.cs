@@ -72,16 +72,13 @@ public class ComparisonBuilder
             return new ObjectArrayComparison(Configuration)
                 .Compare((object[][])(object)t); // casting complexity O(1) according to chatGPT. TODO: To be confirmed
         }
-        if (typeof(T) == typeof(object))
+        if (IsPrimitiveEnumOrString(typeof(T)))
         {
-            // TODO: Consider adding Build method to ComparisonBuilder
-            // TODO: Consider creating ObjectsComparisonByReferenceEquality
-            // and ObjectsComparisonByPropertyEquality classes
-            return new ObjectComparison(Configuration)
-                .Compare(t);
+            throw new NotImplementedException(typeof(T).Name);
         }
 
-        throw new NotImplementedException(typeof(T).Name);
+        return new ObjectComparison(Configuration)
+            .Compare(t);
     }
 
     /// <summary>
@@ -229,20 +226,17 @@ public class ComparisonBuilder
             return new ObjectArrayComparison(Configuration)
                 .Compare(oArr1, oArr2, t1ExprName, t2ExprName);
         }
-        if (typeof(T) == typeof(object)) // TODO: maybe make it a default case
+        if (IsPrimitiveEnumOrString(typeof(T)))
         {
-            // TODO: Consider adding Build method to ComparisonBuilder
-            // TODO: Consider creating ObjectsComparisonByReferenceEquality
-            // and ObjectsComparisonByPropertyEquality classes
+            throw new NotImplementedException(typeof(T).Name);
+        }
+        else // objects and non-primitive types
+        {
             string t1ExprName = t1Expr ?? "ObjectOne";
             string t2ExprName = t2Expr ?? "ObjectTwo";
 
             return new ObjectComparison(Configuration)
                 .Compare(t1, t2, t1ExprName, t2ExprName);
-        }
-        else
-        {
-            throw new NotImplementedException(typeof(T).Name);
         }
     }
 
@@ -327,4 +321,7 @@ public class ComparisonBuilder
         Configuration.StringConfiguration.StringComparisonType = stringComparison;
         return this;
     }
+
+    private static bool IsPrimitiveEnumOrString(Type type1) => type1.IsPrimitive || type1.IsEnum || type1 == typeof(string);
+
 }

@@ -131,7 +131,7 @@ public class ObjectComparison : IExecuteComparison<object>
         var method = compareMethod.MakeGenericMethod(type1);
 
         var subResult = (ComparisonResult)method.Invoke(
-            null,
+            new ComparisonBuilder(),
             new object?[] { t1, t2, t1ExprName, t2ExprName }
         )!;
 
