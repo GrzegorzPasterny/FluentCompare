@@ -1,15 +1,62 @@
 using FluentCompare.Execution.Int;
 
-internal class IntArrayComparison : IntComparisonBase, IExecuteComparison<int[]>
+public class NumericComparison<T> : NumericComparisonBase<T>, IExecuteComparison<T> where T : struct, IComparable<T>
 {
     private readonly ComparisonConfiguration _comparisonConfiguration;
 
-    internal IntArrayComparison(ComparisonConfiguration comparisonConfiguration)
+    internal NumericComparison(ComparisonConfiguration comparisonConfiguration)
     {
         _comparisonConfiguration = comparisonConfiguration;
+
+        if (typeof(T) != typeof(short) &&
+            typeof(T) != typeof(int) &&
+            typeof(T) != typeof(long))
+        {
+            throw new NotSupportedException($"Type {typeof(T)} is not supported. Only Int16, Int32, Int64 are allowed.");
+        }
     }
 
-    public ComparisonResult Compare(params int[][] ints)
+    public ComparisonResult Compare(params T[] ints)
+    {
+        var result = new ComparisonResult();
+
+        if (ints == null)
+        {
+            result.AddError(ComparisonErrors.NullPassedAsArgument(typeof(int)));
+            return result;
+        }
+
+        if (ints.Length < 2)
+        {
+            result.AddError(ComparisonErrors.NotEnoughObjectToCompare(ints.Length, typeof(int)));
+            return result;
+        }
+
+        var first = ints[0];
+        for (int i = 1; i <= ints.Length; i++)
+        {
+            if (!Compare(first, ints[i], _comparisonConfiguration.ComparisonType))
+            {
+                result.AddMismatch(ComparisonMismatches<T>.MismatchDetected(first, ints[i], i, _comparisonConfiguration.ComparisonType, _toStringFunc));
+            }
+        }
+
+        return result;
+    }
+
+    public ComparisonResult Compare(T i1, T i2, string t1ExprName, string t2ExprName)
+    {
+        var result = new ComparisonResult();
+
+        if (!Compare(i1, i2, _comparisonConfiguration.ComparisonType))
+        {
+            result.AddMismatch(ComparisonMismatches<T>.MismatchDetected(i1, i2, t1ExprName, t2ExprName, _comparisonConfiguration.ComparisonType, _toStringFunc));
+        }
+
+        return result;
+    }
+
+    public ComparisonResult Compare(params T[][] ints)
     {
         var result = new ComparisonResult();
 
@@ -45,7 +92,7 @@ internal class IntArrayComparison : IntComparisonBase, IExecuteComparison<int[]>
             {
                 if (!Compare(first[j], current[j], _comparisonConfiguration.ComparisonType))
                 {
-                    result.AddMismatch(ComparisonMismatches<int>.MismatchDetected(
+                    result.AddMismatch(ComparisonMismatches<T>.MismatchDetected(
                         first[j], current[j], j, 0, i, _comparisonConfiguration.ComparisonType, _toStringFunc));
                 }
             }
@@ -54,7 +101,7 @@ internal class IntArrayComparison : IntComparisonBase, IExecuteComparison<int[]>
         return result;
     }
 
-    public ComparisonResult Compare(int[] intArr1, int[] intArr2, string intArr1ExprName, string intArr2ExprName)
+    public ComparisonResult Compare(T[] intArr1, T[] intArr2, string intArr1ExprName, string intArr2ExprName)
     {
         var result = new ComparisonResult();
 
@@ -69,7 +116,7 @@ internal class IntArrayComparison : IntComparisonBase, IExecuteComparison<int[]>
         {
             if (!Compare(intArr1[i], intArr2[i], _comparisonConfiguration.ComparisonType))
             {
-                result.AddMismatch(ComparisonMismatches<int>.MismatchDetected(
+                result.AddMismatch(ComparisonMismatches<T>.MismatchDetected(
                     intArr1[i], intArr2[i], i, intArr1ExprName, intArr2ExprName, _comparisonConfiguration.ComparisonType, _toStringFunc));
             }
         }

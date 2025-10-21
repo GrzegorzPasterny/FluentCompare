@@ -47,15 +47,35 @@ public class ComparisonBuilder
             return new ByteArrayComparison(Configuration)
                 .Compare((byte[][])(object)t); // casting complexity O(1) according to chatGPT. TODO: To be confirmed
         }
+        if (typeof(T) == typeof(short))
+        {
+            return new NumericComparison<short>(Configuration)
+                .Compare((short[])(object)t); // casting complexity O(1) according to chatGPT. TODO: To be confirmed
+        }
+        if (typeof(T) == typeof(short[]))
+        {
+            return new NumericComparison<short>(Configuration)
+                .Compare((short[][])(object)t); // casting complexity O(1) according to chatGPT. TODO: To be confirmed
+        }
         if (typeof(T) == typeof(int))
         {
-            return new IntComparison(Configuration)
+            return new NumericComparison<int>(Configuration)
                 .Compare((int[])(object)t); // casting complexity O(1) according to chatGPT. TODO: To be confirmed
         }
         if (typeof(T) == typeof(int[]))
         {
-            return new IntArrayComparison(Configuration)
+            return new NumericComparison<int>(Configuration)
                 .Compare((int[][])(object)t); // casting complexity O(1) according to chatGPT. TODO: To be confirmed
+        }
+        if (typeof(T) == typeof(long))
+        {
+            return new NumericComparison<long>(Configuration)
+                .Compare((long[])(object)t); // casting complexity O(1) according to chatGPT. TODO: To be confirmed
+        }
+        if (typeof(T) == typeof(long[]))
+        {
+            return new NumericComparison<long>(Configuration)
+                .Compare((long[][])(object)t); // casting complexity O(1) according to chatGPT. TODO: To be confirmed
         }
         if (typeof(T) == typeof(double))
         {
@@ -176,6 +196,26 @@ public class ComparisonBuilder
             return new ByteArrayComparison(Configuration)
                 .Compare(s1, s2, t1ExprName, t2ExprName);
         }
+        if (typeof(T) == typeof(short))
+        {
+            short o1 = Unsafe.As<T, short>(ref t1);
+            short o2 = Unsafe.As<T, short>(ref t2);
+            string t1ExprName = t1Expr ?? "ShortOne";
+            string t2ExprName = t2Expr ?? "ShortTwo";
+
+            return new NumericComparison<short>(Configuration)
+                .Compare(o1, o2, t1ExprName, t2ExprName);
+        }
+        if (typeof(T) == typeof(short[]))
+        {
+            short[] oArr1 = Unsafe.As<T, short[]>(ref t1);
+            short[] oArr2 = Unsafe.As<T, short[]>(ref t2);
+            string t1ExprName = t1Expr ?? "ShortArrayOne";
+            string t2ExprName = t2Expr ?? "ShortArrayTwo";
+
+            return new NumericComparison<short>(Configuration)
+                .Compare(oArr1, oArr2, t1ExprName, t2ExprName);
+        }
         if (typeof(T) == typeof(int))
         {
             int o1 = Unsafe.As<T, int>(ref t1);
@@ -183,7 +223,7 @@ public class ComparisonBuilder
             string t1ExprName = t1Expr ?? "IntOne";
             string t2ExprName = t2Expr ?? "IntTwo";
 
-            return new IntComparison(Configuration)
+            return new NumericComparison<int>(Configuration)
                 .Compare(o1, o2, t1ExprName, t2ExprName);
         }
         if (typeof(T) == typeof(int[]))
@@ -193,7 +233,27 @@ public class ComparisonBuilder
             string t1ExprName = t1Expr ?? "IntArrayOne";
             string t2ExprName = t2Expr ?? "IntArrayTwo";
 
-            return new IntArrayComparison(Configuration)
+            return new NumericComparison<int>(Configuration)
+                .Compare(oArr1, oArr2, t1ExprName, t2ExprName);
+        }
+        if (typeof(T) == typeof(long))
+        {
+            long o1 = Unsafe.As<T, long>(ref t1);
+            long o2 = Unsafe.As<T, long>(ref t2);
+            string t1ExprName = t1Expr ?? "LongOne";
+            string t2ExprName = t2Expr ?? "LongTwo";
+
+            return new NumericComparison<long>(Configuration)
+                .Compare(o1, o2, t1ExprName, t2ExprName);
+        }
+        if (typeof(T) == typeof(long[]))
+        {
+            long[] oArr1 = Unsafe.As<T, long[]>(ref t1);
+            long[] oArr2 = Unsafe.As<T, long[]>(ref t2);
+            string t1ExprName = t1Expr ?? "LongArrayOne";
+            string t2ExprName = t2Expr ?? "LongArrayTwo";
+
+            return new NumericComparison<long>(Configuration)
                 .Compare(oArr1, oArr2, t1ExprName, t2ExprName);
         }
         if (typeof(T) == typeof(double))
