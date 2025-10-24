@@ -37,6 +37,13 @@ public static class ComparisonErrors
     internal static ComparisonError BothObjectsAreNull(int i, Type type)
          => new(BothObjectsAreNullCode, $"Objects of type {type.Name} at index 0 and {i} are null");
 
+    public static string DepthLimitReachedCode => $"{Namespace}.{nameof(DepthLimitReached)}";
+    internal static ComparisonError DepthLimitReached(int currentDepth)
+         => new(DepthLimitReachedCode, $"Comparison depth limit ({currentDepth}) has been reached");
+    internal static ComparisonError DepthLimitReached(int currentDepth, string t1ExprName, string t2ExprName)
+        // TODO: Should I put expression names in brackets like here? 
+        => new(DepthLimitReachedCode, $"Comparison depth limit ({currentDepth}) has been reached for [{t1ExprName}] and [{t2ExprName}]");
+
     public static class Object
     {
         public static string Namespace = "FluentCompare.Error.Object";

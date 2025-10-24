@@ -1,11 +1,29 @@
 using System.Runtime.CompilerServices;
 
+/// <summary>
+/// Builder object to configure and perform comparisons.
+/// </summary>
 public class ComparisonBuilder
 {
+    private readonly int _currentDepth = 0;
+
     internal ComparisonBuilder() { }
 
+    internal ComparisonBuilder(int currentDepth)
+    {
+        _currentDepth = currentDepth;
+    }
+    internal static ComparisonBuilder Create(int currentDepth) => new ComparisonBuilder(currentDepth);
+
+    /// <summary>
+    /// Configuration object for the comparison
+    /// </summary>
     public ComparisonConfiguration Configuration { get; private set; } = new();
 
+    /// <summary>
+    /// Starting point to begin configuring and performing comparisons.
+    /// </summary>
+    /// <returns></returns>
     public static ComparisonBuilder Create() => new ComparisonBuilder();
 
     /// <summary>
@@ -89,7 +107,7 @@ public class ComparisonBuilder
         }
         if (typeof(T) == typeof(object[]))
         {
-            return new ObjectArrayComparison(Configuration)
+            return new ObjectArrayComparison(Configuration, _currentDepth)
                 .Compare((object[][])(object)t); // casting complexity O(1) according to chatGPT. TODO: To be confirmed
         }
         if (IsPrimitiveEnumOrString(typeof(T)))
@@ -97,7 +115,7 @@ public class ComparisonBuilder
             throw new NotImplementedException(typeof(T).Name);
         }
 
-        return new ObjectComparison(Configuration)
+        return new ObjectComparison(Configuration, _currentDepth)
             .Compare(t);
     }
 
@@ -283,7 +301,7 @@ public class ComparisonBuilder
             string t1ExprName = t1Expr ?? "ArrayOne";
             string t2ExprName = t2Expr ?? "ArrayTwo";
 
-            return new ObjectArrayComparison(Configuration)
+            return new ObjectArrayComparison(Configuration, _currentDepth)
                 .Compare(oArr1, oArr2, t1ExprName, t2ExprName);
         }
         if (IsPrimitiveEnumOrString(typeof(T)))
@@ -295,7 +313,7 @@ public class ComparisonBuilder
             string t1ExprName = t1Expr ?? "ObjectOne";
             string t2ExprName = t2Expr ?? "ObjectTwo";
 
-            return new ObjectComparison(Configuration)
+            return new ObjectComparison(Configuration, _currentDepth)
                 .Compare(t1, t2, t1ExprName, t2ExprName);
         }
     }
@@ -307,7 +325,7 @@ public class ComparisonBuilder
         string t1ExprName = o1Expr ?? "ObjectOne";
         string t2ExprName = o2Expr ?? "ObjectTwo";
 
-        return new ObjectComparison(Configuration)
+        return new ObjectComparison(Configuration, _currentDepth)
             .Compare(o1, o2, t1ExprName, t2ExprName);
     }
 
@@ -318,7 +336,7 @@ public class ComparisonBuilder
         string t1ExprName = o1ArrExpr ?? "ObjectOne";
         string t2ExprName = o2ArrExpr ?? "ObjectTwo";
 
-        return new ObjectArrayComparison(Configuration)
+        return new ObjectArrayComparison(Configuration, _currentDepth)
             .Compare(o1Arr, o2Arr, t1ExprName, t2ExprName);
     }
 
@@ -379,6 +397,57 @@ public class ComparisonBuilder
     public ComparisonBuilder UseStringComparisonType(System.StringComparison stringComparison)
     {
         Configuration.StringConfiguration.StringComparisonType = stringComparison;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the maximum depth for recursive comparison of complex types. Default is 5.
+    /// </summary>
+    /// <param name="depth">New comparison depth.</param>
+    /// <returns></returns>
+    public ComparisonBuilder SetComparisonDepth(int depth)
+    {
+        Configuration.MaximumComparisonDepth = depth;
+        return this;
+    }
+
+    /// <summary>
+    /// Allows comparing nulls. If both values are null, they are considered equal. Default behavior.
+    /// </summary>
+    /// <returns></returns>
+    public ComparisonBuilder AllowNullComparison()
+    {
+        Configuration.AllowNullComparison = true;
+        return this;
+    }
+
+    /// <summary>
+    /// Disallows comparing nulls. Comparing nulls will result in a mismatch.
+    /// </summary>
+    /// <returns></returns>
+    public ComparisonBuilder DisallowNullComparison()
+    {
+        Configuration.AllowNullComparison = false;
+        return this;
+    }
+
+    /// <summary>
+    /// Allows nulls in the arguments to be compared. Default behavior.
+    /// </summary>
+    /// <returns></returns>
+    public ComparisonBuilder AllowNullsInArguments()
+    {
+        Configuration.AllowNullsInArguments = true;
+        return this;
+    }
+
+    /// <summary>
+    /// Disallows nulls in the arguments to be compared. Passing nulls will result in an error.
+    /// </summary>
+    /// <returns></returns>
+    public ComparisonBuilder DisallowNullsInArguments()
+    {
+        Configuration.AllowNullsInArguments = false;
         return this;
     }
 

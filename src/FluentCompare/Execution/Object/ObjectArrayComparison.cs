@@ -2,12 +2,14 @@
 internal class ObjectArrayComparison : IExecuteComparison<object[]>
 {
     private ComparisonConfiguration _configuration;
+    private readonly int _currentDepth;
     private ObjectComparison _objectComparison;
 
-    public ObjectArrayComparison(ComparisonConfiguration configuration)
+    public ObjectArrayComparison(ComparisonConfiguration configuration, int currentDepth)
     {
         _configuration = configuration;
-        _objectComparison = new ObjectComparison(configuration);
+        _currentDepth = currentDepth;
+        _objectComparison = new ObjectComparison(configuration, _currentDepth + 1);
     }
 
     public ComparisonResult Compare(params object[][] objects)

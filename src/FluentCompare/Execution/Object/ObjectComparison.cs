@@ -1,16 +1,27 @@
 public class ObjectComparison : IExecuteComparison<object>
 {
     private readonly ComparisonConfiguration _comparisonConfiguration;
+    private readonly int _currentDepth;
+    private int _localDepth = 0;
 
     internal ObjectComparison(
-        ComparisonConfiguration comparisonConfiguration)
+        ComparisonConfiguration comparisonConfiguration, int currentDepth)
     {
         _comparisonConfiguration = comparisonConfiguration;
+        _currentDepth = currentDepth;
     }
 
     public ComparisonResult Compare(params object[] objects)
     {
         var result = new ComparisonResult();
+
+        if (_currentDepth + _localDepth >= _comparisonConfiguration.MaximumComparisonDepth)
+        {
+            result.AddWarning(ComparisonErrors.DepthLimitReached(_currentDepth));
+            return result;
+        }
+
+        _localDepth++;
 
         if (objects == null || objects.Length < 2)
         {
@@ -73,6 +84,15 @@ public class ObjectComparison : IExecuteComparison<object>
     public ComparisonResult Compare(object t1, object t2, string t1ExprName, string t2ExprName)
     {
         var result = new ComparisonResult();
+
+        if (_currentDepth + _localDepth >= _comparisonConfiguration.MaximumComparisonDepth)
+        {
+            result.AddWarning(ComparisonErrors.DepthLimitReached(_currentDepth, t1ExprName, t2ExprName));
+            return result;
+        }
+
+        _localDepth++;
+
         if (ReferenceEquals(t1, t2))
         {
             return result;
@@ -131,7 +151,7 @@ public class ObjectComparison : IExecuteComparison<object>
         var method = compareMethod.MakeGenericMethod(type1);
 
         var subResult = (ComparisonResult)method.Invoke(
-            new ComparisonBuilder(),
+            new ComparisonBuilder(_currentDepth + 1),
             new object?[] { t1, t2, t1ExprName, t2ExprName }
         )!;
 
@@ -140,7 +160,10 @@ public class ObjectComparison : IExecuteComparison<object>
 
     private static bool IsPrimitiveEnumOrString(Type type1) => type1.IsPrimitive || type1.IsEnum || type1 == typeof(string);
 
-    private void CompareObjectsPropertiesRecursively(object t1, object t2, ComparisonResult result, Type type1, string? t1ExprName = null, string? t2ExprName = null)
+    private void CompareObjectsPropertiesRecursively(
+        object t1, object t2,
+        ComparisonResult result, Type type1,
+        string? t1ExprName = null, string? t2ExprName = null)
     {
         var properties = type1.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
         foreach (var prop in properties)
@@ -155,7 +178,9 @@ public class ObjectComparison : IExecuteComparison<object>
             }
             else
             {
-                propResult = Compare(val1, val2, $"{t1ExprName}.{prop.Name}", $"{t2ExprName}.{prop.Name}");
+                propResult = Compare(
+                    val1, val2,
+                    $"{t1ExprName}.{prop.Name}", $"{t2ExprName}.{prop.Name}");
             }
 
             if (!propResult.AllMatched)

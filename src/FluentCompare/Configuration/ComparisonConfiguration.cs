@@ -29,12 +29,20 @@ public class ComparisonConfiguration
     public bool AllowNullsInArguments { get; set; } = true;
 
     /// <summary>
+    /// Maximum depth for recursive comparison of complex types.
+    /// </summary>
+    public int MaximumComparisonDepth { get; set; } = 5;
+
+    /// <summary>
     /// Configuration for comparing double values. 
     /// (Primitive double type, or any double type which is a property of a complex type)
     /// </summary>
     public DoubleComparisonConfiguration DoubleConfiguration { get; set; }
         = new DoubleComparisonConfiguration();
 
+    /// <summary>
+    /// Configuration for comparing string values.
+    /// </summary>
     public StringComparisonConfiguration StringConfiguration { get; set; }
         = new StringComparisonConfiguration();
 }

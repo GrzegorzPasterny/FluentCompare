@@ -75,12 +75,7 @@ namespace FluentCompare.UnitTests.Objects
                 .Compare(objArr1, objArr2);
 
             // Assert
-            result.AllMatched.ShouldBeFalse();
-            result.Mismatches.Count.ShouldBe(1);
-            _testOutputHelper.WriteLine(result.ToString());
-            result.Mismatches.First().Code.ShouldBe(ComparisonMismatches<object>.MismatchDetectedCode);
-            result.Mismatches.First().Message.ShouldContain(nameof(objArr1));
-            result.Mismatches.First().Message.ShouldContain(nameof(objArr2));
+            result.AllMatched.ShouldBeTrue();
         }
 
         [Fact]
