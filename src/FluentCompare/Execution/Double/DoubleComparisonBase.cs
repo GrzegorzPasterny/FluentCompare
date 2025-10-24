@@ -1,5 +1,10 @@
-public class DoubleComparisonBase
+internal abstract class DoubleComparisonBase : ComparisonBase<double>
 {
+    public DoubleComparisonBase(ComparisonConfiguration configuration, ComparisonResult? comparisonResult = null)
+        : base(configuration, comparisonResult)
+    {
+    }
+
     internal bool CompareWithRounding(double valueA, double valueB, ComparisonType comparisonType, int precision)
     {
         double roundedA = Math.Round(valueA, precision);
