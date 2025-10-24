@@ -15,7 +15,7 @@ public class DoubleComparisonBuilder : ComparisonBuilder, IComparisonBuilder<dou
 
     public ComparisonResult Compare(params double[][] d)
     {
-        return new DoubleArrayComparison(_configuration)
+        return new DoubleComparison(_configuration)
             .Compare(d);
     }
 
@@ -28,7 +28,7 @@ public class DoubleComparisonBuilder : ComparisonBuilder, IComparisonBuilder<dou
     public ComparisonResult Compare(
         double[] tArr1, double[] tArr2, string? tArr1Expr = null, string? tArr2Expr = null)
     {
-        return new DoubleArrayComparison(_configuration)
+        return new DoubleComparison(_configuration)
             .Compare(tArr1, tArr2, tArr1Expr ?? "doubleArray1", tArr2Expr ?? "doubleArray2");
     }
 

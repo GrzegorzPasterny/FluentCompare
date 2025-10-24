@@ -92,7 +92,7 @@ public class ComparisonBuilder
                 .Compare((double[][])(object)t);
 
         if (typeof(T) == typeof(object[]))
-            return new ObjectArrayComparison(Configuration, _currentDepth)
+            return new ObjectComparison(Configuration, _currentDepth)
                 .Compare((object[][])(object)t);
 
         if (IsPrimitiveEnumOrString(typeof(T)))
@@ -285,7 +285,7 @@ public class ComparisonBuilder
             string t1ExprName = t1Expr ?? "ArrayOne";
             string t2ExprName = t2Expr ?? "ArrayTwo";
 
-            return new ObjectArrayComparison(Configuration, _currentDepth)
+            return new ObjectComparison(Configuration, _currentDepth)
                 .Compare(oArr1, oArr2, t1ExprName, t2ExprName);
         }
         if (IsPrimitiveEnumOrString(typeof(T)))
@@ -363,7 +363,7 @@ public class ComparisonBuilder
 
 
         if (type == typeof(object[]))
-            return new ObjectArrayComparison(Configuration, _currentDepth)
+            return new ObjectComparison(Configuration, _currentDepth)
                 .Compare((object[])o1, (object[])o2, t1ExprName, t2ExprName);
 
 
@@ -377,10 +377,10 @@ public class ComparisonBuilder
 
     private static ComparisonResult HandleNullability(object o1, object o2)
     {
+        var result = new ComparisonResult();
+
         if (o1 is null || o2 is null)
         {
-            var result = new ComparisonResult();
-
             if (o1 is null && o2 is null)
             {
                 result.AddWarning(ComparisonErrors.BothObjectsAreNull());
@@ -399,6 +399,8 @@ public class ComparisonBuilder
                 return result;
             }
         }
+
+        return result;
     }
 
     public ComparisonResult Compare(object[] o1Arr, object[] o2Arr,
@@ -408,7 +410,7 @@ public class ComparisonBuilder
         string t1ExprName = o1ArrExpr ?? "ObjectArrayOne";
         string t2ExprName = o2ArrExpr ?? "ObjectArrayTwo";
 
-        return new ObjectArrayComparison(Configuration, _currentDepth)
+        return new ObjectComparison(Configuration, _currentDepth)
             .Compare(o1Arr, o2Arr, t1ExprName, t2ExprName);
     }
 

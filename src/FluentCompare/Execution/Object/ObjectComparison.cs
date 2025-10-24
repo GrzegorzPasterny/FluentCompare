@@ -1,17 +1,16 @@
-public class ObjectComparison : IExecuteComparison<object>
+internal class ObjectComparison : ObjectComparisonBase
 {
-    private readonly ComparisonConfiguration _comparisonConfiguration;
     private readonly int _currentDepth;
     private int _localDepth = 0;
 
     internal ObjectComparison(
-        ComparisonConfiguration comparisonConfiguration, int currentDepth)
+        ComparisonConfiguration comparisonConfiguration, int currentDepth, ComparisonResult? comparisonResult = null)
+        : base(comparisonConfiguration, comparisonResult)
     {
-        _comparisonConfiguration = comparisonConfiguration;
         _currentDepth = currentDepth;
     }
 
-    public ComparisonResult Compare(params object[] objects)
+    public override ComparisonResult Compare(params object[] objects)
     {
         var result = new ComparisonResult();
 
@@ -81,7 +80,7 @@ public class ObjectComparison : IExecuteComparison<object>
         return result;
     }
 
-    public ComparisonResult Compare(object t1, object t2, string t1ExprName, string t2ExprName)
+    public override ComparisonResult Compare(object t1, object t2, string t1ExprName, string t2ExprName)
     {
         var result = new ComparisonResult();
 
@@ -135,30 +134,101 @@ public class ObjectComparison : IExecuteComparison<object>
         return result;
     }
 
-    private void CompareObjectsWhenPrimitive(object t1, object t2, string t1ExprName, string t2ExprName, ComparisonResult result, Type type1)
+    public override ComparisonResult Compare(params object[][] objects)
     {
-        var compareMethod = typeof(ComparisonBuilder)
-                                .GetMethods()
-                                .Where(m => m.Name == nameof(Compare))
-                                .Where(m => m.IsGenericMethodDefinition)
-                                .First(m =>
-                                {
-                                    var p = m.GetParameters();
-                                    return p.Length >= 2 && p[0].ParameterType.IsGenericParameter && p[1].ParameterType.IsGenericParameter;
-                                });
+        var result = new ComparisonResult();
+        if (objects == null)
+        {
+            result.AddError(ComparisonErrors.NullPassedAsArgument(typeof(object[])));
+            return result;
+        }
 
-        // Dynamically call the generic Compare<T> with the real type
-        var method = compareMethod.MakeGenericMethod(type1);
+        if (objects.Length < 2)
+        {
+            result.AddError(ComparisonErrors.NotEnoughObjectToCompare(objects.Length, typeof(object[])));
+            return result;
+        }
 
-        var subResult = (ComparisonResult)method.Invoke(
-            new ComparisonBuilder(_currentDepth + 1),
-            new object?[] { t1, t2, t1ExprName, t2ExprName }
-        )!;
+        var first = objects[0];
+        for (int i = 1; i < objects.Length; i++)
+        {
+            var comparisonResult = Compare(first, objects[i], $"objects[0]", $"objects[{i}]");
+            result.AddComparisonResult(comparisonResult);
+        }
 
-        result.AddComparisonResult(subResult);
+        return result;
     }
 
-    private static bool IsPrimitiveEnumOrString(Type type1) => type1.IsPrimitive || type1.IsEnum || type1 == typeof(string);
+    public override ComparisonResult Compare(object[] t1, object[] t2, string t1ExprName, string t2ExprName)
+    {
+        var result = new ComparisonResult();
+
+        if (ReferenceEquals(t1, t2))
+        {
+            return result;
+        }
+        if (t1 == null)
+        {
+            result.AddError(ComparisonErrors.NullPassedAsArgument(t1ExprName, typeof(object[])));
+            return result;
+        }
+
+        if (t2 == null)
+        {
+            result.AddError(ComparisonErrors.NullPassedAsArgument(t2ExprName, typeof(object[])));
+            return result;
+        }
+
+        if (t1.Length != t2.Length)
+        {
+            result.AddError(ComparisonErrors.InputArrayLengthsDiffer(
+                t1.Length, t2.Length, t1ExprName, t2ExprName, typeof(object[])));
+            return result;
+        }
+
+        for (int i = 0; i < t1.Length; i++)
+        {
+            var obj1 = t1[i];
+            var obj2 = t2[i];
+            // Use the configured comparison mode for complex types
+            switch (_comparisonConfiguration.ComplexTypesComparisonMode)
+            {
+                case ComplexTypesComparisonMode.ReferenceEquality:
+                    CompareObjectsByReference(obj1, obj2, i, result);
+                    break;
+                case ComplexTypesComparisonMode.PropertyEquality:
+
+                    if (obj1 == null && obj2 == null)
+                    {
+                        result.AddWarning(ComparisonErrors.Object.BothObjectsAreNull(obj1, obj2, i, i));
+                    }
+
+                    if (obj1 == null || obj2 == null)
+                    {
+                        if (obj1 != obj2)
+                        {
+                            result.AddMismatch(ComparisonMismatches.Object.MismatchDetectedByNull(
+                                obj1, obj2, i, i));
+                        }
+                        break;
+                    }
+
+                    var type1 = obj1.GetType();
+                    var type2 = obj2.GetType();
+
+                    if (type1 != type2)
+                    {
+                        result.AddMismatch(ComparisonMismatches.Object.MismatchDetectedByType(
+                            obj1, obj2, i, i, type1, type2));
+                        break;
+                    }
+
+                    CompareObjectsPropertiesRecursively(obj1, obj2, result, type1);
+                    break;
+            }
+        }
+        return result;
+    }
 
     private void CompareObjectsPropertiesRecursively(
         object t1, object t2,
@@ -189,6 +259,40 @@ public class ObjectComparison : IExecuteComparison<object>
             }
         }
     }
+
+    private void CompareObjectsByReference(object obj1, object obj2, int i, ComparisonResult result)
+    {
+        if (!ReferenceEquals(obj1, obj2))
+        {
+            result.AddMismatch(ComparisonMismatches.Object.MismatchDetectedByReference(
+                obj1, obj2, i));
+        }
+    }
+
+    private void CompareObjectsWhenPrimitive(object t1, object t2, string t1ExprName, string t2ExprName, ComparisonResult result, Type type1)
+    {
+        var compareMethod = typeof(ComparisonBuilder)
+                                .GetMethods()
+                                .Where(m => m.Name == nameof(Compare))
+                                .Where(m => m.IsGenericMethodDefinition)
+                                .First(m =>
+                                {
+                                    var p = m.GetParameters();
+                                    return p.Length >= 2 && p[0].ParameterType.IsGenericParameter && p[1].ParameterType.IsGenericParameter;
+                                });
+
+        // Dynamically call the generic Compare<T> with the real type
+        var method = compareMethod.MakeGenericMethod(type1);
+
+        var subResult = (ComparisonResult)method.Invoke(
+            new ComparisonBuilder(_currentDepth + 1),
+            new object?[] { t1, t2, t1ExprName, t2ExprName }
+        )!;
+
+        result.AddComparisonResult(subResult);
+    }
+
+    private static bool IsPrimitiveEnumOrString(Type type1) => type1.IsPrimitive || type1.IsEnum || type1 == typeof(string);
 
     private static void CompareObjectsByReference(object t1, object t2, string t1ExprName, string t2ExprName, ComparisonResult result)
     {
