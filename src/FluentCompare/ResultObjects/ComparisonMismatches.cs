@@ -51,6 +51,9 @@ public static class ComparisonMismatches
     internal static ComparisonMismatch NullPassedAsArgument(string t1ExprName, string t2ExprName, Type type)
         => new(NullPassedAsArgumentCode,
             $"Null value was provided for comparison [Variable1Name = {t1ExprName}, Variable2Name = {t2ExprName}, Type = {type.Name}]");
+    internal static ComparisonError NullPassedAsArgument(string t2ExprName, Type type)
+        => new(NullPassedAsArgumentCode,
+            $"Null value was provided for comparison [VariableName = {t2ExprName}, Type = {type.Name}]");
 
     /// <summary>
     /// Double-related comparison mismatches repository

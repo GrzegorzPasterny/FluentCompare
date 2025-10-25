@@ -296,7 +296,7 @@ public class ComparisonBuilder
         [CallerArgumentExpression(nameof(o1))] string? o1Expr = null,
         [CallerArgumentExpression(nameof(o2))] string? o2Expr = null)
     {
-        ComparisonResult comparisonResult = HandleNullability(o1, o2);
+        ComparisonResult comparisonResult = HandleNullability(o1, o2, o1Expr, o2Expr);
 
         // Check basic nullability results first
         if (comparisonResult.WasSuccessful == false)
@@ -375,24 +375,51 @@ public class ComparisonBuilder
         [CallerArgumentExpression(nameof(o1Arr))] string? o1ArrExpr = null,
         [CallerArgumentExpression(nameof(o2Arr))] string? o2ArrExpr = null)
     {
+        ComparisonResult comparisonResult = HandleNullability(o1Arr, o2Arr);
+
+        // Check basic nullability results first
+        if (comparisonResult.WasSuccessful == false)
+        {
+            return comparisonResult;
+        }
+        if (comparisonResult.AllMatched == false &&
+            comparisonResult.Mismatches.First().Code == ComparisonMismatches.NullPassedAsArgumentCode)
+        {
+            return comparisonResult;
+        }
+
         string t1ExprName = o1ArrExpr ?? "ObjectArrayOne";
         string t2ExprName = o2ArrExpr ?? "ObjectArrayTwo";
 
-        return new ObjectComparison(Configuration, _currentDepth)
+        return new ObjectComparison(Configuration, _currentDepth, comparisonResult)
             .Compare(o1Arr, o2Arr, t1ExprName, t2ExprName);
     }
 
+    /// <summary>
+    /// Sets the <paramref name="configuration"/> as a comparison configuration objects
+    /// </summary>
+    /// <param name="configuration"></param>
+    /// <returns></returns>
     public ComparisonBuilder UseConfiguration(ComparisonConfiguration configuration)
     {
         Configuration = configuration;
         return this;
     }
 
+    /// <summary>
+    /// Begins double-specific comparison configuration.
+    /// </summary>
+    /// <returns></returns>
     public DoubleComparisonBuilder ForDouble()
     {
         return new DoubleComparisonBuilder(Configuration);
     }
 
+    /// <summary>
+    /// Configures the comparison using the provided <paramref name="configure"/> action.
+    /// </summary>
+    /// <param name="configure"></param>
+    /// <returns></returns>
     public ComparisonBuilder Configure(Action<ComparisonConfiguration> configure)
     {
         configure(Configuration);
@@ -493,7 +520,7 @@ public class ComparisonBuilder
         return this;
     }
 
-    private ComparisonResult HandleNullability(object o1, object o2)
+    private ComparisonResult HandleNullability(object o1, object o2, string? t1Expr, string? t2Expr)
     {
         var result = new ComparisonResult();
 
@@ -501,20 +528,47 @@ public class ComparisonBuilder
         {
             if (o1 is null && o2 is null)
             {
-                result.AddWarning(ComparisonErrors.BothObjectsAreNull());
-                return result;
+                if (Configuration.AllowNullComparison)
+                {
+                    result.AddWarning(ComparisonErrors.BothObjectsAreNull());
+                    return result;
+                }
+                else
+                {
+                    result.AddError(ComparisonErrors.BothObjectsAreNull());
+                    return result;
+                }
             }
 
             if (o1 is null)
             {
-                result.AddMismatch(ComparisonMismatches.NullPassedAsArgument(1, o2!.GetType()));
-                return result;
+                string t1ExprName = t1Expr ?? $"{o2!.GetType().Name}Two";
+
+                if (Configuration.AllowNullComparison)
+                {
+                    result.AddMismatch(ComparisonMismatches.NullPassedAsArgument(1, o2!.GetType()));
+                    return result;
+                }
+                else
+                {
+                    result.AddError(ComparisonMismatches.NullPassedAsArgument(t1ExprName, o2!.GetType()));
+                    return result;
+                }
             }
 
             if (o2 is null)
             {
-                result.AddMismatch(ComparisonMismatches.NullPassedAsArgument(2, o1!.GetType()));
-                return result;
+                string t2ExprName = t2Expr ?? $"{o1.GetType().Name}One";
+                if (Configuration.AllowNullComparison)
+                {
+                    result.AddMismatch(ComparisonMismatches.NullPassedAsArgument(2, o1!.GetType()));
+                    return result;
+                }
+                else
+                {
+                    result.AddError(ComparisonMismatches.NullPassedAsArgument(t2ExprName, o1!.GetType()));
+                    return result;
+                }
             }
         }
 
