@@ -303,12 +303,18 @@ public class ComparisonBuilder
     }
 
     public ComparisonResult Compare(object o1, object o2,
-    [CallerArgumentExpression(nameof(o1))] string? o1Expr = null,
-    [CallerArgumentExpression(nameof(o2))] string? o2Expr = null)
+        [CallerArgumentExpression(nameof(o1))] string? o1Expr = null,
+        [CallerArgumentExpression(nameof(o2))] string? o2Expr = null)
     {
         ComparisonResult comparisonResult = HandleNullability(o1, o2);
 
         if (comparisonResult.WasSuccessful == false)
+        {
+            return comparisonResult;
+        }
+
+        if (comparisonResult.AllMatched == false &&
+            comparisonResult.Mismatches.First().Code == ComparisonMismatches.NullPassedAsArgumentCode)
         {
             return comparisonResult;
         }

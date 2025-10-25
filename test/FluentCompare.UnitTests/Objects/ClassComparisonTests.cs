@@ -32,11 +32,11 @@ public class ClassComparisonTests
         };
         yield return new object[]
         {
-            null,
             new ClassWithIntProperty(1),
+            null,
             false,
-            false,
-            ComparisonErrors.NullPassedAsArgumentCode
+            true,
+            ComparisonMismatches.NullPassedAsArgumentCode
         };
         yield return new object[]
         {
@@ -88,8 +88,8 @@ public class ClassComparisonTests
                 ClassWithIntProperty = null
             },
             false,
-            false,
-            ComparisonErrors.NullPassedAsArgumentCode
+            true,
+            ComparisonMismatches.NullPassedAsArgumentCode
         };
     }
 
