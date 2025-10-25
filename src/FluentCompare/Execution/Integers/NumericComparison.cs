@@ -1,9 +1,7 @@
 using FluentCompare.Execution.Int;
 
-public class NumericComparison<T> : NumericComparisonBase<T>, IExecuteComparison<T> where T : struct, IComparable<T>
+internal class NumericComparison<T> : NumericComparisonBase<T>, IExecuteComparison<T> where T : struct, IComparable<T>
 {
-    private readonly ComparisonConfiguration _comparisonConfiguration;
-
     internal NumericComparison(
         ComparisonConfiguration comparisonConfiguration, ComparisonResult? comparisonResult = null)
         : base(comparisonConfiguration, comparisonResult)
@@ -18,7 +16,7 @@ public class NumericComparison<T> : NumericComparisonBase<T>, IExecuteComparison
         }
     }
 
-    public ComparisonResult Compare(params T[] ints)
+    public override ComparisonResult Compare(params T[] ints)
     {
         var result = new ComparisonResult();
 
@@ -46,7 +44,7 @@ public class NumericComparison<T> : NumericComparisonBase<T>, IExecuteComparison
         return result;
     }
 
-    public ComparisonResult Compare(T i1, T i2, string t1ExprName, string t2ExprName)
+    public override ComparisonResult Compare(T i1, T i2, string t1ExprName, string t2ExprName)
     {
         var result = new ComparisonResult();
 
@@ -58,7 +56,7 @@ public class NumericComparison<T> : NumericComparisonBase<T>, IExecuteComparison
         return result;
     }
 
-    public ComparisonResult Compare(params T[][] ints)
+    public override ComparisonResult Compare(params T[][] ints)
     {
         var result = new ComparisonResult();
 
@@ -103,7 +101,7 @@ public class NumericComparison<T> : NumericComparisonBase<T>, IExecuteComparison
         return result;
     }
 
-    public ComparisonResult Compare(T[] intArr1, T[] intArr2, string intArr1ExprName, string intArr2ExprName)
+    public override ComparisonResult Compare(T[] intArr1, T[] intArr2, string intArr1ExprName, string intArr2ExprName)
     {
         var result = new ComparisonResult();
 

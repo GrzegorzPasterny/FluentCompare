@@ -1,9 +1,10 @@
 namespace FluentCompare.Execution.Int;
 
-public abstract class NumericComparisonBase<T> where T : struct, IComparable<T>
+internal abstract class NumericComparisonBase<T> : ComparisonBase<T> where T : struct, IComparable<T>
 {
     protected NumericComparisonBase(
         ComparisonConfiguration comparisonConfiguration, ComparisonResult? comparisonResult = null)
+        : base(comparisonConfiguration, comparisonResult)
     { }
 
     internal Func<T, string> _toStringFunc = i => i.ToString();
