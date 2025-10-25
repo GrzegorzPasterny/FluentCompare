@@ -115,27 +115,17 @@ public class ComparisonBuilder
         [CallerArgumentExpression(nameof(t1))] string? t1Expr = null,
         [CallerArgumentExpression(nameof(t2))] string? t2Expr = null)
     {
-        if (t1 is null || t2 is null)
+        ComparisonResult comparisonResult = HandleNullability(t1, t2, t1Expr, t2Expr);
+
+        // Check basic nullability results first
+        if (comparisonResult.WasSuccessful == false)
         {
-            ComparisonResult result = new();
-
-            if (t1 is null && t2 is null)
-            {
-                result.AddWarning(ComparisonErrors.BothObjectsAreNull());
-                return result;
-            }
-
-            if (t1 is null)
-            {
-                result.AddMismatch(ComparisonMismatches.NullPassedAsArgument(1, typeof(T)));
-                return result;
-            }
-
-            if (t2 is null)
-            {
-                result.AddMismatch(ComparisonMismatches.NullPassedAsArgument(2, typeof(T)));
-                return result;
-            }
+            return comparisonResult;
+        }
+        if (comparisonResult.AllMatched == false &&
+            comparisonResult.Mismatches.First().Code == ComparisonMismatches.NullPassedAsArgumentCode)
+        {
+            return comparisonResult;
         }
 
         if (typeof(T) == typeof(string))
@@ -308,11 +298,11 @@ public class ComparisonBuilder
     {
         ComparisonResult comparisonResult = HandleNullability(o1, o2);
 
+        // Check basic nullability results first
         if (comparisonResult.WasSuccessful == false)
         {
             return comparisonResult;
         }
-
         if (comparisonResult.AllMatched == false &&
             comparisonResult.Mismatches.First().Code == ComparisonMismatches.NullPassedAsArgumentCode)
         {
@@ -379,34 +369,6 @@ public class ComparisonBuilder
 
         return new ObjectComparison(Configuration, _currentDepth)
             .Compare(o1, o2, t1ExprName, t2ExprName);
-    }
-
-    private static ComparisonResult HandleNullability(object o1, object o2)
-    {
-        var result = new ComparisonResult();
-
-        if (o1 is null || o2 is null)
-        {
-            if (o1 is null && o2 is null)
-            {
-                result.AddWarning(ComparisonErrors.BothObjectsAreNull());
-                return result;
-            }
-
-            if (o1 is null)
-            {
-                result.AddMismatch(ComparisonMismatches.NullPassedAsArgument(1, o2!.GetType()));
-                return result;
-            }
-
-            if (o2 is null)
-            {
-                result.AddMismatch(ComparisonMismatches.NullPassedAsArgument(2, o1!.GetType()));
-                return result;
-            }
-        }
-
-        return result;
     }
 
     public ComparisonResult Compare(object[] o1Arr, object[] o2Arr,
@@ -529,6 +491,90 @@ public class ComparisonBuilder
     {
         Configuration.AllowNullsInArguments = false;
         return this;
+    }
+
+    private ComparisonResult HandleNullability(object o1, object o2)
+    {
+        var result = new ComparisonResult();
+
+        if (o1 is null || o2 is null)
+        {
+            if (o1 is null && o2 is null)
+            {
+                result.AddWarning(ComparisonErrors.BothObjectsAreNull());
+                return result;
+            }
+
+            if (o1 is null)
+            {
+                result.AddMismatch(ComparisonMismatches.NullPassedAsArgument(1, o2!.GetType()));
+                return result;
+            }
+
+            if (o2 is null)
+            {
+                result.AddMismatch(ComparisonMismatches.NullPassedAsArgument(2, o1!.GetType()));
+                return result;
+            }
+        }
+
+        return result;
+    }
+
+    private ComparisonResult HandleNullability<T>(T t1, T t2, string? t1Expr, string? t2Expr)
+    {
+        ComparisonResult result = new();
+
+        if (t1 is null || t2 is null)
+        {
+            if (t1 is null && t2 is null)
+            {
+                if (Configuration.AllowNullsInArguments)
+                {
+                    result.AddWarning(ComparisonErrors.BothObjectsAreNull());
+                    return result;
+                }
+                else
+                {
+                    result.AddError(ComparisonErrors.BothObjectsAreNull());
+                    return result;
+                }
+            }
+
+            string t1ExprName = t1Expr ?? $"{typeof(T).Name}One";
+            string t2ExprName = t1Expr ?? $"{typeof(T).Name}Two";
+
+            if (t1 is null)
+            {
+                if (Configuration.AllowNullsInArguments)
+                {
+                    result.AddMismatch(ComparisonMismatches.NullPassedAsArgument(t1ExprName, t2ExprName, typeof(T)));
+                    return result;
+                }
+                else
+                {
+                    result.AddError(ComparisonErrors.NullPassedAsArgument(t1ExprName, typeof(T)));
+                    return result;
+                }
+
+            }
+
+            if (t2 is null)
+            {
+                if (Configuration.AllowNullsInArguments)
+                {
+                    result.AddMismatch(ComparisonMismatches.NullPassedAsArgument(t1ExprName, t2ExprName, typeof(T)));
+                    return result;
+                }
+                else
+                {
+                    result.AddError(ComparisonErrors.NullPassedAsArgument(t2ExprName, typeof(T)));
+                    return result;
+                }
+            }
+        }
+
+        return result;
     }
 
     private static bool IsPrimitiveEnumOrString(Type type1) => type1.IsPrimitive || type1.IsEnum || type1 == typeof(string);
