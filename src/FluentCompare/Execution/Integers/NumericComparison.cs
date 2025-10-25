@@ -4,7 +4,9 @@ public class NumericComparison<T> : NumericComparisonBase<T>, IExecuteComparison
 {
     private readonly ComparisonConfiguration _comparisonConfiguration;
 
-    internal NumericComparison(ComparisonConfiguration comparisonConfiguration)
+    internal NumericComparison(
+        ComparisonConfiguration comparisonConfiguration, ComparisonResult? comparisonResult = null)
+        : base(comparisonConfiguration, comparisonResult)
     {
         _comparisonConfiguration = comparisonConfiguration;
 

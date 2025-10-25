@@ -2,6 +2,10 @@ namespace FluentCompare.Execution.Int;
 
 public abstract class NumericComparisonBase<T> where T : struct, IComparable<T>
 {
+    protected NumericComparisonBase(
+        ComparisonConfiguration comparisonConfiguration, ComparisonResult? comparisonResult = null)
+    { }
+
     internal Func<T, string> _toStringFunc = i => i.ToString();
 
     internal bool Compare(T valueA, T valueB, ComparisonType comparisonType)
