@@ -71,8 +71,8 @@ public class ClassArrayComparisonTests
             },
             null,
             false,
-            false,
-            ComparisonErrors.NullPassedAsArgumentCode
+            true,
+            ComparisonMismatches.NullPassedAsArgumentCode
         };
         yield return new object[]
         {

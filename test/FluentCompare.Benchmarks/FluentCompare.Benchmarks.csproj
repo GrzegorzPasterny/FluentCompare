@@ -8,7 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.15.4" />
+		<PackageReference Include="AnyDiff" Version="1.0.99" />
+		<PackageReference Include="BenchmarkDotNet" Version="0.15.4" />
+    <PackageReference Include="CompareNETObjects" Version="4.84.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FluentCompare.UnitTests\FluentCompare.UnitTests.csproj" />
   </ItemGroup>
 
 </Project>

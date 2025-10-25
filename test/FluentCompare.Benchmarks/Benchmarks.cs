@@ -1,4 +1,11 @@
+using System.Text;
+
 using BenchmarkDotNet.Attributes;
+
+using FluentCompare.Tests.Shared.Models;
+using FluentCompare.UnitTests;
+
+using KellermanSoftware.CompareNetObjects;
 
 namespace FluentCompare.Benchmarks;
 
@@ -6,26 +13,52 @@ namespace FluentCompare.Benchmarks;
 [SimpleJob(launchCount: 1, warmupCount: 3, iterationCount: 8)]
 public class Benchmarks
 {
-    private int[] _data;
+    private ClassWithAllSupportedTypes _obj1;
+    private ClassWithAllSupportedTypes _obj2;
 
     [GlobalSetup]
     public void Setup()
     {
-        _data = Enumerable.Range(1, 1000).ToArray();
+        _obj1 = TestDataGenerator.CreateClassWithAllSupportedTypes();
+        _obj2 = TestDataGenerator.CreateClassWithAllSupportedTypes();
     }
 
     [Benchmark]
-    public int SumWithForLoop()
+    public string CompareWith_FluentComparison()
     {
-        int sum = 0;
-        for (int i = 0; i < _data.Length; i++)
-            sum += _data[i];
-        return sum;
+        var comparisonResult = ComparisonBuilder.Create()
+            .Compare(_obj1, _obj2);
+        return comparisonResult.ToString();
     }
 
     [Benchmark]
-    public int SumWithLinq()
+    public string CompareWith_CompareNetObjects()
     {
-        return _data.Sum();
+        var compareLogic = new CompareLogic();
+        KellermanSoftware.CompareNetObjects.ComparisonResult comparisonResultNetObjects =
+            compareLogic.Compare(_obj1, _obj2);
+
+        return comparisonResultNetObjects.DifferencesString;
+    }
+
+    [Benchmark]
+    public string CompareWith_AnyDiff()
+    {
+        ICollection<AnyDiff.Difference> differences = AnyDiff.AnyDiff.Diff(_obj1, _obj2);
+
+        var result = new StringBuilder();
+
+        foreach (AnyDiff.Difference difference in differences)
+        {
+            result.AppendLine(difference.ToString());
+            result.AppendLine($"[" +
+                $"{nameof(AnyDiff.Difference.Property)} = {difference.Property}, " +
+                $"{nameof(AnyDiff.Difference.PropertyType)} = {difference.PropertyType.Name}, " +
+                $"{nameof(AnyDiff.Difference.Path)} = {difference.Path}, " +
+                $"{nameof(AnyDiff.Difference.Delta)} = {difference.Delta}, " +
+                $"{nameof(AnyDiff.Difference.ArrayIndex)} = {difference.ArrayIndex}]");
+        }
+
+        return result.ToString();
     }
 }
