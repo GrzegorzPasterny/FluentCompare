@@ -527,6 +527,53 @@ public class ComparisonBuilder
         return this;
     }
 
+    /// <summary>
+    /// Applies a bitwise operation to byte comparisons.
+    /// </summary>
+    /// <param name="bitwiseOperation"></param>
+    /// <param name="mask"></param>
+    /// <param name="comparisonObjectIndexesToExclude"></param>
+    /// <returns></returns>
+    public ComparisonBuilder ApplyBitwiseOperation(BitwiseOperation bitwiseOperation, byte mask, params int[] comparisonObjectIndexesToExclude)
+    {
+        Configuration.ByteConfiguration.BitwiseOperations.Add(new BitwiseOperationModel
+        {
+            Operation = bitwiseOperation,
+            Value = mask,
+            ComparisonObjectIndexesToExclude = comparisonObjectIndexesToExclude.ToList()
+        });
+        return this;
+    }
+
+    /// <summary>
+    /// Applies a bitwise operation to byte comparisons.
+    /// </summary>
+    /// <param name="bitwiseOperation"></param>
+    /// <param name="mask"></param>
+    /// <param name="comparisonObjectIndexToExclude"></param>
+    /// <returns></returns>
+    public ComparisonBuilder ApplyBitwiseOperation(BitwiseOperation bitwiseOperation, byte mask, int comparisonObjectIndexToExclude)
+    {
+        Configuration.ByteConfiguration.BitwiseOperations.Add(new BitwiseOperationModel
+        {
+            Operation = bitwiseOperation,
+            Value = mask,
+            ComparisonObjectIndexesToExclude = new() { comparisonObjectIndexToExclude }
+        });
+        return this;
+    }
+
+    /// <summary>
+    /// Applies a bitwise operation to byte comparisons.
+    /// </summary>
+    /// <param name="bitwiseOperationModel"></param>
+    /// <returns></returns>
+    public ComparisonBuilder ApplyBitwiseOperation(BitwiseOperationModel bitwiseOperationModel)
+    {
+        Configuration.ByteConfiguration.BitwiseOperations.Add(bitwiseOperationModel);
+        return this;
+    }
+
     private ComparisonResult HandleNullability(object o1, object o2, string? t1Expr, string? t2Expr)
     {
         var result = new ComparisonResult();
