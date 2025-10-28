@@ -9,6 +9,8 @@ internal abstract class ComparisonBase<T> : IExecuteComparison<T>
         _comparisonResult = comparisonResult ?? new ComparisonResult();
     }
 
+    internal Func<T, string> _toStringFunc = i => i.ToString();
+
     public abstract ComparisonResult Compare(params T[] objects);
     public abstract ComparisonResult Compare(T t1, T t2, string t1ExprName, string t2ExprName);
     public abstract ComparisonResult Compare(params T[][] objects);

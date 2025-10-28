@@ -45,4 +45,10 @@ public class ComparisonConfiguration
     /// </summary>
     public StringComparisonConfiguration StringConfiguration { get; set; }
         = new StringComparisonConfiguration();
+
+    /// <summary>
+    /// Configuration for comparing byte values.
+    /// </summary>
+    public ByteComparisonConfiguration ByteConfiguration { get; set; }
+        = new ByteComparisonConfiguration();
 }
