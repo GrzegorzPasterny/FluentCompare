@@ -1,3 +1,5 @@
+
+
 internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>
 {
     public ByteComparison(
@@ -22,24 +24,48 @@ internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>
         }
 
         var first = bytes[0];
+        byte transformedFirst = ApplyBitwiseOperations(first, 0, _comparisonConfiguration.ByteConfiguration.BitwiseOperations);
+
         for (byte i = 1; i <= bytes.Length; i++)
         {
-            if (!Compare(first, bytes[i], _comparisonConfiguration.ComparisonType))
+            byte transformedCurrent = ApplyBitwiseOperations(bytes[i], i, _comparisonConfiguration.ByteConfiguration.BitwiseOperations);
+            if (!Compare(transformedFirst, transformedCurrent, _comparisonConfiguration.ComparisonType))
             {
-                result.AddMismatch(ComparisonMismatches<byte>.MismatchDetected(first, bytes[i], i, _comparisonConfiguration.ComparisonType, _toStringFunc));
+                if (_comparisonConfiguration.ByteConfiguration.BitwiseOperations.Count > 0)
+                {
+                    result.AddMismatch(
+                        ComparisonMismatches.Byte.MismatchDetected(
+                            first, bytes[i], transformedFirst, transformedCurrent, i, _comparisonConfiguration.ComparisonType, _toStringFunc));
+                }
+                else
+                {
+                    result.AddMismatch(
+                        ComparisonMismatches<byte>.MismatchDetected(
+                            first, bytes[i], i, _comparisonConfiguration.ComparisonType, _toStringFunc));
+                }
             }
         }
 
         return result;
     }
 
-    public override ComparisonResult Compare(byte i1, byte i2, string t1ExprName, string t2ExprName)
+    public override ComparisonResult Compare(byte b1, byte b2, string t1ExprName, string t2ExprName)
     {
         var result = new ComparisonResult();
 
-        if (!Compare(i1, i2, _comparisonConfiguration.ComparisonType))
+        byte b1Transformed = ApplyBitwiseOperations(b1, 0, _comparisonConfiguration.ByteConfiguration.BitwiseOperations);
+        byte b2Transformed = ApplyBitwiseOperations(b2, 1, _comparisonConfiguration.ByteConfiguration.BitwiseOperations);
+
+        if (!Compare(b1Transformed, b2Transformed, _comparisonConfiguration.ComparisonType))
         {
-            result.AddMismatch(ComparisonMismatches<byte>.MismatchDetected(i1, i2, t1ExprName, t2ExprName, _comparisonConfiguration.ComparisonType, _toStringFunc));
+            if (_comparisonConfiguration.ByteConfiguration.BitwiseOperations.Count > 0)
+            {
+                result.AddMismatch(ComparisonMismatches.Byte.MismatchDetected(b1, b2, b1Transformed, b2Transformed, t1ExprName, t2ExprName, _comparisonConfiguration.ComparisonType, _toStringFunc));
+            }
+            else
+            {
+                result.AddMismatch(ComparisonMismatches<byte>.MismatchDetected(b1, b2, t1ExprName, t2ExprName, _comparisonConfiguration.ComparisonType, _toStringFunc));
+            }
         }
 
         return result;
@@ -55,15 +81,17 @@ internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>
         // All arrays are compared against the first one
         var first = bytes[0];
 
+        if (first == null)
+        {
+            result.AddMismatch(ComparisonMismatches.NullPassedAsArgument(0, typeof(byte[])));
+            return result;
+        }
+
+        var firstTransformed = ApplyBitwiseOperations(first, 0, _comparisonConfiguration.ByteConfiguration.BitwiseOperations);
+
         for (byte i = 1; i < bytes.Length; i++)
         {
             var current = bytes[i];
-
-            if (first == null)
-            {
-                result.AddMismatch(ComparisonMismatches.NullPassedAsArgument(0, typeof(byte[])));
-                return result;
-            }
 
             if (current == null)
             {
@@ -77,12 +105,22 @@ internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>
                 return result;
             }
 
+            var currentTransformed = ApplyBitwiseOperations(current, i, _comparisonConfiguration.ByteConfiguration.BitwiseOperations);
+
             for (byte j = 0; j < first.Length; j++)
             {
-                if (!Compare(first[j], current[j], _comparisonConfiguration.ComparisonType))
+                if (!Compare(firstTransformed[j], currentTransformed[j], _comparisonConfiguration.ComparisonType))
                 {
-                    result.AddMismatch(ComparisonMismatches<byte>.MismatchDetected(
-                        first[j], current[j], j, 0, i, _comparisonConfiguration.ComparisonType, _toStringFunc));
+                    if (_comparisonConfiguration.ByteConfiguration.BitwiseOperations.Count > 0)
+                    {
+                        result.AddMismatch(ComparisonMismatches.Byte.MismatchDetected(
+                            first[j], current[j], firstTransformed[j], currentTransformed[j], j, 0, i, _comparisonConfiguration.ComparisonType, _toStringFunc));
+                    }
+                    else
+                    {
+                        result.AddMismatch(ComparisonMismatches<byte>.MismatchDetected(
+                            first[j], current[j], j, 0, i, _comparisonConfiguration.ComparisonType, _toStringFunc));
+                    }
                 }
             }
         }
@@ -101,12 +139,23 @@ internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>
             return result;
         }
 
+        byte[] byteArr1Transformed = ApplyBitwiseOperations(byteArr1, 0, _comparisonConfiguration.ByteConfiguration.BitwiseOperations);
+        byte[] byteArr2Transformed = ApplyBitwiseOperations(byteArr2, 1, _comparisonConfiguration.ByteConfiguration.BitwiseOperations);
+
         for (byte i = 0; i < byteArr1.Length; i++)
         {
-            if (!Compare(byteArr1[i], byteArr2[i], _comparisonConfiguration.ComparisonType))
+            if (!Compare(byteArr1Transformed[i], byteArr2Transformed[i], _comparisonConfiguration.ComparisonType))
             {
-                result.AddMismatch(ComparisonMismatches<byte>.MismatchDetected(
-                    byteArr1[i], byteArr2[i], i, byteArr1ExprName, byteArr2ExprName, _comparisonConfiguration.ComparisonType, _toStringFunc));
+                if (_comparisonConfiguration.ByteConfiguration.BitwiseOperations.Count > 0)
+                {
+                    result.AddMismatch(ComparisonMismatches.Byte.MismatchDetected(
+                        byteArr1[i], byteArr2[i], byteArr1Transformed[i], byteArr2Transformed[i], i, byteArr1ExprName, byteArr2ExprName, _comparisonConfiguration.ComparisonType, _toStringFunc));
+                }
+                else
+                {
+                    result.AddMismatch(ComparisonMismatches<byte>.MismatchDetected(
+                        byteArr1[i], byteArr2[i], i, byteArr1ExprName, byteArr2ExprName, _comparisonConfiguration.ComparisonType, _toStringFunc));
+                }
             }
         }
 

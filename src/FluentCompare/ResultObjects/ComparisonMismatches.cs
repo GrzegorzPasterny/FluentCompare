@@ -88,6 +88,50 @@ public static class ComparisonMismatches
 
     }
 
+    // TODO: Add information about performed bitwise transformations
+    /// <summary>
+    /// Byte-related comparison mismatches repository
+    /// </summary>
+    public class Byte
+    {
+        public static string Namespace = "FluentCompare.Mismatch.Byte";
+        public static string MismatchDetectedCode => $"{Namespace}.{nameof(MismatchDetected)}";
+        internal static ComparisonMismatch MismatchDetected(byte b1, byte b2, byte bTransformed1, byte bTransformed2, int index, ComparisonType comparisonType, Func<byte, string> toStringFunc)
+            => new(MismatchDetectedCode,
+                $"Mismatch detected " +
+                $"[ByteFirstValue = {toStringFunc(b1)}, AfterTransformation = {toStringFunc(bTransformed1)}, " +
+                $"ByteValueAtIndex[{index}] = {toStringFunc(b2)}, AfterTransformation = {toStringFunc(bTransformed2)}, " +
+                $"ComparisonType = {comparisonType}]");
+        internal static ComparisonMismatch MismatchDetected(byte b1, byte b2, byte bTransformed1, byte bTransformed2, string t1ExprName, string t2ExprName, ComparisonType comparisonType, Func<byte, string> toStringFunc)
+             => new(MismatchDetectedCode,
+                $"Mismatch detected " +
+                $"{t1ExprName} [Byte] = {toStringFunc(b1)}, After bitwise operation = {toStringFunc(bTransformed1)}, " +
+                $"{t2ExprName} [Byte] = {toStringFunc(b2)}, After bitwise operation = {toStringFunc(bTransformed2)}, " +
+                 $"ComparisonType = {comparisonType}]");
+        internal static ComparisonMismatch MismatchDetected(byte b1, byte b2, byte bTransformed1, byte bTransformed2, int indexInArrays, int arr1Index, int arr2Index, ComparisonType comparisonType, Func<byte, string> toStringFunc)
+        => new(MismatchDetectedCode,
+            $"Mismatch detected " +
+            $"[{typeof(byte).Name}Array[{arr1Index}][{indexInArrays}] = {toStringFunc(b1)}, After transformation = {toStringFunc(bTransformed1)}, " +
+            $"{typeof(byte).Name}Array[{arr2Index}][{indexInArrays}] = {toStringFunc(b2)}, After transformation = {toStringFunc(bTransformed2)}, " +
+            $"ComparisonType = {comparisonType}]",
+            verboseMessage:
+            $"Mismatch detected between array {arr1Index} and array {arr2Index} at element index {indexInArrays}. " +
+            $"Expected both values to be {comparisonType}. " +
+            $"Left value: {toStringFunc(b1)} ({typeof(byte).Name}) | " +
+            $"Right value: {toStringFunc(b2)} ({typeof(byte).Name}). ");
+        internal static ComparisonMismatch MismatchDetected(byte b1, byte b2, byte bTransformed1, byte bTransformed2, int indexInArrays, string intArr1ExprName, string intArr2ExprName, ComparisonType comparisonType, Func<byte, string> toStringFunc)
+        => new(MismatchDetectedCode,
+            $"Mismatch detected " +
+            $"[{intArr1ExprName}[{indexInArrays}] = {toStringFunc(b1)}, After transformation = {toStringFunc(bTransformed1)}, " +
+            $"{intArr2ExprName}[{indexInArrays}] = {toStringFunc(b2)}, After transformation = {toStringFunc(bTransformed2)}, " +
+            $"ComparisonType = {comparisonType}]",
+            verboseMessage:
+            $"Mismatch detected between array {intArr1ExprName} and array {intArr2ExprName} at element index {indexInArrays}. " +
+            $"Expected both values to be {comparisonType}. " +
+            $"Left value: {toStringFunc(b1)} ({typeof(byte).Name}) | " +
+            $"Right value: {toStringFunc(b2)} ({typeof(byte).Name}). ");
+    }
+
     /// <summary>
     /// Object-related comparison mismatches repository
     /// </summary>
@@ -105,7 +149,7 @@ public static class ComparisonMismatches
         internal static ComparisonMismatch MismatchDetectedByReference(object o1, object o2, string o1ExprName, string o2ExprName)
             => new(MismatchDetectedByReferenceCode,
                 $"Mismatch detected by reference [Object1: Name = {o1ExprName} ToString() = {o1}, Object2: Name = {o2ExprName} ToString() = {o2}]");
-        // Is it possible to know if ToString was overridden? If not, then ToString looks more like a type
+        // Is it possible to know if ToString was overridden? If not, then ToString returns information about the object type
 
         public static string MismatchDetectedByNullCode => $"{Namespace}.{nameof(MismatchDetectedByNull)}";
         internal static ComparisonMismatch MismatchDetectedByNull(object? o1, object? o2, int o1Index, int o2Index)
