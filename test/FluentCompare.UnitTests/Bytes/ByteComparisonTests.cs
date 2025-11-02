@@ -272,6 +272,26 @@ public class ByteComparisonTests
     }
 
     [Fact]
+    public void Compare_ShiftLeftAndRight_WithBigShift_ShouldBehaveCorrectly_AsBothOperandsTransformed()
+    {
+        // Arrange
+        var shiftLeft = CreateBuilder().ApplyBitwiseOperation(BitwiseOperation.ShiftLeft, 100);
+        var shiftRight = CreateBuilder().ApplyBitwiseOperation(BitwiseOperation.ShiftRight, 100);
+
+        // Act
+        var leftResult = shiftLeft.Compare((byte)0b_1111_0010, (byte)0b_0000_0100);
+        var rightResult = shiftRight.Compare((byte)0b_0000_0100, (byte)0b_1111_0100);
+
+        // Assert — transformed results are different, so mismatches expected
+        _testOutputHelper.WriteLine(leftResult.ToString());
+        _testOutputHelper.WriteLine(rightResult.ToString());
+        leftResult.AllMatched.ShouldBeFalse();
+        leftResult.Mismatches.Count.ShouldBeGreaterThan(0);
+        rightResult.AllMatched.ShouldBeFalse();
+        rightResult.Mismatches.Count.ShouldBeGreaterThan(0);
+    }
+
+    [Fact]
     public void Compare_ShiftLeft_ShiftingBothEqualInputs_ShouldMatch()
     {
         // Arrange
@@ -300,5 +320,4 @@ public class ByteComparisonTests
         result.AllMatched.ShouldBeTrue();
         result.Mismatches.ShouldBeEmpty();
     }
-
 }
