@@ -103,8 +103,7 @@ public class DoubleComparisonTests
 
         // Act
         var result = ComparisonBuilder.Create()
-            .ForDouble()
-            .WithPrecision(2)
+            .WithDoublePrecision(2)
             .Compare(dbl1, dbl2);
 
         // Assert
@@ -120,8 +119,7 @@ public class DoubleComparisonTests
 
         // Act
         var result = ComparisonBuilder.Create()
-            .ForDouble()
-            .WithPrecision(2)
+            .WithDoublePrecision(2)
             .Compare(dbl1, dbl2);
 
         // Assert
@@ -139,8 +137,7 @@ public class DoubleComparisonTests
 
         // Act
         var result = ComparisonBuilder.Create()
-            .ForDouble()
-            .WithPrecision(3)
+            .WithDoublePrecision(3)
             .Compare(dbl1, dbl2);
 
         // Assert
@@ -156,8 +153,7 @@ public class DoubleComparisonTests
 
         // Act
         var result = ComparisonBuilder.Create()
-            .ForDouble()
-            .WithPrecision(3)
+            .WithDoublePrecision(3)
             .Compare(dbl1, dbl2);
 
         // Assert
@@ -175,8 +171,7 @@ public class DoubleComparisonTests
 
         // Act
         var result = ComparisonBuilder.Create()
-            .ForDouble()
-            .WithPrecision(2)
+            .WithDoublePrecision(2)
             .Compare(array1, array2);
 
         // Assert
@@ -192,8 +187,7 @@ public class DoubleComparisonTests
 
         // Act
         var result = ComparisonBuilder.Create()
-            .ForDouble()
-            .WithPrecision(2)
+            .WithDoublePrecision(2)
             .Compare(array1, array2);
 
         // Assert
@@ -213,8 +207,7 @@ public class DoubleComparisonTests
 
         // Act
         var result = ComparisonBuilder.Create()
-            .ForDouble()
-            .WithPrecision(1e-17)
+            .WithDoublePrecision(1e-17)
             .Compare(array1, array2);
 
         _testOutputHelper.WriteLine(result.ToString());
@@ -235,7 +228,6 @@ public class DoubleComparisonTests
         // Act
         // Note: This tests if single vs array of one, but based on Compare overloads, may need adjustment; assuming array compare
         var result = ComparisonBuilder.Create()
-            .ForDouble()
             .Compare(array1, new[] { dbl1 });
 
         // Assert

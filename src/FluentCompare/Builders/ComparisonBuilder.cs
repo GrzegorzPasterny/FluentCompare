@@ -414,15 +414,6 @@ public class ComparisonBuilder
     }
 
     /// <summary>
-    /// Begins double-specific comparison configuration.
-    /// </summary>
-    /// <returns></returns>
-    public DoubleComparisonBuilder ForDouble()
-    {
-        return new DoubleComparisonBuilder(Configuration);
-    }
-
-    /// <summary>
     /// Configures the comparison using the provided <paramref name="configure"/> action.
     /// </summary>
     /// <param name="configure"></param>
@@ -571,6 +562,26 @@ public class ComparisonBuilder
     public ComparisonBuilder ApplyBitwiseOperation(BitwiseOperationModel bitwiseOperationModel)
     {
         Configuration.ByteConfiguration.BitwiseOperations.Add(bitwiseOperationModel);
+        return this;
+    }
+
+    public ComparisonBuilder WithDoublePrecision(int roundingPrecision)
+    {
+        Configuration.DoubleConfiguration.RoundingPrecision = roundingPrecision;
+        Configuration.DoubleConfiguration.ToleranceMethod = DoubleToleranceMethods.Rounding;
+        return this;
+    }
+
+    public ComparisonBuilder WithDoublePrecision(double epsilonPrecision)
+    {
+        Configuration.DoubleConfiguration.EpsilonPrecision = epsilonPrecision;
+        Configuration.DoubleConfiguration.ToleranceMethod = DoubleToleranceMethods.Epsilon;
+        return this;
+    }
+
+    public ComparisonBuilder UseDoubleToleranceMethod(DoubleToleranceMethods doubleToleranceMethod)
+    {
+        Configuration.DoubleConfiguration.ToleranceMethod = doubleToleranceMethod;
         return this;
     }
 
