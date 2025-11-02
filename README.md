@@ -108,6 +108,29 @@ var result = ComparisonBuilder.Create()
 Console.WriteLine(result.AllMatched); // False, different object references
 ```
 
+## 🧪 Supported Types
+
+`FluentCompare` can compare the following types:
+
+**Primitive types:**
+- `int`, `long`, `short`, `byte`
+- `double` (with configurable precision or epsilon tolerance)
+- `bool`
+- `string`
+- `enum` types
+
+**Arrays:**
+- Arrays of any supported primitive type, e.g. `int[]`, `double[]`, `string[]`
+- Nested arrays are supported, e.g. `int[][]`, `object[][]`
+
+**Complex types:**
+- Classes, structs, and records
+- Objects containing primitive types, arrays, or other complex types
+- Supports recursive property-by-property comparison and reference equality comparison
+
+**Special support for byte arrays:**
+- Bitwise operations like AND, OR, XOR, shifts, etc., can be applied before comparison
+
 ## Comparison with other libraries
 
 ### ⚡ Performance Benchmarks
