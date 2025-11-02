@@ -52,10 +52,20 @@ var result = ComparisonBuilder.Create()
 Console.WriteLine(result.AllMatched); // True
 ```
 
-###  Compare with rounding precision to 4 decimal places
+### 🔢 Compare doubles with precision
 ```csharp
 var result = ComparisonBuilder.Create()
     .WithDoublePrecision(4)
+    .Compare(1.23456, 1.23459);
+
+Console.WriteLine(result.AllMatched); // True
+```
+
+Or using epsilon precision:
+
+```csharp
+var result = ComparisonBuilder.Create()
+    .WithDoublePrecision(1e-5) // epsilon
     .Compare(1.23456, 1.23459);
 
 Console.WriteLine(result.AllMatched); // True
@@ -87,6 +97,40 @@ var result = ComparisonBuilder.Create()
 
 Console.WriteLine(result.AllMatched); // True
 ```
+
+🔧 Example 2: Reference comparison
+
+```csharp
+var result = ComparisonBuilder.Create()
+    .UseReferenceEquality()
+    .Compare(person1, person2);
+
+Console.WriteLine(result.AllMatched); // False, different object references
+```
+
+## Comparison with other libraries
+
+### ⚡ Performance Benchmarks
+
+`FluentCompare` is designed to be efficient, even for complex or nested object comparisons.  
+The following benchmark compares `FluentCompare` against other popular .NET object comparison libraries:
+
+| Method                        | Mean       | Error      | StdDev     | Gen0    | Gen1    | Allocated |
+|-------------------------------|-----------:|-----------:|-----------:|--------:|--------:|----------:|
+| CompareWith_FluentComparison  |   7.603 μs |  2.7598 μs |  1.4434 μs |  2.7161 |       - |  16.76 KB |
+| CompareWith_CompareNetObjects |   6.323 μs |  0.2566 μs |  0.1342 μs |  2.6398 |  0.0992 |   16.2 KB |
+| CompareWith_AnyDiff           | 402.616 μs | 57.0189 μs | 25.3167 μs | 70.3125 | 15.6250 | 434.91 KB |
+
+**Observations:**
+
+- `FluentCompare` is competitive with other fast object comparison libraries.
+- Memory usage remains low even with nested objects.
+- Libraries like `AnyDiff` are significantly slower and allocate much more memory.
+
+### License
+
+⚠️ Note: CompareNetObjects is not entirely free for commercial use.
+FluentCompare is fully open-source under the Apache 2.0 license.
 
 ## Documentation
 
