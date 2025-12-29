@@ -132,6 +132,41 @@ public static class ComparisonMismatches
             $"Right value: {toStringFunc(b2)} ({typeof(byte).Name}). ");
     }
 
+    public static class Bool
+    {
+        public static string Namespace = "FluentCompare.Mismatch.Bool";
+        public static string MismatchDetectedCode => $"{Namespace}.{nameof(MismatchDetected)}";
+        internal static ComparisonMismatch MismatchDetected(bool b1, bool b2, int index)
+            => new(MismatchDetectedCode,
+                $"Mismatch detected [BoolFirstValue = {b1}, BoolValueAtIndex[{index}] = {b2}]");
+        internal static ComparisonMismatch MismatchDetected(bool b1, bool b2, string t1ExprName, string t2ExprName)
+             => new(MismatchDetectedCode,
+                $"Mismatch detected [{t1ExprName} = {b1}, {t2ExprName} = {b2}]");
+        internal static ComparisonMismatch MismatchDetected(
+            bool b1, bool b2, int indexInArrays, int arr1Index, int arr2Index, ComparisonType comparisonType, Func<bool, string> toStringFunc)
+        => new(MismatchDetectedCode,
+            $"Mismatch detected " +
+            $"[{typeof(bool).Name}Array[{arr1Index}][{indexInArrays}] = {toStringFunc(b1)}, " +
+            $"{typeof(bool).Name}Array[{arr2Index}][{indexInArrays}] = {toStringFunc(b2)}, " +
+            $"ComparisonType = {comparisonType}]",
+            verboseMessage:
+            $"Mismatch detected between array {arr1Index} and array {arr2Index} at element index {indexInArrays}. " +
+            $"Expected both values to be {comparisonType}. " +
+            $"Left value: {toStringFunc(b1)} ({typeof(bool).Name}) | " +
+            $"Right value: {toStringFunc(b2)} ({typeof(bool).Name}). ");
+        internal static ComparisonMismatch MismatchDetected(bool b1, bool b2, int indexInArrays, string intArr1ExprName, string intArr2ExprName, ComparisonType comparisonType, Func<bool, string> toStringFunc)
+        => new(MismatchDetectedCode,
+            $"Mismatch detected " +
+            $"[{intArr1ExprName}[{indexInArrays}] = {toStringFunc(b1)}, " +
+            $"{intArr2ExprName}[{indexInArrays}] = {toStringFunc(b2)}, " +
+            $"ComparisonType = {comparisonType}]",
+            verboseMessage:
+            $"Mismatch detected between array {intArr1ExprName} and array {intArr2ExprName} at element index {indexInArrays}. " +
+            $"Expected both values to be {comparisonType}. " +
+            $"Left value: {toStringFunc(b1)} ({typeof(bool).Name}) | " +
+            $"Right value: {toStringFunc(b2)} ({typeof(bool).Name}). ");
+    }
+
     /// <summary>
     /// Object-related comparison mismatches repository
     /// </summary>

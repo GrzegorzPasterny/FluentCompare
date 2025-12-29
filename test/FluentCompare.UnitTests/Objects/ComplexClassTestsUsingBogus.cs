@@ -19,6 +19,7 @@ public class ComplexClassTestsUsingBogus
 
         // Act
         var result = ComparisonBuilder.Create()
+            .SetComparisonDepth(2)
             .Compare(obj1, obj2);
 
         // Assert
