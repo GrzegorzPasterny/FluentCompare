@@ -7,32 +7,45 @@ public class ComparisonBuilder
 {
     private readonly int _currentDepth = 0;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ComparisonBuilder"/> class with default settings.
+    /// </summary>
     internal ComparisonBuilder() { }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ComparisonBuilder"/> class with a specified comparison depth.
+    /// </summary>
+    /// <param name="currentDepth">The current depth for recursive comparison.</param>
     internal ComparisonBuilder(int currentDepth)
     {
         _currentDepth = currentDepth;
     }
+
+    /// <summary>
+    /// Creates a new <see cref="ComparisonBuilder"/> with the specified comparison depth.
+    /// </summary>
+    /// <param name="currentDepth">The current depth for recursive comparison.</param>
+    /// <returns>A new <see cref="ComparisonBuilder"/> instance.</returns>
     internal static ComparisonBuilder Create(int currentDepth) => new ComparisonBuilder(currentDepth);
 
     /// <summary>
-    /// Configuration object for the comparison
+    /// Configuration object for the comparison.
     /// </summary>
     public ComparisonConfiguration Configuration { get; private set; } = new();
 
     /// <summary>
     /// Starting point to begin configuring and performing comparisons.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>A new <see cref="ComparisonBuilder"/> instance.</returns>
     public static ComparisonBuilder Create() => new ComparisonBuilder();
 
     /// <summary>
     /// Builds and executes the comparison for <typeparamref name="T"/>.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="t"></param>
-    /// <returns></returns>
-    /// <exception cref="NotImplementedException"></exception>
+    /// <typeparam name="T">The type of objects to compare.</typeparam>
+    /// <param name="t">The objects to compare.</param>
+    /// <returns>A <see cref="ComparisonResult"/> representing the outcome of the comparison.</returns>
+    /// <exception cref="NotImplementedException">Thrown if the type is not supported.</exception>
     public ComparisonResult Compare<T>(params T[] t)
     {
         if (t is null)
@@ -102,22 +115,23 @@ public class ComparisonBuilder
             return new ObjectComparison(Configuration, _currentDepth)
                 .Compare((object[][])(object)t);
 
-        if (IsPrimitiveEnumOrString(typeof(T)))
+        if (IsPrimitiveOrEnum(typeof(T)))
             throw new NotImplementedException(typeof(T).Name);
 
         return new ObjectComparison(Configuration, _currentDepth)
             .Compare(t);
     }
 
-
     /// <summary>
-    /// Builds and executes the comparison between <paramref name="t1"/> and <paramref name="t2"/>
+    /// Builds and executes the comparison between <paramref name="t1"/> and <paramref name="t2"/>.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="t1">First object for comparison</param>
-    /// <param name="t2">Second object for comparison</param>
-    /// <returns></returns>
-    /// <exception cref="NotImplementedException"></exception>
+    /// <typeparam name="T">The type of objects to compare.</typeparam>
+    /// <param name="t1">First object for comparison.</param>
+    /// <param name="t2">Second object for comparison.</param>
+    /// <param name="t1Expr">Caller argument expression for t1.</param>
+    /// <param name="t2Expr">Caller argument expression for t2.</param>
+    /// <returns>A <see cref="ComparisonResult"/> representing the outcome of the comparison.</returns>
+    /// <exception cref="NotImplementedException">Thrown if the type is not supported.</exception>
     public ComparisonResult Compare<T>(T t1, T t2,
         [CallerArgumentExpression(nameof(t1))] string? t1Expr = null,
         [CallerArgumentExpression(nameof(t2))] string? t2Expr = null)
@@ -285,7 +299,7 @@ public class ComparisonBuilder
             return new ObjectComparison(Configuration, _currentDepth, comparisonResult)
                 .Compare(oArr1, oArr2, t1ExprName, t2ExprName);
         }
-        if (IsPrimitiveEnumOrString(typeof(T)))
+        if (IsPrimitiveOrEnum(typeof(T)))
         {
             throw new NotImplementedException(typeof(T).Name);
         }
@@ -299,6 +313,14 @@ public class ComparisonBuilder
         }
     }
 
+    /// <summary>
+    /// Builds and executes the comparison between two objects.
+    /// </summary>
+    /// <param name="o1">First object for comparison.</param>
+    /// <param name="o2">Second object for comparison.</param>
+    /// <param name="o1Expr">Caller argument expression for o1.</param>
+    /// <param name="o2Expr">Caller argument expression for o2.</param>
+    /// <returns>A <see cref="ComparisonResult"/> representing the outcome of the comparison.</returns>
     public ComparisonResult Compare(object o1, object o2,
         [CallerArgumentExpression(nameof(o1))] string? o1Expr = null,
         [CallerArgumentExpression(nameof(o2))] string? o2Expr = null)
@@ -370,7 +392,7 @@ public class ComparisonBuilder
                 .Compare((object[])o1, (object[])o2, t1ExprName, t2ExprName);
 
 
-        if (IsPrimitiveEnumOrString(type))
+        if (IsPrimitiveOrEnum(type))
             throw new NotImplementedException(type.Name);
 
 
@@ -378,6 +400,14 @@ public class ComparisonBuilder
             .Compare(o1, o2, t1ExprName, t2ExprName);
     }
 
+    /// <summary>
+    /// Builds and executes the comparison between two object arrays.
+    /// </summary>
+    /// <param name="o1Arr">First object array for comparison.</param>
+    /// <param name="o2Arr">Second object array for comparison.</param>
+    /// <param name="o1ArrExpr">Caller argument expression for o1Arr.</param>
+    /// <param name="o2ArrExpr">Caller argument expression for o2Arr.</param>
+    /// <returns>A <see cref="ComparisonResult"/> representing the outcome of the comparison.</returns>
     public ComparisonResult Compare(object[] o1Arr, object[] o2Arr,
         [CallerArgumentExpression(nameof(o1Arr))] string? o1ArrExpr = null,
         [CallerArgumentExpression(nameof(o2Arr))] string? o2ArrExpr = null)
@@ -403,10 +433,10 @@ public class ComparisonBuilder
     }
 
     /// <summary>
-    /// Sets the <paramref name="configuration"/> as a comparison configuration objects
+    /// Sets the <paramref name="configuration"/> as a comparison configuration object.
     /// </summary>
-    /// <param name="configuration"></param>
-    /// <returns></returns>
+    /// <param name="configuration">The configuration to use.</param>
+    /// <returns>The current <see cref="ComparisonBuilder"/> instance.</returns>
     public ComparisonBuilder UseConfiguration(ComparisonConfiguration configuration)
     {
         Configuration = configuration;
@@ -416,20 +446,19 @@ public class ComparisonBuilder
     /// <summary>
     /// Configures the comparison using the provided <paramref name="configure"/> action.
     /// </summary>
-    /// <param name="configure"></param>
-    /// <returns></returns>
+    /// <param name="configure">The action to configure the comparison.</param>
+    /// <returns>The current <see cref="ComparisonBuilder"/> instance.</returns>
     public ComparisonBuilder Configure(Action<ComparisonConfiguration> configure)
     {
         configure(Configuration);
         return this;
     }
 
-    // TODO: All of the configuration methods can be in a partial class
     /// <summary>
     /// Sets the <paramref name="comparisonType"/>. Default is <see cref="ComparisonType.EqualTo"/>.
     /// </summary>
-    /// <param name="comparisonType"></param>
-    /// <returns></returns>
+    /// <param name="comparisonType">The comparison type to use.</param>
+    /// <returns>The current <see cref="ComparisonBuilder"/> instance.</returns>
     public ComparisonBuilder UseComparisonType(ComparisonType comparisonType)
     {
         Configuration.ComparisonType = comparisonType;
@@ -439,7 +468,7 @@ public class ComparisonBuilder
     /// <summary>
     /// Checks if objects are equivalent by comparing their properties. Default setting.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>The current <see cref="ComparisonBuilder"/> instance.</returns>
     public ComparisonBuilder UsePropertyEquality()
     {
         Configuration.ComplexTypesComparisonMode = ComplexTypesComparisonMode.PropertyEquality;
@@ -449,7 +478,7 @@ public class ComparisonBuilder
     /// <summary>
     /// Checks if objects are equivalent by comparing their references.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>The current <see cref="ComparisonBuilder"/> instance.</returns>
     public ComparisonBuilder UseReferenceEquality()
     {
         Configuration.ComplexTypesComparisonMode = ComplexTypesComparisonMode.ReferenceEquality;
@@ -459,8 +488,8 @@ public class ComparisonBuilder
     /// <summary>
     /// Sets the string comparison type. Default is <see cref="System.StringComparison.Ordinal"/>.
     /// </summary>
-    /// <param name="stringComparison"></param>
-    /// <returns></returns>
+    /// <param name="stringComparison">The string comparison type to use.</param>
+    /// <returns>The current <see cref="ComparisonBuilder"/> instance.</returns>
     public ComparisonBuilder UseStringComparisonType(System.StringComparison stringComparison)
     {
         Configuration.StringConfiguration.StringComparisonType = stringComparison;
@@ -471,7 +500,7 @@ public class ComparisonBuilder
     /// Sets the maximum depth for recursive comparison of complex types. Default is 5.
     /// </summary>
     /// <param name="depth">New comparison depth.</param>
-    /// <returns></returns>
+    /// <returns>The current <see cref="ComparisonBuilder"/> instance.</returns>
     public ComparisonBuilder SetComparisonDepth(int depth)
     {
         Configuration.MaximumComparisonDepth = depth;
@@ -481,7 +510,7 @@ public class ComparisonBuilder
     /// <summary>
     /// Allows comparing nulls. If both values are null, they are considered equal. Default behavior.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>The current <see cref="ComparisonBuilder"/> instance.</returns>
     public ComparisonBuilder AllowNullComparison()
     {
         Configuration.AllowNullComparison = true;
@@ -491,7 +520,7 @@ public class ComparisonBuilder
     /// <summary>
     /// Disallows comparing nulls. Comparing nulls will result in a mismatch.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>The current <see cref="ComparisonBuilder"/> instance.</returns>
     public ComparisonBuilder DisallowNullComparison()
     {
         Configuration.AllowNullComparison = false;
@@ -501,7 +530,7 @@ public class ComparisonBuilder
     /// <summary>
     /// Allows nulls in the arguments to be compared. Default behavior.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>The current <see cref="ComparisonBuilder"/> instance.</returns>
     public ComparisonBuilder AllowNullsInArguments()
     {
         Configuration.AllowNullsInArguments = true;
@@ -511,7 +540,7 @@ public class ComparisonBuilder
     /// <summary>
     /// Disallows nulls in the arguments to be compared. Passing nulls will result in an error.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>The current <see cref="ComparisonBuilder"/> instance.</returns>
     public ComparisonBuilder DisallowNullsInArguments()
     {
         Configuration.AllowNullsInArguments = false;
@@ -519,12 +548,32 @@ public class ComparisonBuilder
     }
 
     /// <summary>
+    /// Configures the comparison to finish on the first mismatch found.
+    /// </summary>
+    /// <returns>The current <see cref="ComparisonBuilder"/> instance.</returns>
+    public ComparisonBuilder FinishComparisonOnFirstMismatch()
+    {
+        Configuration.FinishComparisonOnFirstMismatch = true;
+        return this;
+    }
+
+    /// <summary>
+    /// Configures the comparison to collect all mismatches before finishing.
+    /// </summary>
+    /// <returns>The current <see cref="ComparisonBuilder"/> instance.</returns>
+    public ComparisonBuilder FinishComparisonCollectingAllMismatches()
+    {
+        Configuration.FinishComparisonOnFirstMismatch = false;
+        return this;
+    }
+
+    /// <summary>
     /// Applies a bitwise operation to byte comparisons.
     /// </summary>
-    /// <param name="bitwiseOperation"></param>
-    /// <param name="mask"></param>
-    /// <param name="comparisonObjectIndexesToExclude"></param>
-    /// <returns></returns>
+    /// <param name="bitwiseOperation">The bitwise operation to apply.</param>
+    /// <param name="mask">The mask value for the operation.</param>
+    /// <param name="comparisonObjectIndexesToExclude">Indexes to exclude from the operation.</param>
+    /// <returns>The current <see cref="ComparisonBuilder"/> instance.</returns>
     public ComparisonBuilder ApplyBitwiseOperation(BitwiseOperation bitwiseOperation, byte mask, params int[] comparisonObjectIndexesToExclude)
     {
         Configuration.ByteConfiguration.BitwiseOperations.Add(new BitwiseOperationModel
@@ -539,10 +588,10 @@ public class ComparisonBuilder
     /// <summary>
     /// Applies a bitwise operation to byte comparisons.
     /// </summary>
-    /// <param name="bitwiseOperation"></param>
-    /// <param name="mask"></param>
-    /// <param name="comparisonObjectIndexToExclude"></param>
-    /// <returns></returns>
+    /// <param name="bitwiseOperation">The bitwise operation to apply.</param>
+    /// <param name="mask">The mask value for the operation.</param>
+    /// <param name="comparisonObjectIndexToExclude">Index to exclude from the operation.</param>
+    /// <returns>The current <see cref="ComparisonBuilder"/> instance.</returns>
     public ComparisonBuilder ApplyBitwiseOperation(BitwiseOperation bitwiseOperation, byte mask, int comparisonObjectIndexToExclude)
     {
         Configuration.ByteConfiguration.BitwiseOperations.Add(new BitwiseOperationModel
@@ -557,14 +606,19 @@ public class ComparisonBuilder
     /// <summary>
     /// Applies a bitwise operation to byte comparisons.
     /// </summary>
-    /// <param name="bitwiseOperationModel"></param>
-    /// <returns></returns>
+    /// <param name="bitwiseOperationModel">The bitwise operation model to apply.</param>
+    /// <returns>The current <see cref="ComparisonBuilder"/> instance.</returns>
     public ComparisonBuilder ApplyBitwiseOperation(BitwiseOperationModel bitwiseOperationModel)
     {
         Configuration.ByteConfiguration.BitwiseOperations.Add(bitwiseOperationModel);
         return this;
     }
 
+    /// <summary>
+    /// Sets the double comparison to use rounding precision.
+    /// </summary>
+    /// <param name="roundingPrecision">The number of decimal places to round to.</param>
+    /// <returns>The current <see cref="ComparisonBuilder"/> instance.</returns>
     public ComparisonBuilder WithDoublePrecision(int roundingPrecision)
     {
         Configuration.DoubleConfiguration.RoundingPrecision = roundingPrecision;
@@ -572,6 +626,11 @@ public class ComparisonBuilder
         return this;
     }
 
+    /// <summary>
+    /// Sets the double comparison to use epsilon precision.
+    /// </summary>
+    /// <param name="epsilonPrecision">The epsilon value for comparison.</param>
+    /// <returns>The current <see cref="ComparisonBuilder"/> instance.</returns>
     public ComparisonBuilder WithDoublePrecision(double epsilonPrecision)
     {
         Configuration.DoubleConfiguration.EpsilonPrecision = epsilonPrecision;
@@ -579,12 +638,25 @@ public class ComparisonBuilder
         return this;
     }
 
+    /// <summary>
+    /// Sets the double tolerance method for double comparisons.
+    /// </summary>
+    /// <param name="doubleToleranceMethod">The tolerance method to use.</param>
+    /// <returns>The current <see cref="ComparisonBuilder"/> instance.</returns>
     public ComparisonBuilder UseDoubleToleranceMethod(DoubleToleranceMethods doubleToleranceMethod)
     {
         Configuration.DoubleConfiguration.ToleranceMethod = doubleToleranceMethod;
         return this;
     }
 
+    /// <summary>
+    /// Handles nullability checks for object comparisons.
+    /// </summary>
+    /// <param name="o1">First object.</param>
+    /// <param name="o2">Second object.</param>
+    /// <param name="t1Expr">Caller argument expression for o1.</param>
+    /// <param name="t2Expr">Caller argument expression for o2.</param>
+    /// <returns>A <see cref="ComparisonResult"/> indicating nullability issues.</returns>
     private ComparisonResult HandleNullability(object o1, object o2, string? t1Expr, string? t2Expr)
     {
         var result = new ComparisonResult();
@@ -640,6 +712,15 @@ public class ComparisonBuilder
         return result;
     }
 
+    /// <summary>
+    /// Handles nullability checks for generic type comparisons.
+    /// </summary>
+    /// <typeparam name="T">The type of objects to compare.</typeparam>
+    /// <param name="t1">First object.</param>
+    /// <param name="t2">Second object.</param>
+    /// <param name="t1Expr">Caller argument expression for t1.</param>
+    /// <param name="t2Expr">Caller argument expression for t2.</param>
+    /// <returns>A <see cref="ComparisonResult"/> indicating nullability issues.</returns>
     private ComparisonResult HandleNullability<T>(T t1, T t2, string? t1Expr, string? t2Expr)
     {
         ComparisonResult result = new();
@@ -696,6 +777,10 @@ public class ComparisonBuilder
         return result;
     }
 
-    private static bool IsPrimitiveEnumOrString(Type type1) => type1.IsPrimitive || type1.IsEnum || type1 == typeof(string);
-
+    /// <summary>
+    /// Determines if the specified type is a primitive or enum.
+    /// </summary>
+    /// <param name="type1">The type to check.</param>
+    /// <returns><c>true</c> if the type is primitive or enum; otherwise, <c>false</c>.</returns>
+    private static bool IsPrimitiveOrEnum(Type type1) => type1.IsPrimitive || type1.IsEnum;
 }

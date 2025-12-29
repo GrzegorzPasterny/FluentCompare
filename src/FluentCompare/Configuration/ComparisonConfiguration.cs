@@ -34,6 +34,12 @@ public class ComparisonConfiguration
     public int MaximumComparisonDepth { get; set; } = 5;
 
     /// <summary>
+    /// If true, the comparison will stop and return on the first mismatch found. 
+    /// If false, the comparison will continue and collect all mismatches. Defaults to false.
+    /// </summary>
+    public bool FinishComparisonOnFirstMismatch { get; set; } = false;
+
+    /// <summary>
     /// Configuration for comparing double values. 
     /// (Primitive double type, or any double type which is a property of a complex type)
     /// </summary>
