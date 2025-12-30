@@ -3,6 +3,7 @@ using FluentCompare.Tests.Shared.Models;
 using Xunit.Abstractions;
 
 namespace FluentCompare.UnitTests.Objects;
+
 public class ClassArrayComparisonTests
 {
     private readonly ITestOutputHelper _testOutputHelper;
@@ -69,7 +70,7 @@ public class ClassArrayComparisonTests
                 new ClassWithIntProperty(1),
                 new ClassWithIntProperty(2)
             },
-            null,
+            null!,
             false,
             true,
             ComparisonMismatches.NullPassedAsArgumentCode

@@ -122,7 +122,7 @@ public class BoolComparisonTests
         var builder = CreateBuilder();
 
         // Act
-        var result = builder.Compare(new[] { true, false, true }, new[] { true, false, true });
+        var result = builder.Compare([true, false, true], [true, false, true]);
 
         // Assert
         _testOutputHelper.WriteLine(result.ToString());
@@ -136,7 +136,7 @@ public class BoolComparisonTests
         var builder = CreateBuilder();
 
         // Act
-        var result = builder.Compare(new[] { true, false }, new[] { true, false, true });
+        var result = builder.Compare([true, false], [true, false, true]);
 
         // Assert
         _testOutputHelper.WriteLine(result.ToString());
@@ -151,7 +151,7 @@ public class BoolComparisonTests
         var builder = CreateBuilder();
 
         // Act
-        var result = builder.Compare(new[] { true, false, true }, new[] { true, true, true });
+        var result = builder.Compare([true, false, true], [true, true, true]);
 
         // Assert
         _testOutputHelper.WriteLine(result.ToString());

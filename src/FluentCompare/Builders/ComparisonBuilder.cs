@@ -303,13 +303,13 @@ public class ComparisonBuilder
         {
             throw new NotImplementedException(typeof(T).Name);
         }
-        else // objects and non-primitive types
+        else
         {
             string t1ExprName = t1Expr ?? "ObjectOne";
             string t2ExprName = t2Expr ?? "ObjectTwo";
 
             return new ObjectComparison(Configuration, _currentDepth, comparisonResult)
-                .Compare(t1, t2, t1ExprName, t2ExprName);
+                .Compare(t1!, t2!, t1ExprName, t2ExprName);
         }
     }
 

@@ -1,6 +1,7 @@
 using Xunit.Abstractions;
 
 namespace FluentCompare.UnitTests.Bytes;
+
 public class ByteComparisonTests
 {
     private readonly ITestOutputHelper _testOutputHelper;
@@ -23,15 +24,12 @@ public class ByteComparisonTests
         var builder = CreateBuilder();
 
         // Act
-        var result = builder.Compare(null as byte[]);
+        var result = builder.Compare((byte[]?)null!);
 
         // Assert
         _testOutputHelper.WriteLine(result.ToString());
         result.Errors.Count.ShouldBe(1);
-        result.Mismatches.ShouldBeEmpty();
-        result.Warnings.ShouldBeEmpty();
-        result.AllMatched.ShouldBeFalse();
-        result.WasSuccessful.ShouldBeFalse();
+        result.Errors[0].Code.ShouldBe(ComparisonErrors.NullPassedAsArgumentCode);
     }
 
     [Fact]
@@ -46,9 +44,7 @@ public class ByteComparisonTests
         // Assert
         _testOutputHelper.WriteLine(result.ToString());
         result.Errors.Count.ShouldBe(1);
-        result.Mismatches.ShouldBeEmpty();
-        result.AllMatched.ShouldBeFalse();
-        result.WasSuccessful.ShouldBeFalse();
+        result.Errors[0].Code.ShouldBe(ComparisonErrors.NotEnoughObjectsToCompareCode);
     }
 
     [Fact]

@@ -175,7 +175,7 @@ public static class ComparisonMismatches
         public static string Namespace = "FluentCompare.Mismatch.Object";
 
         public static string MismatchDetectedByReferenceCode => $"{Namespace}.{nameof(MismatchDetectedByReference)}";
-        internal static ComparisonMismatch MismatchDetectedByReference(object o1, object o2, int o1Index, int o2Index)
+        internal static ComparisonMismatch MismatchDetectedByReference(object? o1, object? o2, int o1Index, int o2Index)
             => new(MismatchDetectedByReferenceCode,
                 $"Mismatch detected by reference [Object1Index = {o1Index}, Object2Index = {o2Index}, Object1 = {o1}, Object2 = {o2}]");
         internal static ComparisonMismatch MismatchDetectedByReference(object o1, object o2, int indexInArray)

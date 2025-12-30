@@ -22,17 +22,23 @@ internal class ObjectComparison : ObjectComparisonBase
 
         _localDepth++;
 
-        if (objects == null || objects.Length < 2)
+        if (objects == null)
         {
             result.AddError(ComparisonErrors.NullPassedAsArgument(typeof(object[])));
             return result;
         }
 
-        object firstObj = objects[0];
+        if (objects.Length < 2)
+        {
+            result.AddError(ComparisonErrors.NotEnoughObjectsToCompare(objects.Length, typeof(object[])));
+            return result;
+        }
+
+        object? firstObj = objects[0];
 
         for (int i = 1; i < objects.Length; i++)
         {
-            object currentObj = objects[i];
+            object? currentObj = objects[i];
 
             // Use the configured comparison mode for complex types
             switch (_comparisonConfiguration.ComplexTypesComparisonMode)
@@ -80,7 +86,7 @@ internal class ObjectComparison : ObjectComparisonBase
         return result;
     }
 
-    public override ComparisonResult Compare(object t1, object t2, string t1ExprName, string t2ExprName)
+    public override ComparisonResult Compare(object? t1, object? t2, string t1ExprName, string t2ExprName)
     {
         var result = new ComparisonResult();
 
@@ -303,7 +309,7 @@ internal class ObjectComparison : ObjectComparisonBase
         }
     }
 
-    private void CompareObjectsByReference(object? firstObj, object currentObj, int v, int i, ComparisonResult result)
+    private void CompareObjectsByReference(object? firstObj, object? currentObj, int v, int i, ComparisonResult result)
     {
         if (!ReferenceEquals(firstObj, currentObj))
         {

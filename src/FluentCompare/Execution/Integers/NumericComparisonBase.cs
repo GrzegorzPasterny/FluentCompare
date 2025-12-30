@@ -7,7 +7,7 @@ internal abstract class NumericComparisonBase<T> : ComparisonBase<T> where T : s
         : base(comparisonConfiguration, comparisonResult)
     { }
 
-    internal Func<T, string> _toStringFunc = i => i.ToString();
+    internal new Func<T, string> _toStringFunc = i => i.ToString()!;
 
     internal bool Compare(T valueA, T valueB, ComparisonType comparisonType)
     {
