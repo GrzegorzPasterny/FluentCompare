@@ -37,7 +37,7 @@ internal class StringComparison : StringComparisonBase, IExecuteComparison<strin
 
         if (strings.Length < 2)
         {
-            result.AddError(ComparisonErrors.NotEnoughObjectToCompare(strings.Length, typeof(string)));
+            result.AddError(ComparisonErrors.NotEnoughObjectsToCompare(strings.Length, typeof(string)));
             return result;
         }
 
@@ -80,7 +80,7 @@ internal class StringComparison : StringComparisonBase, IExecuteComparison<strin
         }
         if (strings.Length < 2)
         {
-            result.AddError(ComparisonErrors.NotEnoughObjectToCompare(strings.Length, typeof(string[])));
+            result.AddError(ComparisonErrors.NotEnoughObjectsToCompare(strings.Length, typeof(string[])));
             return result;
         }
         var first = strings[0];

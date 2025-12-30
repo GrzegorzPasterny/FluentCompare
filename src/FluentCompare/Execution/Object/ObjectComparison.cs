@@ -145,7 +145,7 @@ internal class ObjectComparison : ObjectComparisonBase
 
         if (objects.Length < 2)
         {
-            result.AddError(ComparisonErrors.NotEnoughObjectToCompare(objects.Length, typeof(object[])));
+            result.AddError(ComparisonErrors.NotEnoughObjectsToCompare(objects.Length, typeof(object[])));
             return result;
         }
 

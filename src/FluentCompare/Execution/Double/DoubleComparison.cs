@@ -17,7 +17,7 @@ internal class DoubleComparison : DoubleComparisonBase
 
         if (doubles.Length < 2)
         {
-            result.AddError(ComparisonErrors.NotEnoughObjectToCompare(doubles.Length, typeof(double)));
+            result.AddError(ComparisonErrors.NotEnoughObjectsToCompare(doubles.Length, typeof(double)));
             return result;
         }
 
@@ -88,7 +88,7 @@ internal class DoubleComparison : DoubleComparisonBase
 
         if (doubleArrays.Length < 2)
         {
-            result.AddError(ComparisonErrors.NotEnoughObjectToCompare(doubleArrays.Length, typeof(double[])));
+            result.AddError(ComparisonErrors.NotEnoughObjectsToCompare(doubleArrays.Length, typeof(double[])));
             return result;
         }
 

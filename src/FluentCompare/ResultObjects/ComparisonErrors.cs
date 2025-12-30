@@ -6,9 +6,12 @@ public static class ComparisonErrors
 {
     public static string Namespace = "FluentCompare.Error";
 
-    public static string NotEnoughObjectToCompareCode => $"{Namespace}.{nameof(NotEnoughObjectToCompare)}";
-    internal static ComparisonError NotEnoughObjectToCompare(int length, Type type)
-        => new(NotEnoughObjectToCompareCode,
+    /// <summary>
+    /// Code for error indicating that not enough objects were provided for comparison
+    /// </summary>
+    public static string NotEnoughObjectsToCompareCode => $"{Namespace}.{nameof(NotEnoughObjectsToCompare)}";
+    internal static ComparisonError NotEnoughObjectsToCompare(int length, Type type)
+        => new(NotEnoughObjectsToCompareCode,
             $"At least two values are required for comparison [Type = {type.Name}");
 
     public static string NullPassedAsArgumentCode => $"{Namespace}.{nameof(NullPassedAsArgument)}";

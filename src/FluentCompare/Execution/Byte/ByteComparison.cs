@@ -19,7 +19,7 @@ internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>
 
         if (bytes.Length < 2)
         {
-            result.AddError(ComparisonErrors.NotEnoughObjectToCompare(bytes.Length, typeof(byte)));
+            result.AddError(ComparisonErrors.NotEnoughObjectsToCompare(bytes.Length, typeof(byte)));
             return result;
         }
 

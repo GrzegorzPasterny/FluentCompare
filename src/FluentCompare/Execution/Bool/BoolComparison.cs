@@ -17,7 +17,7 @@ internal class BoolComparison : BoolComparisonBase, IExecuteComparison<bool>
 
         if (bools.Length < 2)
         {
-            result.AddError(ComparisonErrors.NotEnoughObjectToCompare(bools.Length, typeof(bool)));
+            result.AddError(ComparisonErrors.NotEnoughObjectsToCompare(bools.Length, typeof(bool)));
             return result;
         }
 
@@ -61,7 +61,7 @@ internal class BoolComparison : BoolComparisonBase, IExecuteComparison<bool>
 
         if (bools.Length < 2)
         {
-            result.AddError(ComparisonErrors.NotEnoughObjectToCompare(bools.Length, typeof(bool)));
+            result.AddError(ComparisonErrors.NotEnoughObjectsToCompare(bools.Length, typeof(bool)));
             return result;
         }
 

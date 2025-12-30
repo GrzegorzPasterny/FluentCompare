@@ -28,7 +28,7 @@ internal class NumericComparison<T> : NumericComparisonBase<T>, IExecuteComparis
 
         if (ints.Length < 2)
         {
-            result.AddError(ComparisonErrors.NotEnoughObjectToCompare(ints.Length, typeof(int)));
+            result.AddError(ComparisonErrors.NotEnoughObjectsToCompare(ints.Length, typeof(int)));
             return result;
         }
 
