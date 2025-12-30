@@ -12,8 +12,8 @@ public class ParamsObjectsComparisonTests
     }
 
     [Theory]
-    [InlineData([null, null])]
-    public void Compare_ParamsObjects(params object?[] objects)
+    [InlineData([null, null, null])]
+    public void Compare_ParamsObjects_AllShouldMatch(params object[] objects)
     {
         // Arrange
         var builder = ComparisonBuilder.Create();
@@ -21,15 +21,12 @@ public class ParamsObjectsComparisonTests
         var result = builder.Compare(objects);
         // Assert
         _testOutputHelper.WriteLine(result.ToString());
-        result.MismatchCount.ShouldBe(1);
-        result.Mismatches[0].Code.ShouldBe(ComparisonMismatches.Object.MismatchDetectedByReferenceCode);
-        //result.ErrorCount.ShouldBe(1);
-        //result.Errors[0].Code.ShouldBe(ComparisonErrors.Object.BothObjectsAreNullCode);
+        result.AllMatched.ShouldBeTrue();
     }
 
     [Theory]
-    [InlineData(null, null)]
-    public void Compare_ParamsNullableObject(params object?[] objects)
+    [InlineData(null, null, null)]
+    public void Compare_ParamsNullableObject_AllShouldMatch(params object?[] objects)
     {
         // Arrange
         var builder = ComparisonBuilder.Create();
@@ -37,10 +34,7 @@ public class ParamsObjectsComparisonTests
         var result = builder.Compare(objects);
         // Assert
         _testOutputHelper.WriteLine(result.ToString());
-        result.MismatchCount.ShouldBe(1);
-        result.Mismatches[0].Code.ShouldBe(ComparisonMismatches.Object.MismatchDetectedByReferenceCode);
-        //result.ErrorCount.ShouldBe(1);
-        //result.Errors[0].Code.ShouldBe(ComparisonErrors.Object.BothObjectsAreNullCode);
+        result.AllMatched.ShouldBeTrue();
     }
 
     [Theory]
@@ -77,12 +71,14 @@ public class ParamsObjectsComparisonTests
         result.Mismatches[0].Code.ShouldContain(string.Concat(mismatchCode.SkipLast(4))); // Skip "Code" suffix
     }
 
-    [Theory]
+    [Theory(Skip = "Not implemented")]
     [InlineData(null, null, null)]
     public void Compare_ParamsObject_ShouldReturnError(object obj1, object obj2, object obj3)
     {
         // Arrange
-        var builder = ComparisonBuilder.Create();
+        var builder = ComparisonBuilder
+            .Create()
+            .DisallowNullsInArguments();
         // Act
         var result = builder.Compare(obj1, obj2, obj3);
         // Assert

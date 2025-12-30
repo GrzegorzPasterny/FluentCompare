@@ -48,13 +48,15 @@ internal class ObjectComparison : ObjectComparisonBase
                     break;
 
                 case ComplexTypesComparisonMode.PropertyEquality:
-                    if (ReferenceEquals(firstObj, currentObj))
-                    {
-                        return result;
-                    }
                     if (firstObj == null && currentObj == null)
                     {
                         result.AddWarning(ComparisonErrors.Object.BothObjectsAreNull(firstObj, currentObj, 0, i));
+                        continue;
+                    }
+
+                    if (ReferenceEquals(firstObj, currentObj))
+                    {
+                        continue;
                     }
 
                     if (firstObj == null || currentObj == null)

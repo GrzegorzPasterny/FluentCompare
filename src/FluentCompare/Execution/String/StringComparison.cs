@@ -69,7 +69,6 @@ internal class StringComparison : StringComparisonBase, IExecuteComparison<strin
         return result;
     }
 
-
     public override ComparisonResult Compare(string[][] strings)
     {
         var result = new ComparisonResult();
