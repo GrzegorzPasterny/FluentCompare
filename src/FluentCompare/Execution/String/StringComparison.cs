@@ -25,7 +25,7 @@ internal class StringComparison : StringComparisonBase, IExecuteComparison<strin
         return result;
     }
 
-    public override ComparisonResult Compare(params string[] strings)
+    public override ComparisonResult Compare(string[] strings)
     {
         ComparisonResult result = new();
 
@@ -70,7 +70,7 @@ internal class StringComparison : StringComparisonBase, IExecuteComparison<strin
     }
 
 
-    public override ComparisonResult Compare(params string[][] strings)
+    public override ComparisonResult Compare(string[][] strings)
     {
         var result = new ComparisonResult();
         if (strings == null)

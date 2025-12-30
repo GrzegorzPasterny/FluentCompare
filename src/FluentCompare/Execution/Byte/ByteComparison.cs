@@ -7,7 +7,7 @@ internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>
         : base(configuration, comparisonResult)
     { }
 
-    public override ComparisonResult Compare(params byte[] bytes)
+    public override ComparisonResult Compare(byte[] bytes)
     {
         var result = new ComparisonResult();
 
@@ -71,7 +71,7 @@ internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>
         return result;
     }
 
-    public override ComparisonResult Compare(params byte[][] bytes)
+    public override ComparisonResult Compare(byte[][] bytes)
     {
         var result = new ComparisonResult();
 

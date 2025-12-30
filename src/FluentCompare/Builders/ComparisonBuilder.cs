@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 /// <summary>
 /// Builder object to configure and perform comparisons.
 /// </summary>
-public class ComparisonBuilder
+public class ComparisonBuilder : IComparisonBuilder
 {
     private readonly int _currentDepth = 0;
 
@@ -49,6 +49,12 @@ public class ComparisonBuilder
     public ComparisonResult Compare<T>(params T[] t)
     {
         if (t is null)
+        {
+            ComparisonResult result = new();
+            result.AddError(ComparisonErrors.NullPassedAsArgument(typeof(T)));
+            return result;
+        }
+        if (typeof(T).Name == typeof(Nullable<>).Name)
         {
             ComparisonResult result = new();
             result.AddError(ComparisonErrors.NullPassedAsArgument(typeof(T)));

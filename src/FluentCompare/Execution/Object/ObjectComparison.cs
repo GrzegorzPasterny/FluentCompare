@@ -235,6 +235,12 @@ internal class ObjectComparison : ObjectComparisonBase
                         break;
                     }
 
+                    if (IsPrimitiveEnumOrString(type1))
+                    {
+                        CompareObjectsWhenPrimitive(obj1, obj2, t1ExprName, t2ExprName, result, type1);
+                        break;
+                    }
+
                     CompareObjectsPropertiesRecursively(obj1, obj2, result, type1);
                     break;
             }

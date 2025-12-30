@@ -13,8 +13,8 @@ internal abstract class ComparisonBase<T> : IExecuteComparison<T>
     // boxing overhead should be negligible
     internal Func<T, string> _toStringFunc = i => ((object?)i)?.ToString() ?? "null";
 
-    public abstract ComparisonResult Compare(params T[] objects);
+    public abstract ComparisonResult Compare(T[] objects);
     public abstract ComparisonResult Compare(T t1, T t2, string t1ExprName, string t2ExprName);
-    public abstract ComparisonResult Compare(params T[][] objects);
+    public abstract ComparisonResult Compare(T[][] objects);
     public abstract ComparisonResult Compare(T[] t1, T[] t2, string t1ExprName, string t2ExprName);
 }

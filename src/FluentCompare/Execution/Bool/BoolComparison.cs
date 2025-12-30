@@ -5,7 +5,7 @@ internal class BoolComparison : BoolComparisonBase, IExecuteComparison<bool>
         : base(comparisonConfiguration, comparisonResult)
     { }
 
-    public override ComparisonResult Compare(params bool[] bools)
+    public override ComparisonResult Compare(bool[] bools)
     {
         var result = new ComparisonResult();
 
@@ -35,7 +35,6 @@ internal class BoolComparison : BoolComparisonBase, IExecuteComparison<bool>
         return result;
     }
 
-
     public override ComparisonResult Compare(bool b1, bool b2, string t1ExprName, string t2ExprName)
     {
         var result = new ComparisonResult();
@@ -49,7 +48,7 @@ internal class BoolComparison : BoolComparisonBase, IExecuteComparison<bool>
         return result;
     }
 
-    public override ComparisonResult Compare(params bool[][] bools)
+    public override ComparisonResult Compare(bool[][] bools)
     {
         var result = new ComparisonResult();
 
