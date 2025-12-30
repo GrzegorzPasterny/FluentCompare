@@ -119,7 +119,7 @@ public class ComparisonBuilder
             throw new NotImplementedException(typeof(T).Name);
 
         return new ObjectComparison(Configuration, _currentDepth)
-            .Compare(t);
+            .Compare((object[])(object)t);
     }
 
     /// <summary>
@@ -482,6 +482,17 @@ public class ComparisonBuilder
     public ComparisonBuilder UseReferenceEquality()
     {
         Configuration.ComplexTypesComparisonMode = ComplexTypesComparisonMode.ReferenceEquality;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the comparison mode for complex types (such as classes and structs).
+    /// </summary>
+    /// <param name="complexTypesComparisonMode">The mode to use when comparing complex types.</param>
+    /// <returns>The current <see cref="ComparisonBuilder"/> instance.</returns>
+    public ComparisonBuilder UseComplexTypeComparisonMode(ComplexTypesComparisonMode complexTypesComparisonMode)
+    {
+        Configuration.ComplexTypesComparisonMode = complexTypesComparisonMode;
         return this;
     }
 

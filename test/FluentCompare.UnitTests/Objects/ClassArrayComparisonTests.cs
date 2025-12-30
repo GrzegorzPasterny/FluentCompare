@@ -57,7 +57,7 @@ public class ClassArrayComparisonTests
             new ClassWithIntProperty[]
             {
                 new ClassWithIntProperty(1),
-                null
+                null!
             },
             false,
             true,

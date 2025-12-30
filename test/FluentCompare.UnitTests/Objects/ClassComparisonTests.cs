@@ -3,6 +3,7 @@ using FluentCompare.Tests.Shared.Models;
 using Xunit.Abstractions;
 
 namespace FluentCompare.UnitTests.Objects;
+
 public class ClassComparisonTests
 {
     private readonly ITestOutputHelper _testOutputHelper;
@@ -33,7 +34,7 @@ public class ClassComparisonTests
         yield return new object[]
         {
             new ClassWithIntProperty(1),
-            null,
+            null!,
             false,
             true,
             ComparisonMismatches.NullPassedAsArgumentCode
@@ -74,7 +75,7 @@ public class ClassComparisonTests
             },
             new ClassWithNestedClassWithIntProperty()
             {
-                ClassWithIntProperty = null
+                ClassWithIntProperty = null!
             },
             false,
             false,
@@ -82,10 +83,10 @@ public class ClassComparisonTests
         };
         yield return new object[]
         {
-            null,
+            null!,
             new ClassWithNestedClassWithIntProperty()
             {
-                ClassWithIntProperty = null
+                ClassWithIntProperty = null!
             },
             false,
             true,

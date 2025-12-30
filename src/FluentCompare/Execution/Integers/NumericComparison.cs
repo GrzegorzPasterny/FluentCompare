@@ -16,7 +16,7 @@ internal class NumericComparison<T> : NumericComparisonBase<T>, IExecuteComparis
         }
     }
 
-    public override ComparisonResult Compare(params T[] ints)
+    public override ComparisonResult Compare(T[] ints)
     {
         var result = new ComparisonResult();
 
@@ -56,7 +56,7 @@ internal class NumericComparison<T> : NumericComparisonBase<T>, IExecuteComparis
         return result;
     }
 
-    public override ComparisonResult Compare(params T[][] ints)
+    public override ComparisonResult Compare(T[][] ints)
     {
         var result = new ComparisonResult();
 

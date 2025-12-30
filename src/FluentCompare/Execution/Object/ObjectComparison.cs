@@ -10,7 +10,7 @@ internal class ObjectComparison : ObjectComparisonBase
         _currentDepth = currentDepth;
     }
 
-    public override ComparisonResult Compare(params object[] objects)
+    public override ComparisonResult Compare(object[] objects)
     {
         var result = new ComparisonResult();
 
@@ -67,18 +67,24 @@ internal class ObjectComparison : ObjectComparisonBase
                         break;
                     }
 
-                    var type1 = firstObj.GetType();
-                    var type2 = currentObj.GetType();
+                    var t1 = firstObj.GetType();
+                    var t2 = currentObj.GetType();
 
-                    if (type1 != type2)
+                    if (t1 != t2)
                     {
                         result.AddMismatch(ComparisonMismatches.Object.MismatchDetectedByType(
-                            firstObj, currentObj, 0, i, type1, type2));
+                            firstObj, currentObj, 0, i, t1, t2));
+                        break;
+                    }
+
+                    if (IsPrimitiveEnumOrString(t1))
+                    {
+                        CompareObjectsWhenPrimitive(firstObj, currentObj, $"object{0}", $"object{i}", result, t1);
                         break;
                     }
 
                     // For complex types, compare properties recursively
-                    CompareObjectsPropertiesRecursively(firstObj, currentObj, result, type1);
+                    CompareObjectsPropertiesRecursively(firstObj, currentObj, result, t1);
                     break;
             }
         }
@@ -140,7 +146,7 @@ internal class ObjectComparison : ObjectComparisonBase
         return result;
     }
 
-    public override ComparisonResult Compare(params object[][] objects)
+    public override ComparisonResult Compare(object[][] objects)
     {
         var result = new ComparisonResult();
         if (objects == null)
