@@ -82,13 +82,13 @@ public class ClassArrayComparisonTests
                 new ClassWithIntProperty(1),
                 new ClassWithIntProperty(2)
             },
-            new ClassWithNestedClassWithIntProperty[]
+            new ClassWithClassWithIntProperty[]
             {
-                new ClassWithNestedClassWithIntProperty()
+                new ClassWithClassWithIntProperty()
                 {
                     ClassWithIntProperty = new ClassWithIntProperty(1)
                 },
-                new ClassWithNestedClassWithIntProperty()
+                new ClassWithClassWithIntProperty()
                 {
                     ClassWithIntProperty = new ClassWithIntProperty(2)
                 }

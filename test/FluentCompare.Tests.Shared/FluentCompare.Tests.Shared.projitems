@@ -11,6 +11,6 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Models\ClassWithAllSupportedTypes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ClassWithIntProperty.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\ClassWithNestedClassWithIntProperty.cs" />
+    <Compile Include="..\FluentCompare.Tests.Shared\Models\ClassWithClassWithIntProperty.cs" />
   </ItemGroup>
 </Project>

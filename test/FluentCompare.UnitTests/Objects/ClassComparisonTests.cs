@@ -41,11 +41,11 @@ public class ClassComparisonTests
         };
         yield return new object[]
         {
-            new ClassWithNestedClassWithIntProperty()
+            new ClassWithClassWithIntProperty()
             {
                 ClassWithIntProperty = new ClassWithIntProperty(1)
             },
-            new ClassWithNestedClassWithIntProperty()
+            new ClassWithClassWithIntProperty()
             {
                 ClassWithIntProperty = new ClassWithIntProperty(1)
             },
@@ -55,11 +55,11 @@ public class ClassComparisonTests
         };
         yield return new object[]
         {
-            new ClassWithNestedClassWithIntProperty()
+            new ClassWithClassWithIntProperty()
             {
                 ClassWithIntProperty = new ClassWithIntProperty(1)
             },
-            new ClassWithNestedClassWithIntProperty()
+            new ClassWithClassWithIntProperty()
             {
                 ClassWithIntProperty = new ClassWithIntProperty(2)
             },
@@ -69,11 +69,11 @@ public class ClassComparisonTests
         };
         yield return new object[]
         {
-            new ClassWithNestedClassWithIntProperty()
+            new ClassWithClassWithIntProperty()
             {
                 ClassWithIntProperty = new ClassWithIntProperty(1)
             },
-            new ClassWithNestedClassWithIntProperty()
+            new ClassWithClassWithIntProperty()
             {
                 ClassWithIntProperty = null!
             },
@@ -84,7 +84,7 @@ public class ClassComparisonTests
         yield return new object[]
         {
             null!,
-            new ClassWithNestedClassWithIntProperty()
+            new ClassWithClassWithIntProperty()
             {
                 ClassWithIntProperty = null!
             },
@@ -117,5 +117,102 @@ public class ClassComparisonTests
         }
 
         _testOutputHelper.WriteLine(result.ToString());
+    }
+
+    public static IEnumerable<object[]> CompareNestedClasses_WithLimitedDepth_ShouldReturnExpectedResult_DataSource()
+    {
+        yield return new object[]
+        {
+            new ClassWithAllSupportedTypes()
+            {
+                Double = 1.0,
+                NestedClass = new ClassWithAllSupportedTypes()
+                {
+                    String = "string",
+                    Bool = true,
+                    NestedClass = new ClassWithAllSupportedTypes()
+                    {
+                        NestedClass = new ClassWithAllSupportedTypes()
+                        {
+                            Int = 1 // difference on 4th level
+                        }
+                    }
+                }
+            },
+            new ClassWithAllSupportedTypes()
+            {
+                Double = 1.0,
+                NestedClass = new ClassWithAllSupportedTypes()
+                {
+                    String = "string",
+                    Bool = true,
+                    NestedClass = new ClassWithAllSupportedTypes()
+                    {
+                        NestedClass = new ClassWithAllSupportedTypes()
+                        {
+                            Int = 2 // difference on 4th level
+                        }
+                    }
+                }
+            },
+            3,
+            true,
+        };
+        yield return new object[]
+        {
+            new ClassWithAllSupportedTypes()
+            {
+                Double = 1.0,
+                NestedClass = new ClassWithAllSupportedTypes()
+                {
+                    String = "string",
+                    Bool = true,
+                    NestedClass = new ClassWithAllSupportedTypes()
+                    {
+                        NestedClass = new ClassWithAllSupportedTypes()
+                        {
+                            Int = 1 // difference on 4th level
+                        }
+                    }
+                }
+            },
+            new ClassWithAllSupportedTypes()
+            {
+                Double = 1.0,
+                NestedClass = new ClassWithAllSupportedTypes()
+                {
+                    String = "string",
+                    Bool = true,
+                    NestedClass = new ClassWithAllSupportedTypes()
+                    {
+                        NestedClass = new ClassWithAllSupportedTypes()
+                        {
+                            Int = 2 // difference on 4th level
+                        }
+                    }
+                }
+            },
+            4,
+            false,
+        };
+    }
+
+    [Theory]
+    [MemberData(nameof(CompareNestedClasses_WithLimitedDepth_ShouldReturnExpectedResult_DataSource))]
+    public void CompareNestedClasses_WithLimitedDepth_ShouldReturnExpectedResult(
+        ClassWithAllSupportedTypes nestedClass1,
+        ClassWithAllSupportedTypes nestedClass2,
+        int depth,
+        bool shouldAllMatch)
+    {
+        // Act
+        var result = ComparisonBuilder.Create()
+            .SetComparisonDepth(depth)
+            .Compare(nestedClass1, nestedClass2);
+
+        // Assert
+        _testOutputHelper.WriteLine(result.ToString());
+        result.WasSuccessful.ShouldBeTrue();
+        result.AllMatched.ShouldBe(shouldAllMatch);
     }
 }
