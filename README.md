@@ -113,8 +113,8 @@ Console.WriteLine(result.AllMatched); // False, different object references
 `FluentCompare` can compare the following types:
 
 **Primitive types:**
-- `int`, `long`, `short`, `byte`
-- `double` (with configurable precision or epsilon tolerance)
+- *numeric*: `int`, `long`, `short`, `byte`
+- *floating point*: `double`, `float`, `Half`, `NFloat` (with configurable precision or epsilon tolerance)
 - `bool`
 - `string`
 - `enum` types
