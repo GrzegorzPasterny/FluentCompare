@@ -1,22 +1,20 @@
 internal class ObjectComparison : ObjectComparisonBase
 {
-    private readonly int _currentDepth;
-    private int _localDepth = 0;
+    private int _depth = 0;
 
     internal ObjectComparison(
-        ComparisonConfiguration comparisonConfiguration, int currentDepth, ComparisonResult? comparisonResult = null)
+        ComparisonConfiguration comparisonConfiguration, ComparisonResult? comparisonResult = null)
         : base(comparisonConfiguration, comparisonResult)
     {
-        _currentDepth = currentDepth;
     }
 
     public override ComparisonResult Compare(object[] objects)
     {
         var result = new ComparisonResult();
 
-        if (_currentDepth + _localDepth >= _comparisonConfiguration.MaximumComparisonDepth)
+        if (_depth >= _comparisonConfiguration.MaximumComparisonDepth)
         {
-            result.AddWarning(ComparisonErrors.DepthLimitReached(_currentDepth));
+            result.AddWarning(ComparisonErrors.DepthLimitReached(_depth));
             return result;
         }
 
@@ -32,7 +30,7 @@ internal class ObjectComparison : ObjectComparisonBase
             return result;
         }
 
-        _localDepth++;
+        _depth++;
 
         object? firstObj = objects[0];
 
@@ -91,7 +89,7 @@ internal class ObjectComparison : ObjectComparisonBase
             }
         }
 
-        _localDepth--;
+        _depth--;
         return result;
     }
 
@@ -99,9 +97,9 @@ internal class ObjectComparison : ObjectComparisonBase
     {
         var result = new ComparisonResult();
 
-        if (_currentDepth + _localDepth >= _comparisonConfiguration.MaximumComparisonDepth)
+        if (_depth >= _comparisonConfiguration.MaximumComparisonDepth)
         {
-            result.AddWarning(ComparisonErrors.DepthLimitReached(_currentDepth, t1ExprName, t2ExprName));
+            result.AddWarning(ComparisonErrors.DepthLimitReached(_depth, t1ExprName, t2ExprName));
             return result;
         }
 
@@ -120,7 +118,7 @@ internal class ObjectComparison : ObjectComparisonBase
             return result;
         }
 
-        _localDepth++;
+        _depth++;
 
         switch (_comparisonConfiguration.ComplexTypesComparisonMode)
         {
@@ -147,7 +145,7 @@ internal class ObjectComparison : ObjectComparisonBase
                 break;
         }
 
-        _localDepth--;
+        _depth--;
         return result;
     }
 
@@ -305,7 +303,7 @@ internal class ObjectComparison : ObjectComparisonBase
         var method = compareMethod.MakeGenericMethod(type1);
 
         var subResult = (ComparisonResult)method.Invoke(
-            new ComparisonBuilder(_currentDepth + 1),
+            new ComparisonBuilder(),
             new object?[] { t1, t2, t1ExprName, t2ExprName }
         )!;
 

@@ -5,28 +5,10 @@ using System.Runtime.CompilerServices;
 /// </summary>
 public class ComparisonBuilder : IComparisonBuilder
 {
-    private readonly int _currentDepth = 0;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="ComparisonBuilder"/> class with default settings.
     /// </summary>
     internal ComparisonBuilder() { }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ComparisonBuilder"/> class with a specified comparison depth.
-    /// </summary>
-    /// <param name="currentDepth">The current depth for recursive comparison.</param>
-    internal ComparisonBuilder(int currentDepth)
-    {
-        _currentDepth = currentDepth;
-    }
-
-    /// <summary>
-    /// Creates a new <see cref="ComparisonBuilder"/> with the specified comparison depth.
-    /// </summary>
-    /// <param name="currentDepth">The current depth for recursive comparison.</param>
-    /// <returns>A new <see cref="ComparisonBuilder"/> instance.</returns>
-    internal static ComparisonBuilder Create(int currentDepth) => new ComparisonBuilder(currentDepth);
 
     /// <summary>
     /// Configuration object for the comparison.
@@ -126,13 +108,13 @@ public class ComparisonBuilder : IComparisonBuilder
                 .Compare((double[][])(object)t);
 
         if (typeof(T) == typeof(object[]))
-            return new ObjectComparison(Configuration, _currentDepth)
+            return new ObjectComparison(Configuration)
                 .Compare((object[][])(object)t);
 
         if (IsPrimitiveOrEnum(typeof(T)))
             throw new NotImplementedException(typeof(T).Name);
 
-        return new ObjectComparison(Configuration, _currentDepth)
+        return new ObjectComparison(Configuration)
             .Compare((object[])(object)t);
     }
 
@@ -330,7 +312,7 @@ public class ComparisonBuilder : IComparisonBuilder
             string t1ExprName = t1Expr ?? "ArrayOne";
             string t2ExprName = t2Expr ?? "ArrayTwo";
 
-            return new ObjectComparison(Configuration, _currentDepth, comparisonResult)
+            return new ObjectComparison(Configuration, comparisonResult)
                 .Compare(oArr1, oArr2, t1ExprName, t2ExprName);
         }
         if (IsPrimitiveOrEnum(typeof(T)))
@@ -342,7 +324,7 @@ public class ComparisonBuilder : IComparisonBuilder
             string t1ExprName = t1Expr ?? "ObjectOne";
             string t2ExprName = t2Expr ?? "ObjectTwo";
 
-            return new ObjectComparison(Configuration, _currentDepth, comparisonResult)
+            return new ObjectComparison(Configuration, comparisonResult)
                 .Compare(t1!, t2!, t1ExprName, t2ExprName);
         }
     }
@@ -428,7 +410,7 @@ public class ComparisonBuilder : IComparisonBuilder
 
 
         if (type == typeof(object[]))
-            return new ObjectComparison(Configuration, _currentDepth, comparisonResult)
+            return new ObjectComparison(Configuration, comparisonResult)
                 .Compare((object[])o1, (object[])o2, t1ExprName, t2ExprName);
 
 
@@ -436,7 +418,7 @@ public class ComparisonBuilder : IComparisonBuilder
             throw new NotImplementedException(type.Name);
 
 
-        return new ObjectComparison(Configuration, _currentDepth, comparisonResult)
+        return new ObjectComparison(Configuration, comparisonResult)
             .Compare(o1, o2, t1ExprName, t2ExprName);
     }
 
@@ -468,7 +450,7 @@ public class ComparisonBuilder : IComparisonBuilder
         string t1ExprName = o1ArrExpr ?? "ObjectArrayOne";
         string t2ExprName = o2ArrExpr ?? "ObjectArrayTwo";
 
-        return new ObjectComparison(Configuration, _currentDepth, comparisonResult)
+        return new ObjectComparison(Configuration, comparisonResult)
             .Compare(o1Arr, o2Arr, t1ExprName, t2ExprName);
     }
 

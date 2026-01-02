@@ -21,6 +21,9 @@ internal abstract class FloatingPointComparisonBase<T>
         ComparisonType comparisonType,
         int precision)
     {
+        int maxPrecision = FloatingPointHelpers.MaxRoundingDigits<T>();
+        precision = Math.Min(precision, maxPrecision);
+
         T roundedA = T.Round(valueA, precision);
         T roundedB = T.Round(valueB, precision);
 
@@ -42,7 +45,7 @@ internal abstract class FloatingPointComparisonBase<T>
         ComparisonType comparisonType,
         double epsilon)
     {
-        T epsilonT = FloatingPointTolerance.ToEpsilon<T>(epsilon);
+        T epsilonT = FloatingPointHelpers.ToEpsilon<T>(epsilon);
 
         T diff = valueA - valueB;
         T absDiff = T.Abs(diff);
