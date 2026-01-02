@@ -1,6 +1,6 @@
 internal class ObjectComparison : ObjectComparisonBase
 {
-    private int _depth = 0;
+    private int _depth = -1;
 
     internal ObjectComparison(
         ComparisonConfiguration comparisonConfiguration, ComparisonResult? comparisonResult = null)
@@ -12,7 +12,7 @@ internal class ObjectComparison : ObjectComparisonBase
     {
         var result = new ComparisonResult();
 
-        if (_depth >= _comparisonConfiguration.MaximumComparisonDepth)
+        if (_depth > _comparisonConfiguration.MaximumComparisonDepth)
         {
             result.AddWarning(ComparisonErrors.DepthLimitReached(_depth));
             return result;
@@ -29,8 +29,6 @@ internal class ObjectComparison : ObjectComparisonBase
             result.AddError(ComparisonErrors.NotEnoughObjectsToCompare(objects.Length, typeof(object[])));
             return result;
         }
-
-        _depth++;
 
         object? firstObj = objects[0];
 
@@ -83,13 +81,13 @@ internal class ObjectComparison : ObjectComparisonBase
                         break;
                     }
 
-                    // For complex types, compare properties recursively
+                    _depth++;
                     CompareObjectsPropertiesRecursively(firstObj, currentObj, result, t1);
+                    _depth--;
                     break;
             }
         }
 
-        _depth--;
         return result;
     }
 
@@ -118,8 +116,6 @@ internal class ObjectComparison : ObjectComparisonBase
             return result;
         }
 
-        _depth++;
-
         switch (_comparisonConfiguration.ComplexTypesComparisonMode)
         {
             case ComplexTypesComparisonMode.ReferenceEquality:
@@ -141,11 +137,12 @@ internal class ObjectComparison : ObjectComparisonBase
                     break;
                 }
 
+                _depth++;
                 CompareObjectsPropertiesRecursively(t1, t2, result, type1, t1ExprName, t2ExprName);
+                _depth--;
                 break;
         }
 
-        _depth--;
         return result;
     }
 
@@ -244,7 +241,9 @@ internal class ObjectComparison : ObjectComparisonBase
                         break;
                     }
 
+                    _depth++;
                     CompareObjectsPropertiesRecursively(obj1, obj2, result, type1);
+                    _depth--;
                     break;
             }
         }
