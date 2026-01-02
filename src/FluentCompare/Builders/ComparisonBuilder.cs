@@ -672,8 +672,8 @@ public class ComparisonBuilder : IComparisonBuilder
     /// <returns>The current <see cref="ComparisonBuilder"/> instance.</returns>
     public ComparisonBuilder WithDoublePrecision(int roundingPrecision)
     {
-        Configuration.DoubleConfiguration.RoundingPrecision = roundingPrecision;
-        Configuration.DoubleConfiguration.ToleranceMethod = DoubleToleranceMethods.Rounding;
+        Configuration.FloatConfiguration.RoundingPrecision = roundingPrecision;
+        Configuration.FloatConfiguration.ToleranceMethod = DoubleToleranceMethods.Rounding;
         return this;
     }
 
@@ -684,8 +684,8 @@ public class ComparisonBuilder : IComparisonBuilder
     /// <returns>The current <see cref="ComparisonBuilder"/> instance.</returns>
     public ComparisonBuilder WithDoublePrecision(double epsilonPrecision)
     {
-        Configuration.DoubleConfiguration.EpsilonPrecision = epsilonPrecision;
-        Configuration.DoubleConfiguration.ToleranceMethod = DoubleToleranceMethods.Epsilon;
+        Configuration.FloatConfiguration.EpsilonPrecision = epsilonPrecision;
+        Configuration.FloatConfiguration.ToleranceMethod = DoubleToleranceMethods.Epsilon;
         return this;
     }
 
@@ -696,7 +696,7 @@ public class ComparisonBuilder : IComparisonBuilder
     /// <returns>The current <see cref="ComparisonBuilder"/> instance.</returns>
     public ComparisonBuilder UseDoubleToleranceMethod(DoubleToleranceMethods doubleToleranceMethod)
     {
-        Configuration.DoubleConfiguration.ToleranceMethod = doubleToleranceMethod;
+        Configuration.FloatConfiguration.ToleranceMethod = doubleToleranceMethod;
         return this;
     }
 

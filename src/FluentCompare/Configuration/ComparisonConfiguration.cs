@@ -40,11 +40,11 @@ public class ComparisonConfiguration
     public bool FinishComparisonOnFirstMismatch { get; set; } = false;
 
     /// <summary>
-    /// Configuration for comparing double values. 
-    /// (Primitive double type, or any double type which is a property of a complex type)
+    /// Configuration for comparing floating point values. 
+    /// (Primitive float family type, or any float type which is a property of a complex type)
     /// </summary>
-    public DoubleComparisonConfiguration DoubleConfiguration { get; set; }
-        = new DoubleComparisonConfiguration();
+    public FloatComparisonConfiguration FloatConfiguration { get; set; }
+        = new FloatComparisonConfiguration();
 
     /// <summary>
     /// Configuration for comparing string values.
@@ -57,4 +57,12 @@ public class ComparisonConfiguration
     /// </summary>
     public ByteComparisonConfiguration ByteConfiguration { get; set; }
         = new ByteComparisonConfiguration();
+
+    // TODO: Implement
+    /// <summary>
+    /// A list of types that will be excluded from comparison operations. 
+    /// Any type in this list will not be compared when performing object comparisons.
+    /// </summary>
+    public List<Type> TypesExcludedFromComparison { get; set; } = new List<Type>();
 }
+

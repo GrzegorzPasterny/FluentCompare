@@ -27,7 +27,7 @@ internal class FloatingPointComparison<T> : FloatingPointComparisonBase<T> where
 
         var comparisonType = _comparisonConfiguration.ComparisonType;
 
-        if (_comparisonConfiguration.DoubleConfiguration is null)
+        if (_comparisonConfiguration.FloatConfiguration is null)
         {
             result.AddError(ComparisonErrors.ConfigurationIsMissing(typeof(double)));
             return result;
@@ -45,13 +45,13 @@ internal class FloatingPointComparison<T> : FloatingPointComparisonBase<T> where
     {
         bool matched;
 
-        switch (_comparisonConfiguration.DoubleConfiguration.ToleranceMethod)
+        switch (_comparisonConfiguration.FloatConfiguration.ToleranceMethod)
         {
             case DoubleToleranceMethods.Rounding:
-                matched = CompareWithRounding(d1, d2, comparisonType, _comparisonConfiguration.DoubleConfiguration.RoundingPrecision);
+                matched = CompareWithRounding(d1, d2, comparisonType, _comparisonConfiguration.FloatConfiguration.RoundingPrecision);
                 break;
             case DoubleToleranceMethods.Epsilon:
-                matched = CompareWithEpsilon(d1, d2, comparisonType, _comparisonConfiguration.DoubleConfiguration.EpsilonPrecision);
+                matched = CompareWithEpsilon(d1, d2, comparisonType, _comparisonConfiguration.FloatConfiguration.EpsilonPrecision);
                 break;
             default:
                 throw new NotImplementedException();
@@ -60,7 +60,7 @@ internal class FloatingPointComparison<T> : FloatingPointComparisonBase<T> where
         if (!matched)
         {
             result.AddMismatch(ComparisonMismatches.Floats.MismatchDetected(
-                _toStringFunc(d1), _toStringFunc(d2), _comparisonConfiguration.DoubleConfiguration.EpsilonPrecision, _comparisonConfiguration.DoubleConfiguration.ToleranceMethod));
+                _toStringFunc(d1), _toStringFunc(d2), _comparisonConfiguration.FloatConfiguration.EpsilonPrecision, _comparisonConfiguration.FloatConfiguration.ToleranceMethod));
         }
     }
 
@@ -69,7 +69,7 @@ internal class FloatingPointComparison<T> : FloatingPointComparisonBase<T> where
         var result = new ComparisonResult();
         var comparisonType = _comparisonConfiguration.ComparisonType;
 
-        if (_comparisonConfiguration.DoubleConfiguration is null)
+        if (_comparisonConfiguration.FloatConfiguration is null)
         {
             result.AddError(ComparisonErrors.ConfigurationIsMissing(typeof(T)));
             return result;
@@ -151,13 +151,13 @@ internal class FloatingPointComparison<T> : FloatingPointComparisonBase<T> where
     {
         bool matched;
 
-        switch (_comparisonConfiguration.DoubleConfiguration.ToleranceMethod)
+        switch (_comparisonConfiguration.FloatConfiguration.ToleranceMethod)
         {
             case DoubleToleranceMethods.Rounding:
-                matched = CompareWithRounding(d1, d2, comparisonType, _comparisonConfiguration.DoubleConfiguration.RoundingPrecision);
+                matched = CompareWithRounding(d1, d2, comparisonType, _comparisonConfiguration.FloatConfiguration.RoundingPrecision);
                 break;
             case DoubleToleranceMethods.Epsilon:
-                matched = CompareWithEpsilon(d1, d2, comparisonType, _comparisonConfiguration.DoubleConfiguration.EpsilonPrecision);
+                matched = CompareWithEpsilon(d1, d2, comparisonType, _comparisonConfiguration.FloatConfiguration.EpsilonPrecision);
                 break;
             default:
                 throw new NotImplementedException();
@@ -167,8 +167,8 @@ internal class FloatingPointComparison<T> : FloatingPointComparisonBase<T> where
         {
             result.AddMismatch(ComparisonMismatches.Floats.MismatchDetected(
                 _toStringFunc(d1), _toStringFunc(d2), dArr1ExprName, dArr2ExprName, index,
-                _comparisonConfiguration.DoubleConfiguration.RoundingPrecision,
-                _comparisonConfiguration.DoubleConfiguration.ToleranceMethod));
+                _comparisonConfiguration.FloatConfiguration.RoundingPrecision,
+                _comparisonConfiguration.FloatConfiguration.ToleranceMethod));
         }
     }
 
@@ -176,22 +176,22 @@ internal class FloatingPointComparison<T> : FloatingPointComparisonBase<T> where
     {
         bool matched;
 
-        switch (_comparisonConfiguration.DoubleConfiguration.ToleranceMethod)
+        switch (_comparisonConfiguration.FloatConfiguration.ToleranceMethod)
         {
             case DoubleToleranceMethods.Rounding:
-                matched = CompareWithRounding(d1, d2, comparisonType, _comparisonConfiguration.DoubleConfiguration.RoundingPrecision);
+                matched = CompareWithRounding(d1, d2, comparisonType, _comparisonConfiguration.FloatConfiguration.RoundingPrecision);
                 if (!matched)
                 {
                     result.AddMismatch(ComparisonMismatches.Floats.MismatchDetected(
-                        _toStringFunc(d1), _toStringFunc(d2), d1ExprName, d2ExprName, _comparisonConfiguration.DoubleConfiguration.RoundingPrecision, _comparisonConfiguration.DoubleConfiguration.ToleranceMethod));
+                        _toStringFunc(d1), _toStringFunc(d2), d1ExprName, d2ExprName, _comparisonConfiguration.FloatConfiguration.RoundingPrecision, _comparisonConfiguration.FloatConfiguration.ToleranceMethod));
                 }
                 break;
             case DoubleToleranceMethods.Epsilon:
-                matched = CompareWithEpsilon(d1, d2, comparisonType, _comparisonConfiguration.DoubleConfiguration.EpsilonPrecision);
+                matched = CompareWithEpsilon(d1, d2, comparisonType, _comparisonConfiguration.FloatConfiguration.EpsilonPrecision);
                 if (!matched)
                 {
                     result.AddMismatch(ComparisonMismatches.Floats.MismatchDetected(
-                        _toStringFunc(d1), _toStringFunc(d2), d1ExprName, d2ExprName, _comparisonConfiguration.DoubleConfiguration.EpsilonPrecision, _comparisonConfiguration.DoubleConfiguration.ToleranceMethod));
+                        _toStringFunc(d1), _toStringFunc(d2), d1ExprName, d2ExprName, _comparisonConfiguration.FloatConfiguration.EpsilonPrecision, _comparisonConfiguration.FloatConfiguration.ToleranceMethod));
                 }
                 break;
             default:
