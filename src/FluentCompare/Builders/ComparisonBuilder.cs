@@ -109,12 +109,20 @@ public class ComparisonBuilder : IComparisonBuilder
             return new NumericComparison<long>(Configuration)
                 .Compare((long[][])(object)t);
 
+        if (typeof(T) == typeof(float))
+            return new FloatingPointComparison<float>(Configuration)
+                .Compare((float[])(object)t);
+
+        if (typeof(T) == typeof(float[]))
+            return new FloatingPointComparison<float>(Configuration)
+                .Compare((float[][])(object)t);
+
         if (typeof(T) == typeof(double))
-            return new DoubleComparison(Configuration)
+            return new FloatingPointComparison<double>(Configuration)
                 .Compare((double[])(object)t);
 
         if (typeof(T) == typeof(double[]))
-            return new DoubleComparison(Configuration)
+            return new FloatingPointComparison<double>(Configuration)
                 .Compare((double[][])(object)t);
 
         if (typeof(T) == typeof(object[]))
@@ -275,6 +283,26 @@ public class ComparisonBuilder : IComparisonBuilder
             return new NumericComparison<long>(Configuration, comparisonResult)
                 .Compare(oArr1, oArr2, t1ExprName, t2ExprName);
         }
+        if (typeof(T) == typeof(float))
+        {
+            var o1 = Unsafe.As<T, float>(ref t1);
+            var o2 = Unsafe.As<T, float>(ref t2);
+            string t1ExprName = t1Expr ?? "FloatOne";
+            string t2ExprName = t2Expr ?? "FloatTwo";
+
+            return new FloatingPointComparison<float>(Configuration, comparisonResult)
+                .Compare(o1, o2, t1ExprName, t2ExprName);
+        }
+        if (typeof(T) == typeof(float[]))
+        {
+            var oArr1 = Unsafe.As<T, float[]>(ref t1);
+            var oArr2 = Unsafe.As<T, float[]>(ref t2);
+            string t1ExprName = t1Expr ?? "FloatArrayOne";
+            string t2ExprName = t2Expr ?? "FloatArrayTwo";
+
+            return new FloatingPointComparison<float>(Configuration, comparisonResult)
+                .Compare(oArr1, oArr2, t1ExprName, t2ExprName);
+        }
         if (typeof(T) == typeof(double))
         {
             var o1 = Unsafe.As<T, double>(ref t1);
@@ -282,7 +310,7 @@ public class ComparisonBuilder : IComparisonBuilder
             string t1ExprName = t1Expr ?? "DoubleOne";
             string t2ExprName = t2Expr ?? "DoubleTwo";
 
-            return new DoubleComparison(Configuration, comparisonResult)
+            return new FloatingPointComparison<double>(Configuration, comparisonResult)
                 .Compare(o1, o2, t1ExprName, t2ExprName);
         }
         if (typeof(T) == typeof(double[]))
@@ -292,7 +320,7 @@ public class ComparisonBuilder : IComparisonBuilder
             string t1ExprName = t1Expr ?? "DoubleArrayOne";
             string t2ExprName = t2Expr ?? "DoubleArrayTwo";
 
-            return new DoubleComparison(Configuration, comparisonResult)
+            return new FloatingPointComparison<double>(Configuration, comparisonResult)
                 .Compare(oArr1, oArr2, t1ExprName, t2ExprName);
         }
         if (typeof(T) == typeof(object[]))
@@ -367,8 +395,11 @@ public class ComparisonBuilder : IComparisonBuilder
         if (type == typeof(long))
             return new NumericComparison<long>(Configuration, comparisonResult).Compare((long)o1, (long)o2, t1ExprName, t2ExprName);
 
+        if (type == typeof(float))
+            return new FloatingPointComparison<float>(Configuration, comparisonResult).Compare((float)o1, (float)o2, t1ExprName, t2ExprName);
+
         if (type == typeof(double))
-            return new DoubleComparison(Configuration, comparisonResult).Compare((double)o1, (double)o2, t1ExprName, t2ExprName);
+            return new FloatingPointComparison<double>(Configuration, comparisonResult).Compare((double)o1, (double)o2, t1ExprName, t2ExprName);
 
         // Array types
         if (type == typeof(string[]))
@@ -389,8 +420,11 @@ public class ComparisonBuilder : IComparisonBuilder
         if (type == typeof(long[]))
             return new NumericComparison<long>(Configuration, comparisonResult).Compare((long[])o1, (long[])o2, t1ExprName, t2ExprName);
 
+        if (type == typeof(float[]))
+            return new FloatingPointComparison<float>(Configuration, comparisonResult).Compare((float[])o1, (float[])o2, t1ExprName, t2ExprName);
+
         if (type == typeof(double[]))
-            return new DoubleComparison(Configuration, comparisonResult).Compare((double[])o1, (double[])o2, t1ExprName, t2ExprName);
+            return new FloatingPointComparison<double>(Configuration, comparisonResult).Compare((double[])o1, (double[])o2, t1ExprName, t2ExprName);
 
 
         if (type == typeof(object[]))

@@ -1,23 +1,27 @@
-internal class DoubleComparison : DoubleComparisonBase
+using System.Numerics;
+
+using FluentCompare.Execution.FloatingPointValues;
+
+internal class FloatingPointComparison<T> : FloatingPointComparisonBase<T> where T : struct, IFloatingPoint<T>
 {
-    public DoubleComparison(
+    public FloatingPointComparison(
         ComparisonConfiguration configuration, ComparisonResult? comparisonResult = null)
         : base(configuration, comparisonResult)
     { }
 
-    public override ComparisonResult Compare(params double[] doubles)
+    public override ComparisonResult Compare(params T[] floats)
     {
         var result = new ComparisonResult();
 
-        if (doubles == null)
+        if (floats == null)
         {
-            result.AddError(ComparisonErrors.NullPassedAsArgument(typeof(double)));
+            result.AddError(ComparisonErrors.NullPassedAsArgument(typeof(T)));
             return result;
         }
 
-        if (doubles.Length < 2)
+        if (floats.Length < 2)
         {
-            result.AddError(ComparisonErrors.NotEnoughObjectsToCompare(doubles.Length, typeof(double)));
+            result.AddError(ComparisonErrors.NotEnoughObjectsToCompare(floats.Length, typeof(double)));
             return result;
         }
 
@@ -29,15 +33,15 @@ internal class DoubleComparison : DoubleComparisonBase
             return result;
         }
 
-        for (int i = 0; i < doubles.Length - 1; i++)
+        for (int i = 0; i < floats.Length - 1; i++)
         {
-            Compare(doubles[i], doubles[i + 1], comparisonType, result);
+            Compare(floats[i], floats[i + 1], comparisonType, result);
         }
 
         return result;
     }
 
-    private void Compare(double d1, double d2, ComparisonType comparisonType, ComparisonResult result)
+    private void Compare(T d1, T d2, ComparisonType comparisonType, ComparisonResult result)
     {
         bool matched;
 
@@ -55,19 +59,19 @@ internal class DoubleComparison : DoubleComparisonBase
 
         if (!matched)
         {
-            result.AddMismatch(ComparisonMismatches.Doubles.MismatchDetected(
-                d1, d2, _comparisonConfiguration.DoubleConfiguration.EpsilonPrecision, _comparisonConfiguration.DoubleConfiguration.ToleranceMethod));
+            result.AddMismatch(ComparisonMismatches.Floats.MismatchDetected(
+                _toStringFunc(d1), _toStringFunc(d2), _comparisonConfiguration.DoubleConfiguration.EpsilonPrecision, _comparisonConfiguration.DoubleConfiguration.ToleranceMethod));
         }
     }
 
-    public override ComparisonResult Compare(double d1, double d2, string d1ExprName, string d2ExprName)
+    public override ComparisonResult Compare(T d1, T d2, string d1ExprName, string d2ExprName)
     {
         var result = new ComparisonResult();
         var comparisonType = _comparisonConfiguration.ComparisonType;
 
         if (_comparisonConfiguration.DoubleConfiguration is null)
         {
-            result.AddError(ComparisonErrors.ConfigurationIsMissing(typeof(double)));
+            result.AddError(ComparisonErrors.ConfigurationIsMissing(typeof(T)));
             return result;
         }
 
@@ -76,19 +80,19 @@ internal class DoubleComparison : DoubleComparisonBase
         return result;
     }
 
-    public override ComparisonResult Compare(params double[][] doubleArrays)
+    public override ComparisonResult Compare(params T[][] doubleArrays)
     {
         var result = new ComparisonResult();
 
         if (doubleArrays == null)
         {
-            result.AddError(ComparisonErrors.NullPassedAsArgument(typeof(double[])));
+            result.AddError(ComparisonErrors.NullPassedAsArgument(typeof(T[])));
             return result;
         }
 
         if (doubleArrays.Length < 2)
         {
-            result.AddError(ComparisonErrors.NotEnoughObjectsToCompare(doubleArrays.Length, typeof(double[])));
+            result.AddError(ComparisonErrors.NotEnoughObjectsToCompare(doubleArrays.Length, typeof(T[])));
             return result;
         }
 
@@ -105,7 +109,7 @@ internal class DoubleComparison : DoubleComparisonBase
         return result;
     }
 
-    public override ComparisonResult Compare(double[] dArr1, double[] dArr2, string dArr1ExprName, string dArr2ExprName)
+    public override ComparisonResult Compare(T[] dArr1, T[] dArr2, string dArr1ExprName, string dArr2ExprName)
     {
         var result = new ComparisonResult();
 
@@ -116,13 +120,13 @@ internal class DoubleComparison : DoubleComparisonBase
 
         if (dArr1 == null)
         {
-            result.AddError(ComparisonErrors.NullPassedAsArgument(dArr1ExprName, typeof(double[])));
+            result.AddError(ComparisonErrors.NullPassedAsArgument(dArr1ExprName, typeof(T[])));
             return result;
         }
 
         if (dArr2 == null)
         {
-            result.AddError(ComparisonErrors.NullPassedAsArgument(dArr2ExprName, typeof(double[])));
+            result.AddError(ComparisonErrors.NullPassedAsArgument(dArr2ExprName, typeof(T[])));
             return result;
         }
 
@@ -143,7 +147,7 @@ internal class DoubleComparison : DoubleComparisonBase
         return result;
     }
 
-    private void Compare(double d1, double d2, string dArr1ExprName, string dArr2ExprName, int index, ComparisonType comparisonType, ComparisonResult result)
+    private void Compare(T d1, T d2, string dArr1ExprName, string dArr2ExprName, int index, ComparisonType comparisonType, ComparisonResult result)
     {
         bool matched;
 
@@ -161,14 +165,14 @@ internal class DoubleComparison : DoubleComparisonBase
 
         if (!matched)
         {
-            result.AddMismatch(ComparisonMismatches.Doubles.MismatchDetected(
-                d1, d2, dArr1ExprName, dArr2ExprName, index,
+            result.AddMismatch(ComparisonMismatches.Floats.MismatchDetected(
+                _toStringFunc(d1), _toStringFunc(d2), dArr1ExprName, dArr2ExprName, index,
                 _comparisonConfiguration.DoubleConfiguration.RoundingPrecision,
                 _comparisonConfiguration.DoubleConfiguration.ToleranceMethod));
         }
     }
 
-    private void Compare(double d1, double d2, string d1ExprName, string d2ExprName, ComparisonType comparisonType, ComparisonResult result)
+    private void Compare(T d1, T d2, string d1ExprName, string d2ExprName, ComparisonType comparisonType, ComparisonResult result)
     {
         bool matched;
 
@@ -178,16 +182,16 @@ internal class DoubleComparison : DoubleComparisonBase
                 matched = CompareWithRounding(d1, d2, comparisonType, _comparisonConfiguration.DoubleConfiguration.RoundingPrecision);
                 if (!matched)
                 {
-                    result.AddMismatch(ComparisonMismatches.Doubles.MismatchDetected(
-                        d1, d2, d1ExprName, d2ExprName, _comparisonConfiguration.DoubleConfiguration.RoundingPrecision, _comparisonConfiguration.DoubleConfiguration.ToleranceMethod));
+                    result.AddMismatch(ComparisonMismatches.Floats.MismatchDetected(
+                        _toStringFunc(d1), _toStringFunc(d2), d1ExprName, d2ExprName, _comparisonConfiguration.DoubleConfiguration.RoundingPrecision, _comparisonConfiguration.DoubleConfiguration.ToleranceMethod));
                 }
                 break;
             case DoubleToleranceMethods.Epsilon:
                 matched = CompareWithEpsilon(d1, d2, comparisonType, _comparisonConfiguration.DoubleConfiguration.EpsilonPrecision);
                 if (!matched)
                 {
-                    result.AddMismatch(ComparisonMismatches.Doubles.MismatchDetected(
-                        d1, d2, d1ExprName, d2ExprName, _comparisonConfiguration.DoubleConfiguration.EpsilonPrecision, _comparisonConfiguration.DoubleConfiguration.ToleranceMethod));
+                    result.AddMismatch(ComparisonMismatches.Floats.MismatchDetected(
+                        _toStringFunc(d1), _toStringFunc(d2), d1ExprName, d2ExprName, _comparisonConfiguration.DoubleConfiguration.EpsilonPrecision, _comparisonConfiguration.DoubleConfiguration.ToleranceMethod));
                 }
                 break;
             default:

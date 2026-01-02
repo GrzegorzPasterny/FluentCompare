@@ -20,8 +20,6 @@ internal class ObjectComparison : ObjectComparisonBase
             return result;
         }
 
-        _localDepth++;
-
         if (objects == null)
         {
             result.AddError(ComparisonErrors.NullPassedAsArgument(typeof(object[])));
@@ -33,6 +31,8 @@ internal class ObjectComparison : ObjectComparisonBase
             result.AddError(ComparisonErrors.NotEnoughObjectsToCompare(objects.Length, typeof(object[])));
             return result;
         }
+
+        _localDepth++;
 
         object? firstObj = objects[0];
 
@@ -91,6 +91,7 @@ internal class ObjectComparison : ObjectComparisonBase
             }
         }
 
+        _localDepth--;
         return result;
     }
 
@@ -103,8 +104,6 @@ internal class ObjectComparison : ObjectComparisonBase
             result.AddWarning(ComparisonErrors.DepthLimitReached(_currentDepth, t1ExprName, t2ExprName));
             return result;
         }
-
-        _localDepth++;
 
         if (ReferenceEquals(t1, t2))
         {
@@ -120,6 +119,8 @@ internal class ObjectComparison : ObjectComparisonBase
             result.AddError(ComparisonErrors.NullPassedAsArgument(t2ExprName, typeof(object)));
             return result;
         }
+
+        _localDepth++;
 
         switch (_comparisonConfiguration.ComplexTypesComparisonMode)
         {
@@ -145,6 +146,8 @@ internal class ObjectComparison : ObjectComparisonBase
                 CompareObjectsPropertiesRecursively(t1, t2, result, type1, t1ExprName, t2ExprName);
                 break;
         }
+
+        _localDepth--;
         return result;
     }
 
@@ -273,10 +276,7 @@ internal class ObjectComparison : ObjectComparisonBase
                     $"{t1ExprName}.{prop.Name}", $"{t2ExprName}.{prop.Name}");
             }
 
-            if (!propResult.AllMatched)
-            {
-                result.AddComparisonResult(propResult);
-            }
+            result.AddComparisonResult(propResult);
         }
     }
 

@@ -85,7 +85,8 @@ internal class StringComparison : StringComparisonBase, IExecuteComparison<strin
         var first = strings[0];
         for (int i = 1; i < strings.Length; i++)
         {
-            result.AddComparisonResult(Compare(first, strings[i], $"strings[0]", $"strings[{i}]"));
+            result.AddComparisonResult(
+                Compare(first, strings[i], $"strings[0]", $"strings[{i}]"));
         }
         return result;
     }
