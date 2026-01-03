@@ -194,6 +194,13 @@ public static class ComparisonMismatches
                 $"Null mismatch detected between objects at index {o1Index} and {o2Index}. " +
                 $"Left value: {(o1 is null ? "null" : o1.ToString())} | " +
                 $"Right value: {(o2 is null ? "null" : o2.ToString())}.");
+        internal static ComparisonMismatch MismatchDetectedByNull(object? o1, object? o2, string o1ExprName, string o2ExprName)
+            => new(MismatchDetectedByNullCode,
+                $"Mismatch detected by null [Object1Name = {o1ExprName}, Object2Name = {o2ExprName}]",
+                verboseMessage:
+                $"Null mismatch detected between objects {o1ExprName} and {o2ExprName}. " +
+                $"Left value: {o1} | " +
+                $"Right value: {o2}.");
 
         public static string MismatchDetectedByTypeCode => $"{Namespace}.{nameof(MismatchDetectedByType)}";
         internal static ComparisonMismatch MismatchDetectedByType(object o1, object o2, int o1Index, int o2Index, Type o1Type, Type o2Type)

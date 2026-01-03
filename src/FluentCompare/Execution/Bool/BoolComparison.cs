@@ -73,12 +73,24 @@ internal class BoolComparison : BoolComparisonBase, IExecuteComparison<bool>
 
             if (first == null)
             {
+                if (_comparisonConfiguration.AllowNullComparison == false)
+                {
+                    result.AddError(ComparisonErrors.OneOfTheObjectsIsNull<bool>());
+                    return result;
+                }
+
                 result.AddMismatch(ComparisonMismatches.NullPassedAsArgument(0, typeof(bool[])));
                 return result;
             }
 
             if (current == null)
             {
+                if (_comparisonConfiguration.AllowNullComparison == false)
+                {
+                    result.AddError(ComparisonErrors.OneOfTheObjectsIsNull<bool>());
+                    return result;
+                }
+
                 result.AddMismatch(ComparisonMismatches.NullPassedAsArgument(i, typeof(bool[])));
                 return result;
             }

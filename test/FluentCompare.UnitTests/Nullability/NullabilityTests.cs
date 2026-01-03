@@ -1,3 +1,5 @@
+using FluentCompare.Tests.Shared.Models;
+
 using Xunit.Abstractions;
 
 namespace FluentCompare.UnitTests.Nullability;
@@ -70,5 +72,31 @@ public class NullabilityTests
         result.WasSuccessful.ShouldBeFalse();
         result.ErrorCount.ShouldBe(1);
         result.Errors[0].Code.ShouldContain(string.Concat(expecterErrorCode.SkipLast(4)));
+    }
+
+    [Theory]
+    [MemberData(nameof(ReturnComparisonError_WhenNullsArePassedWithComplexTypes_WhenNullsNotAllowed_DataSource))]
+    public void ReturnComparisonError_WhenNullsArePassedWithComplexTypes_WhenNullsNotAllowed(
+        ClassWithAllSupportedTypes obj1,
+        ClassWithAllSupportedTypes obj2)
+    {
+        // Arrange
+        // Act
+        var result = ComparisonBuilder.Create()
+            .DisallowNullComparison()
+            .Compare(obj1, obj2);
+
+        // Assert
+        _testOutputHelper.WriteLine(result.ToString());
+        result.WasSuccessful.ShouldBeFalse();
+        result.Errors[0].Code.ShouldBe(ComparisonErrors.OneOfTheObjectsIsNullCode);
+    }
+
+    public static IEnumerable<object[]> ReturnComparisonError_WhenNullsArePassedWithComplexTypes_WhenNullsNotAllowed_DataSource()
+    {
+        yield return new object[] {
+            TestDataGenerator.CreateClassWithAllSupportedTypes(1)!,
+            new ClassWithAllSupportedTypes()
+        };
     }
 }

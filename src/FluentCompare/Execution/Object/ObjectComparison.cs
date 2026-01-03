@@ -105,14 +105,17 @@ internal class ObjectComparison : ObjectComparisonBase
         {
             return result;
         }
-        if (t1 == null)
+
+        if (t1 == null || t2 == null)
         {
-            result.AddError(ComparisonErrors.NullPassedAsArgument(t1ExprName, typeof(object)));
-            return result;
-        }
-        if (t2 == null)
-        {
-            result.AddError(ComparisonErrors.NullPassedAsArgument(t2ExprName, typeof(object)));
+            if (_comparisonConfiguration.AllowNullComparison == false)
+            {
+                result.AddError(ComparisonErrors.OneOfTheObjectsIsNull(t1ExprName, t2ExprName));
+                return result;
+            }
+
+            result.AddMismatch(ComparisonMismatches.Object.MismatchDetectedByNull(
+                t1, t2, t1ExprName, t2ExprName));
             return result;
         }
 

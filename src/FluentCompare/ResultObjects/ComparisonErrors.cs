@@ -40,9 +40,15 @@ public static class ComparisonErrors
     internal static ComparisonError BothObjectsAreNull(int i, Type type)
          => new(BothObjectsAreNullCode, $"Objects of type {type.Name} at index 0 and {i} are null");
 
+    /// <summary>
+    /// Returned when comparison was configured to disallow nulls, 
+    /// and one of the objects that normally would be compared is null
+    /// </summary>
     public static string OneOfTheObjectsIsNullCode => $"{Namespace}.{nameof(OneOfTheObjectsIsNull)}";
     internal static ComparisonError OneOfTheObjectsIsNull(string t1ExprName, string t2ExprName)
          => new(OneOfTheObjectsIsNullCode, $"One of the objects is null [Object1 = {t1ExprName}, Object2 = {t2ExprName}, AllowNullComparison = False]");
+    internal static ComparisonError OneOfTheObjectsIsNull<T>()
+         => new(OneOfTheObjectsIsNullCode, $"One of the arrays to compare is null [ArrayType = {typeof(T).Name}, AllowNullComparison = False]");
 
     public static string DepthLimitReachedCode => $"{Namespace}.{nameof(DepthLimitReached)}";
     internal static ComparisonError DepthLimitReached(int currentDepth)
