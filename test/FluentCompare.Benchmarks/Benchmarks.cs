@@ -13,8 +13,8 @@ namespace FluentCompare.Benchmarks;
 [SimpleJob(launchCount: 1, warmupCount: 3, iterationCount: 8)]
 public class Benchmarks
 {
-    private ClassWithAllSupportedTypes _obj1;
-    private ClassWithAllSupportedTypes _obj2;
+    private ClassWithAllSupportedTypes? _obj1;
+    private ClassWithAllSupportedTypes? _obj2;
 
     [GlobalSetup]
     public void Setup()

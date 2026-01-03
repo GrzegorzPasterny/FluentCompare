@@ -212,16 +212,23 @@ internal class ObjectComparison : ObjectComparisonBase
 
                     if (obj1 == null && obj2 == null)
                     {
-                        result.AddWarning(ComparisonErrors.Object.BothObjectsAreNull(obj1, obj2, i, i));
+                        if (_comparisonConfiguration.AllowNullComparison == false)
+                        {
+                            result.AddError(ComparisonErrors.BothObjectsAreNull(t1ExprName, t2ExprName));
+                        }
+                        break; // objects are equal. Move to the next pair
                     }
 
                     if (obj1 == null || obj2 == null)
                     {
-                        if (obj1 != obj2)
+                        if (_comparisonConfiguration.AllowNullComparison == false)
                         {
-                            result.AddMismatch(ComparisonMismatches.Object.MismatchDetectedByNull(
-                                obj1, obj2, i, i));
+                            result.AddError(ComparisonErrors.OneOfTheObjectsIsNull(t1ExprName, t2ExprName));
+                            break;
                         }
+
+                        result.AddMismatch(ComparisonMismatches.Object.MismatchDetectedByNull(
+                            obj1, obj2, i, i));
                         break;
                     }
 
