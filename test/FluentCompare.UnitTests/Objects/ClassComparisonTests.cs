@@ -78,8 +78,8 @@ public class ClassComparisonTests
                 ClassWithIntProperty = null!
             },
             false,
-            false,
-            ComparisonErrors.NullPassedAsArgumentCode
+            true,
+            ComparisonMismatches.Object.MismatchDetectedByNullCode
         };
         yield return new object[]
         {

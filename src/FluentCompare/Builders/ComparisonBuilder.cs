@@ -757,48 +757,34 @@ public class ComparisonBuilder : IComparisonBuilder
         {
             if (t1 is null && t2 is null)
             {
-                if (Configuration.AllowNullsInArguments)
+                if (Configuration.AllowNullsInArguments && Configuration.AllowNullComparison)
                 {
                     result.AddWarning(ComparisonErrors.BothObjectsAreNull());
                     return result;
                 }
-                else
-                {
-                    result.AddError(ComparisonErrors.BothObjectsAreNull());
-                    return result;
-                }
+
+                result.AddError(ComparisonErrors.BothObjectsAreNull());
+                return result;
             }
 
             string t1ExprName = t1Expr ?? $"{typeof(T).Name}One";
             string t2ExprName = t1Expr ?? $"{typeof(T).Name}Two";
 
-            if (t1 is null)
+            if (t1 is null || t2 is null)
             {
-                if (Configuration.AllowNullsInArguments)
-                {
-                    result.AddMismatch(ComparisonMismatches.NullPassedAsArgument(t1ExprName, t2ExprName, typeof(T)));
-                    return result;
-                }
-                else
+                if (Configuration.AllowNullsInArguments == false)
                 {
                     result.AddError(ComparisonErrors.NullPassedAsArgument(t1ExprName, typeof(T)));
                     return result;
                 }
 
-            }
+                if (Configuration.AllowNullComparison == false)
+                {
+                    result.AddError(ComparisonErrors.OneOfTheObjectsIsNull(t1ExprName, t2ExprName));
+                }
 
-            if (t2 is null)
-            {
-                if (Configuration.AllowNullsInArguments)
-                {
-                    result.AddMismatch(ComparisonMismatches.NullPassedAsArgument(t1ExprName, t2ExprName, typeof(T)));
-                    return result;
-                }
-                else
-                {
-                    result.AddError(ComparisonErrors.NullPassedAsArgument(t2ExprName, typeof(T)));
-                    return result;
-                }
+                result.AddMismatch(ComparisonMismatches.NullPassedAsArgument(t1ExprName, t2ExprName, typeof(T)));
+                return result;
             }
         }
 

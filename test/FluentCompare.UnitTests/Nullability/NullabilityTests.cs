@@ -74,6 +74,14 @@ public class NullabilityTests
         result.Errors[0].Code.ShouldContain(string.Concat(expecterErrorCode.SkipLast(4)));
     }
 
+    public static IEnumerable<object[]> ReturnComparisonError_WhenNullsArePassedWithComplexTypes_WhenNullsNotAllowed_DataSource()
+    {
+        yield return new object[] {
+            TestDataGenerator.CreateClassWithAllSupportedTypes(1)!,
+            new ClassWithAllSupportedTypes()
+        };
+    }
+
     [Theory]
     [MemberData(nameof(ReturnComparisonError_WhenNullsArePassedWithComplexTypes_WhenNullsNotAllowed_DataSource))]
     public void ReturnComparisonError_WhenNullsArePassedWithComplexTypes_WhenNullsNotAllowed(
@@ -92,11 +100,25 @@ public class NullabilityTests
         result.Errors[0].Code.ShouldBe(ComparisonErrors.OneOfTheObjectsIsNullCode);
     }
 
-    public static IEnumerable<object[]> ReturnComparisonError_WhenNullsArePassedWithComplexTypes_WhenNullsNotAllowed_DataSource()
+    [Theory]
+    [InlineData(12, null, nameof(ComparisonErrors.OneOfTheObjectsIsNullCode))]
+    [InlineData(null, 12, nameof(ComparisonErrors.OneOfTheObjectsIsNullCode))]
+    [InlineData(null, null, nameof(ComparisonErrors.BothObjectsAreNullCode))]
+    public void ReturnComparisonError_WhenComparingInts_WhenIntIsProvided_WhenNullsAreNotAllowed(
+        int? int1,
+        int? int2,
+        string expecterErrorCode)
     {
-        yield return new object[] {
-            TestDataGenerator.CreateClassWithAllSupportedTypes(1)!,
-            new ClassWithAllSupportedTypes()
-        };
+        // Arrange
+        // Act
+        var result = ComparisonBuilder.Create()
+            .DisallowNullComparison()
+            .Compare(int1, int2);
+
+        // Assert
+        _testOutputHelper.WriteLine(result.ToString());
+        result.WasSuccessful.ShouldBeFalse();
+        result.ErrorCount.ShouldBe(1);
+        result.Errors[0].Code.ShouldContain(string.Concat(expecterErrorCode.SkipLast(4)));
     }
 }

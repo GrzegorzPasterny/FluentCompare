@@ -7,6 +7,7 @@ internal class BoolComparison : BoolComparisonBase, IExecuteComparison<bool>
 
     public override ComparisonResult Compare(bool[] bools)
     {
+        // TODO: Get rid of the initialization of ComparisonResult here and in other similar places
         var result = new ComparisonResult();
 
         if (bools == null)
