@@ -6,10 +6,14 @@ namespace FluentCompare.Tests.Utilities;
 
 public static class TestDataGenerator
 {
+    private static int _currentDepth = -1;
+
     public static ClassWithAllSupportedTypes? CreateClassWithAllSupportedTypes(int depth = 1)
     {
-        if (depth > 10) // prevent infinite recursion
+        if (_currentDepth > depth || _currentDepth > 10) // prevent infinite recursion
             return null;
+
+        _currentDepth++;
 
         var faker = new Faker<ClassWithAllSupportedTypes>()
             .RuleFor(x => x.Bool, f => f.Random.Bool())
@@ -28,9 +32,9 @@ public static class TestDataGenerator
             .RuleFor(x => x.DecimalArray, f => f.Make(3, () => f.Random.Decimal(0, 100)).ToArray())
             .RuleFor(x => x.Object, f => f.Random.Word())
             .RuleFor(x => x.ObjectArray, f => f.Make(3, () => (object)f.Random.Word()).ToArray())
-            .RuleFor(x => x.NestedClass, _ => CreateClassWithAllSupportedTypes(depth + 1))
+            .RuleFor(x => x.NestedClass, _ => CreateClassWithAllSupportedTypes(depth))
             .RuleFor(x => x.NestedClassArray, _ => Enumerable.Range(0, 2)
-                                                             .Select(_ => CreateClassWithAllSupportedTypes(depth + 1))
+                                                             .Select(_ => CreateClassWithAllSupportedTypes(depth))
                                                              .ToArray());
 
         return faker.Generate();

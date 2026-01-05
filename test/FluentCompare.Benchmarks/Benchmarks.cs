@@ -1,11 +1,15 @@
 using System.Text;
 
+using AutoMapper;
+
 using BenchmarkDotNet.Attributes;
 
 using FluentCompare.Tests.Shared.Models;
-using FluentCompare.UnitTests;
+using FluentCompare.Tests.Utilities;
 
 using KellermanSoftware.CompareNetObjects;
+
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace FluentCompare.Benchmarks;
 
@@ -16,11 +20,29 @@ public class Benchmarks
     private ClassWithAllSupportedTypes? _obj1;
     private ClassWithAllSupportedTypes? _obj2;
 
+    [Params("SetA", "SetB")] // Runs everything twice, once per value
+    public string DataSet { get; set; } = string.Empty;
+
     [GlobalSetup]
     public void Setup()
     {
-        _obj1 = TestDataGenerator.CreateClassWithAllSupportedTypes(depth: 2);
-        _obj2 = TestDataGenerator.CreateClassWithAllSupportedTypes(depth: 2);
+        if (DataSet == "SetA")
+        {
+            _obj1 = TestDataGenerator.CreateClassWithAllSupportedTypes(depth: 2);
+            _obj2 = TestDataGenerator.CreateClassWithAllSupportedTypes(depth: 2);
+        }
+        else if (DataSet == "SetB")
+        {
+            _obj1 = TestDataGenerator.CreateClassWithAllSupportedTypes(depth: 2);
+            var config = new MapperConfiguration(cfg => cfg.CreateMap<ClassWithAllSupportedTypes, ClassWithAllSupportedTypes>(), new NullLoggerFactory());
+            IMapper mapper = config.CreateMapper();
+
+            // Usage:
+            _obj2 = mapper.Map<ClassWithAllSupportedTypes>(_obj1);
+            _obj2.NestedClassArray?.LastOrDefault()?
+                 .NestedClassArray?.LastOrDefault()?
+                 .Decimal = 2;
+        }
     }
 
     [Benchmark]
