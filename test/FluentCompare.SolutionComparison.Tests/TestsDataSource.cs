@@ -1,9 +1,11 @@
 using FluentCompare.Tests.Shared.Models;
+using FluentCompare.Tests.Utilities;
 
 namespace FluentCompare.SolutionComparison.Tests;
+
 public class TestsDataSource
 {
-    public static IEnumerable<object[]> PerformObjectComparison_DataSource()
+    public static IEnumerable<object?[]> PerformObjectComparison_DataSource()
     {
         yield return new object[]
         {
@@ -14,6 +16,16 @@ public class TestsDataSource
         {
             new ClassWithIntProperty(1),
             new ClassWithIntProperty(2)
+        };
+        yield return new object?[]
+        {
+            TestDataGenerator.CreateClassWithAllSupportedTypes(depth: 1),
+            TestDataGenerator.CreateClassWithAllSupportedTypes(depth: 1),
+        };
+        yield return new object?[]
+        {
+            TestDataGenerator.CreateClassWithAllSupportedTypes(depth: 2),
+            TestDataGenerator.CreateClassWithAllSupportedTypes(depth: 2),
         };
     }
 }

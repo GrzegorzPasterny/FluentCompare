@@ -19,8 +19,8 @@ public class Benchmarks
     [GlobalSetup]
     public void Setup()
     {
-        _obj1 = TestDataGenerator.CreateClassWithAllSupportedTypes();
-        _obj2 = TestDataGenerator.CreateClassWithAllSupportedTypes();
+        _obj1 = TestDataGenerator.CreateClassWithAllSupportedTypes(depth: 2);
+        _obj2 = TestDataGenerator.CreateClassWithAllSupportedTypes(depth: 2);
     }
 
     [Benchmark]
@@ -34,7 +34,10 @@ public class Benchmarks
     [Benchmark]
     public string CompareWith_CompareNetObjects()
     {
-        var compareLogic = new CompareLogic();
+        var compareLogic = new CompareLogic(new ComparisonConfig()
+        {
+            MaxDifferences = int.MaxValue
+        });
         KellermanSoftware.CompareNetObjects.ComparisonResult comparisonResultNetObjects =
             compareLogic.Compare(_obj1, _obj2);
 

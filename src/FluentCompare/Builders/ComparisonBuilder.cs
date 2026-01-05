@@ -35,10 +35,10 @@ public class ComparisonBuilder : IComparisonBuilder
     /// <remarks>
     /// Use <see cref="Create"/> method to enable the Fluent API experience if needed.
     /// </remarks>
-    //public static ComparisonResult Compare<T>(T t1, T t2, ComparisonConfiguration? comparisonConfiguration = null)
-    //{
-    //    throw new NotImplementedException();
-    //}
+    public static ComparisonResult Compare<T>(T t1, T t2, ComparisonConfiguration? comparisonConfiguration = null)
+    {
+        throw new NotImplementedException();
+    }
 
     /// <summary>
     /// Builds and executes the comparison for <typeparamref name="T"/>.
@@ -366,6 +366,11 @@ public class ComparisonBuilder : IComparisonBuilder
 
         // Check basic nullability results first
         if (_result.WasSuccessful == false || _result.AllMatched == false)
+        {
+            return _result;
+        }
+        if (_result.WarningCount > 0 &&
+            _result.Warnings.Any(warning => warning.Code == ComparisonErrors.BothObjectsAreNullCode))
         {
             return _result;
         }

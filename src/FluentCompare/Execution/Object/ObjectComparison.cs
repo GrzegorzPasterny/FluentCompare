@@ -293,6 +293,7 @@ internal class ObjectComparison : ObjectComparisonBase
                                 .GetMethods()
                                 .Where(m => m.Name == nameof(Compare))
                                 .Where(m => m.IsGenericMethodDefinition)
+                                .Where(m => m.IsStatic == false)
                                 .First(m =>
                                 {
                                     var p = m.GetParameters();

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.31903.59
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11222.15 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{827E0CD3-B72D-47B6-A68D-7590B98EB39B}"
 EndProject
@@ -21,6 +21,8 @@ EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FluentCompare.Tests.Shared", "test\FluentCompare.Tests.Shared\FluentCompare.Tests.Shared.shproj", "{25EA070A-EB0B-4902-87A6-C07742F1699A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentCompare.Benchmarks", "test\FluentCompare.Benchmarks\FluentCompare.Benchmarks.csproj", "{3A404F80-473C-4488-B96B-209B23AA1EEE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentCompare.Tests.Utilities", "test\FluentCompare.Tests.Utilities\FluentCompare.Tests.Utilities.csproj", "{9EDFB40E-5689-494B-A8D0-6C5D311F6750}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -80,6 +82,18 @@ Global
 		{3A404F80-473C-4488-B96B-209B23AA1EEE}.Release|x64.Build.0 = Release|Any CPU
 		{3A404F80-473C-4488-B96B-209B23AA1EEE}.Release|x86.ActiveCfg = Release|Any CPU
 		{3A404F80-473C-4488-B96B-209B23AA1EEE}.Release|x86.Build.0 = Release|Any CPU
+		{9EDFB40E-5689-494B-A8D0-6C5D311F6750}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9EDFB40E-5689-494B-A8D0-6C5D311F6750}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9EDFB40E-5689-494B-A8D0-6C5D311F6750}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9EDFB40E-5689-494B-A8D0-6C5D311F6750}.Debug|x64.Build.0 = Debug|Any CPU
+		{9EDFB40E-5689-494B-A8D0-6C5D311F6750}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9EDFB40E-5689-494B-A8D0-6C5D311F6750}.Debug|x86.Build.0 = Debug|Any CPU
+		{9EDFB40E-5689-494B-A8D0-6C5D311F6750}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9EDFB40E-5689-494B-A8D0-6C5D311F6750}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9EDFB40E-5689-494B-A8D0-6C5D311F6750}.Release|x64.ActiveCfg = Release|Any CPU
+		{9EDFB40E-5689-494B-A8D0-6C5D311F6750}.Release|x64.Build.0 = Release|Any CPU
+		{9EDFB40E-5689-494B-A8D0-6C5D311F6750}.Release|x86.ActiveCfg = Release|Any CPU
+		{9EDFB40E-5689-494B-A8D0-6C5D311F6750}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -90,6 +104,7 @@ Global
 		{A7E871CB-D354-424F-8A31-CAF15CB768C4} = {0C88DD14-F956-CE84-757C-A364CCF449FC}
 		{25EA070A-EB0B-4902-87A6-C07742F1699A} = {0C88DD14-F956-CE84-757C-A364CCF449FC}
 		{3A404F80-473C-4488-B96B-209B23AA1EEE} = {0C88DD14-F956-CE84-757C-A364CCF449FC}
+		{9EDFB40E-5689-494B-A8D0-6C5D311F6750} = {0C88DD14-F956-CE84-757C-A364CCF449FC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8DB2F507-0A6E-44A6-80A4-150B11FB653B}
@@ -97,6 +112,7 @@ Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		test\FluentCompare.Tests.Shared\FluentCompare.Tests.Shared.projitems*{25ea070a-eb0b-4902-87a6-c07742f1699a}*SharedItemsImports = 13
 		test\FluentCompare.Tests.Shared\FluentCompare.Tests.Shared.projitems*{2e7803d3-29cd-40af-8f3e-7f4b0a0af12e}*SharedItemsImports = 5
+		test\FluentCompare.Tests.Shared\FluentCompare.Tests.Shared.projitems*{9edfb40e-5689-494b-a8d0-6c5d311f6750}*SharedItemsImports = 5
 		test\FluentCompare.Tests.Shared\FluentCompare.Tests.Shared.projitems*{a7e871cb-d354-424f-8a31-caf15cb768c4}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal

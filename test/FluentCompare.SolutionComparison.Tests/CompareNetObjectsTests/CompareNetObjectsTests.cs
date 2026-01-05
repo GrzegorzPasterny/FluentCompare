@@ -3,6 +3,7 @@ using KellermanSoftware.CompareNetObjects;
 using Xunit.Abstractions;
 
 namespace FluentCompare.SolutionComparison.Tests.CompareNetObjectsTests;
+
 public class CompareNetObjectsTests
 {
     private readonly ITestOutputHelper _testOutputHelper;
@@ -17,7 +18,10 @@ public class CompareNetObjectsTests
         MemberType = typeof(TestsDataSource))]
     public void PerformObjectComparison_UsingAnyDiff_CompareWithFluentCompare(object obj1, object obj2)
     {
-        var compareLogic = new CompareLogic();
+        var compareLogic = new CompareLogic(new ComparisonConfig()
+        {
+            MaxDifferences = int.MaxValue
+        });
         KellermanSoftware.CompareNetObjects.ComparisonResult comparisonResultNetObjects =
             compareLogic.Compare(obj1, obj2);
 
