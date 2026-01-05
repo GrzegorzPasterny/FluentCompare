@@ -126,6 +126,74 @@ public class ClassComparisonTests
             new ClassWithAllSupportedTypes()
             {
                 Double = 1.0,
+            },
+            new ClassWithAllSupportedTypes()
+            {
+                Double = 1.1,
+            },
+            0,
+            true,
+        };
+        yield return new object[]
+        {
+            new ClassWithAllSupportedTypes()
+            {
+                Double = 1.0,
+            },
+            new ClassWithAllSupportedTypes()
+            {
+                Double = 1.1,
+            },
+            1,
+            false,
+        };
+        yield return new object[]
+        {
+            new ClassWithAllSupportedTypes()
+            {
+                Double = 1.0,
+                NestedClass = new ClassWithAllSupportedTypes()
+                {
+                    String = "string",
+                }
+            },
+            new ClassWithAllSupportedTypes()
+            {
+                Double = 1.0,
+                NestedClass = new ClassWithAllSupportedTypes()
+                {
+                    String = "other-string",
+                }
+            },
+            1,
+            true,
+        };
+        yield return new object[]
+        {
+            new ClassWithAllSupportedTypes()
+            {
+                Double = 1.0,
+                NestedClass = new ClassWithAllSupportedTypes()
+                {
+                    String = "string",
+                }
+            },
+            new ClassWithAllSupportedTypes()
+            {
+                Double = 1.0,
+                NestedClass = new ClassWithAllSupportedTypes()
+                {
+                    String = "other-string",
+                }
+            },
+            2,
+            false,
+        };
+        yield return new object[]
+        {
+            new ClassWithAllSupportedTypes()
+            {
+                Double = 1.0,
                 NestedClass = new ClassWithAllSupportedTypes()
                 {
                     String = "string",
