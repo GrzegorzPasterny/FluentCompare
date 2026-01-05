@@ -239,7 +239,7 @@ public class DoubleComparisonTests
     {
         // Arrange
         double[] array1 = { 1.0, 2.0 };
-        double[] array2 = null;
+        double[]? array2 = null;
 
         // Act
         var result = ComparisonBuilder.Create()

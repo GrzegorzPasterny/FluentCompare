@@ -1,6 +1,7 @@
 using Xunit.Abstractions;
 
 namespace FluentCompare.UnitTests.Strings;
+
 public class StringComparisonTests
 {
     private readonly ITestOutputHelper _testOutputHelper;
@@ -25,7 +26,7 @@ public class StringComparisonTests
         var builder = CreateBuilder();
 
         // Act
-        var result = builder.Compare<string>(null, null);
+        var result = builder.Compare<string?>(null, null);
         _testOutputHelper.WriteLine(result.ToString());
 
         // Assert
@@ -189,7 +190,7 @@ public class StringComparisonTests
         var builder = CreateBuilder();
 
         // Act
-        var result = builder.Compare<string[]>(null, null, null, null, null, null, null);
+        var result = builder.Compare<string[]?>(null, null, null, null, null, null, null);
         _testOutputHelper.WriteLine(result.ToString());
 
         // Assert

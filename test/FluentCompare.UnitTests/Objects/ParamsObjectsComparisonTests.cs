@@ -13,7 +13,7 @@ public class ParamsObjectsComparisonTests
 
     [Theory]
     [InlineData([null, null, null])]
-    public void Compare_ParamsObjects_AllShouldMatch(params object[] objects)
+    public void Compare_ParamsObjects_AllShouldMatch(params object?[] objects)
     {
         // Arrange
         var builder = ComparisonBuilder.Create();
@@ -40,7 +40,7 @@ public class ParamsObjectsComparisonTests
     [Theory]
     [InlineData(null, null, null)]
     [InlineData(1, 1, 1)]
-    public void Compare_ParamsObject_AllShouldMatch(object obj1, object obj2, object obj3)
+    public void Compare_ParamsObject_AllShouldMatch(object? obj1, object? obj2, object? obj3)
     {
         // Arrange
         var builder = ComparisonBuilder.Create();
@@ -57,7 +57,7 @@ public class ParamsObjectsComparisonTests
     [InlineData(null, 1, null, nameof(ComparisonMismatches.Object.MismatchDetectedByReferenceCode), ComplexTypesComparisonMode.ReferenceEquality)]
     [InlineData(1, null, 1, nameof(ComparisonMismatches.Object.MismatchDetectedByReferenceCode), ComplexTypesComparisonMode.ReferenceEquality)]
     public void Compare_ParamsObject_ShouldReturnMismatch(
-        object obj1, object obj2, object obj3, string mismatchCode, ComplexTypesComparisonMode complexTypesComparisonMode)
+        object? obj1, object? obj2, object? obj3, string mismatchCode, ComplexTypesComparisonMode complexTypesComparisonMode)
     {
         // Arrange
         var builder = ComparisonBuilder
@@ -73,7 +73,7 @@ public class ParamsObjectsComparisonTests
 
     [Theory(Skip = "Not implemented")]
     [InlineData(null, null, null)]
-    public void Compare_ParamsObject_ShouldReturnError(object obj1, object obj2, object obj3)
+    public void Compare_ParamsObject_ShouldReturnError(object? obj1, object? obj2, object? obj3)
     {
         // Arrange
         var builder = ComparisonBuilder

@@ -28,7 +28,7 @@ public class ComparisonBuilder : IComparisonBuilder
     /// <param name="t">The objects to compare.</param>
     /// <returns>A <see cref="ComparisonResult"/> representing the outcome of the comparison.</returns>
     /// <exception cref="NotImplementedException">Thrown if the type is not supported.</exception>
-    public ComparisonResult Compare<T>(params T[] t)
+    public ComparisonResult Compare<T>(params T[]? t)
     {
         if (t is null)
         {

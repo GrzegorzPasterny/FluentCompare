@@ -121,7 +121,7 @@ namespace FluentCompare.UnitTests.Integers
         {
             // Act
             var result = ComparisonBuilder.Create()
-            .Compare<int[]>([1, 2, 3, 4, 5], null);
+            .Compare<int[]?>([1, 2, 3, 4, 5], null);
 
             // Assert
             result.WasSuccessful.ShouldBeTrue();
