@@ -3,8 +3,8 @@ using FluentCompare.Execution.Int;
 internal class NumericComparison<T> : NumericComparisonBase<T>, IExecuteComparison<T> where T : struct, IComparable<T>
 {
     internal NumericComparison(
-        ComparisonConfiguration comparisonConfiguration, ComparisonResult? comparisonResult = null)
-        : base(comparisonConfiguration, comparisonResult)
+        ComparisonConfiguration comparisonConfiguration)
+        : base(comparisonConfiguration)
     {
         _comparisonConfiguration = comparisonConfiguration;
 
@@ -16,10 +16,8 @@ internal class NumericComparison<T> : NumericComparisonBase<T>, IExecuteComparis
         }
     }
 
-    public override ComparisonResult Compare(T[] ints)
+    public override ComparisonResult Compare(T[] ints, ComparisonResult result)
     {
-        var result = new ComparisonResult();
-
         if (ints == null)
         {
             result.AddError(ComparisonErrors.NullPassedAsArgument(typeof(int)));
@@ -44,10 +42,8 @@ internal class NumericComparison<T> : NumericComparisonBase<T>, IExecuteComparis
         return result;
     }
 
-    public override ComparisonResult Compare(T i1, T i2, string t1ExprName, string t2ExprName)
+    public override ComparisonResult Compare(T i1, T i2, string t1ExprName, string t2ExprName, ComparisonResult result)
     {
-        var result = new ComparisonResult();
-
         if (!Compare(i1, i2, _comparisonConfiguration.ComparisonType))
         {
             result.AddMismatch(ComparisonMismatches<T>.MismatchDetected(i1, i2, t1ExprName, t2ExprName, _comparisonConfiguration.ComparisonType, _toStringFunc));
@@ -56,10 +52,8 @@ internal class NumericComparison<T> : NumericComparisonBase<T>, IExecuteComparis
         return result;
     }
 
-    public override ComparisonResult Compare(T[][] ints)
+    public override ComparisonResult Compare(T[][] ints, ComparisonResult result)
     {
-        var result = new ComparisonResult();
-
         if (ints == null || ints.Length < 2)
             return result;
 
@@ -101,10 +95,8 @@ internal class NumericComparison<T> : NumericComparisonBase<T>, IExecuteComparis
         return result;
     }
 
-    public override ComparisonResult Compare(T[] intArr1, T[] intArr2, string intArr1ExprName, string intArr2ExprName)
+    public override ComparisonResult Compare(T[] intArr1, T[] intArr2, string intArr1ExprName, string intArr2ExprName, ComparisonResult result)
     {
-        var result = new ComparisonResult();
-
         if (intArr1.Length != intArr2.Length)
         {
             result.AddError(ComparisonErrors.InputArrayLengthsDiffer(

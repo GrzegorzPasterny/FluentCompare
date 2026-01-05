@@ -49,11 +49,11 @@ namespace FluentCompare.UnitTests.Objects
             // Act
             var result = ComparisonBuilder.Create()
                 .Compare(obj1, obj2);
+            _testOutputHelper.WriteLine(result.ToString());
 
             // Assert
             result.AllMatched.ShouldBeFalse();
             result.Mismatches.Count.ShouldBe(1);
-            _testOutputHelper.WriteLine(result.ToString());
             result.Mismatches.First().Message.ShouldContain(nameof(obj1));
             result.Mismatches.First().Message.ShouldContain(nameof(obj2));
         }

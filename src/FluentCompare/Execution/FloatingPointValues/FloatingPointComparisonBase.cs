@@ -9,9 +9,7 @@ internal abstract class FloatingPointComparisonBase<T>
     where T : struct, IFloatingPoint<T>
 {
     protected FloatingPointComparisonBase(
-        ComparisonConfiguration configuration,
-        ComparisonResult? comparisonResult = null)
-        : base(configuration, comparisonResult)
+        ComparisonConfiguration configuration) : base(configuration)
     {
     }
 

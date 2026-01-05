@@ -5,14 +5,12 @@ using FluentCompare.Execution.FloatingPointValues;
 internal class FloatingPointComparison<T> : FloatingPointComparisonBase<T> where T : struct, IFloatingPoint<T>
 {
     public FloatingPointComparison(
-        ComparisonConfiguration configuration, ComparisonResult? comparisonResult = null)
-        : base(configuration, comparisonResult)
+        ComparisonConfiguration configuration)
+        : base(configuration)
     { }
 
-    public override ComparisonResult Compare(params T[] floats)
+    public override ComparisonResult Compare(T[] floats, ComparisonResult result)
     {
-        var result = new ComparisonResult();
-
         if (floats == null)
         {
             result.AddError(ComparisonErrors.NullPassedAsArgument(typeof(T)));
@@ -64,9 +62,8 @@ internal class FloatingPointComparison<T> : FloatingPointComparisonBase<T> where
         }
     }
 
-    public override ComparisonResult Compare(T d1, T d2, string d1ExprName, string d2ExprName)
+    public override ComparisonResult Compare(T d1, T d2, string d1ExprName, string d2ExprName, ComparisonResult result)
     {
-        var result = new ComparisonResult();
         var comparisonType = _comparisonConfiguration.ComparisonType;
 
         if (_comparisonConfiguration.FloatConfiguration is null)
@@ -80,10 +77,8 @@ internal class FloatingPointComparison<T> : FloatingPointComparisonBase<T> where
         return result;
     }
 
-    public override ComparisonResult Compare(params T[][] doubleArrays)
+    public override ComparisonResult Compare(T[][] doubleArrays, ComparisonResult result)
     {
-        var result = new ComparisonResult();
-
         if (doubleArrays == null)
         {
             result.AddError(ComparisonErrors.NullPassedAsArgument(typeof(T[])));
@@ -99,7 +94,7 @@ internal class FloatingPointComparison<T> : FloatingPointComparisonBase<T> where
         var first = doubleArrays[0];
         for (int i = 1; i < doubleArrays.Length; i++)
         {
-            var mismatch = Compare(first, doubleArrays[i], $"doubles[0]", $"doubles[{i}]");
+            var mismatch = Compare(first, doubleArrays[i], $"doubles[0]", $"doubles[{i}]", result);
             foreach (var m in mismatch.Mismatches)
             {
                 result.AddMismatch(m);
@@ -109,10 +104,8 @@ internal class FloatingPointComparison<T> : FloatingPointComparisonBase<T> where
         return result;
     }
 
-    public override ComparisonResult Compare(T[] dArr1, T[] dArr2, string dArr1ExprName, string dArr2ExprName)
+    public override ComparisonResult Compare(T[] dArr1, T[] dArr2, string dArr1ExprName, string dArr2ExprName, ComparisonResult result)
     {
-        var result = new ComparisonResult();
-
         if (ReferenceEquals(dArr1, dArr2))
         {
             return result;

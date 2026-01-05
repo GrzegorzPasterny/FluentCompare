@@ -3,15 +3,13 @@ internal class ObjectComparison : ObjectComparisonBase
     private int _depth = -1;
 
     internal ObjectComparison(
-        ComparisonConfiguration comparisonConfiguration, ComparisonResult? comparisonResult = null)
-        : base(comparisonConfiguration, comparisonResult)
+        ComparisonConfiguration comparisonConfiguration)
+        : base(comparisonConfiguration)
     {
     }
 
-    public override ComparisonResult Compare(object[] objects)
+    public override ComparisonResult Compare(object[] objects, ComparisonResult result)
     {
-        var result = new ComparisonResult();
-
         if (_depth > _comparisonConfiguration.MaximumComparisonDepth)
         {
             result.AddWarning(ComparisonErrors.DepthLimitReached(_depth));
@@ -91,10 +89,8 @@ internal class ObjectComparison : ObjectComparisonBase
         return result;
     }
 
-    public override ComparisonResult Compare(object? t1, object? t2, string t1ExprName, string t2ExprName)
+    public override ComparisonResult Compare(object? t1, object? t2, string t1ExprName, string t2ExprName, ComparisonResult result)
     {
-        var result = new ComparisonResult();
-
         if (_depth >= _comparisonConfiguration.MaximumComparisonDepth)
         {
             result.AddWarning(ComparisonErrors.DepthLimitReached(_depth, t1ExprName, t2ExprName));
@@ -149,9 +145,8 @@ internal class ObjectComparison : ObjectComparisonBase
         return result;
     }
 
-    public override ComparisonResult Compare(object[][] objects)
+    public override ComparisonResult Compare(object[][] objects, ComparisonResult result)
     {
-        var result = new ComparisonResult();
         if (objects == null)
         {
             result.AddError(ComparisonErrors.NullPassedAsArgument(typeof(object[])));
@@ -167,17 +162,14 @@ internal class ObjectComparison : ObjectComparisonBase
         var first = objects[0];
         for (int i = 1; i < objects.Length; i++)
         {
-            var comparisonResult = Compare(first, objects[i], $"objects[0]", $"objects[{i}]");
-            result.AddComparisonResult(comparisonResult);
+            var comparisonResult = Compare(first, objects[i], $"objects[0]", $"objects[{i}]", result);
         }
 
         return result;
     }
 
-    public override ComparisonResult Compare(object[] t1, object[] t2, string t1ExprName, string t2ExprName)
+    public override ComparisonResult Compare(object[] t1, object[] t2, string t1ExprName, string t2ExprName, ComparisonResult result)
     {
-        var result = new ComparisonResult();
-
         if (ReferenceEquals(t1, t2))
         {
             return result;
@@ -274,16 +266,15 @@ internal class ObjectComparison : ObjectComparisonBase
 
             if (t1ExprName is null || t2ExprName is null)
             {
-                propResult = Compare(val1, val2, prop.Name, prop.Name);
+                propResult = Compare(val1, val2, prop.Name, prop.Name, result);
             }
             else
             {
                 propResult = Compare(
                     val1, val2,
-                    $"{t1ExprName}.{prop.Name}", $"{t2ExprName}.{prop.Name}");
+                    $"{t1ExprName}.{prop.Name}", $"{t2ExprName}.{prop.Name}",
+                    result);
             }
-
-            result.AddComparisonResult(propResult);
         }
     }
 

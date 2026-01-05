@@ -20,6 +20,8 @@ public class ComparisonResult
     public bool WasSuccessful => _errors.Count == 0;
     public int ErrorCount => _errors.Count;
 
+    public int WarningCount => _warnings.Count;
+
     public override string ToString()
     {
         if (!AllMatched)

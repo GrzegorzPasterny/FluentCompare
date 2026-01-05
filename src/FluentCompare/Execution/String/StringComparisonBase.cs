@@ -1,8 +1,8 @@
 internal abstract class StringComparisonBase : ComparisonBase<string>
 {
     protected StringComparisonBase(
-        ComparisonConfiguration configuration, ComparisonResult? comparisonResult = null)
-        : base(configuration, comparisonResult) { }
+        ComparisonConfiguration configuration)
+        : base(configuration) { }
 
     internal bool Compare(
         string stringA, string stringB,

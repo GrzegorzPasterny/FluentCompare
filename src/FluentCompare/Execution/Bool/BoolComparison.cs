@@ -1,15 +1,12 @@
 internal class BoolComparison : BoolComparisonBase, IExecuteComparison<bool>
 {
     public BoolComparison(
-        ComparisonConfiguration comparisonConfiguration, ComparisonResult? comparisonResult = null)
-        : base(comparisonConfiguration, comparisonResult)
+        ComparisonConfiguration comparisonConfiguration)
+        : base(comparisonConfiguration)
     { }
 
-    public override ComparisonResult Compare(bool[] bools)
+    public override ComparisonResult Compare(bool[] bools, ComparisonResult result)
     {
-        // TODO: Get rid of the initialization of ComparisonResult here and in other similar places
-        var result = new ComparisonResult();
-
         if (bools == null)
         {
             result.AddError(ComparisonErrors.NullPassedAsArgument(typeof(bool)));
@@ -26,6 +23,11 @@ internal class BoolComparison : BoolComparisonBase, IExecuteComparison<bool>
 
         for (int i = 1; i < bools.Length; i++)
         {
+            if (_comparisonConfiguration.FinishComparisonOnFirstMismatch && result.MismatchCount > 0)
+            {
+                return result;
+            }
+
             var current = bools[i];
             if (!Compare(first, current, _comparisonConfiguration.ComparisonType))
             {
@@ -36,9 +38,12 @@ internal class BoolComparison : BoolComparisonBase, IExecuteComparison<bool>
         return result;
     }
 
-    public override ComparisonResult Compare(bool b1, bool b2, string t1ExprName, string t2ExprName)
+    public override ComparisonResult Compare(bool b1, bool b2, string t1ExprName, string t2ExprName, ComparisonResult result)
     {
-        var result = new ComparisonResult();
+        if (_comparisonConfiguration.FinishComparisonOnFirstMismatch && result.MismatchCount > 0)
+        {
+            return result;
+        }
 
         if (!Compare(b1, b2, _comparisonConfiguration.ComparisonType))
         {
@@ -49,10 +54,8 @@ internal class BoolComparison : BoolComparisonBase, IExecuteComparison<bool>
         return result;
     }
 
-    public override ComparisonResult Compare(bool[][] bools)
+    public override ComparisonResult Compare(bool[][] bools, ComparisonResult result)
     {
-        var result = new ComparisonResult();
-
         if (bools == null)
         {
             result.AddError(ComparisonErrors.NullPassedAsArgument(typeof(bool)));
@@ -115,10 +118,8 @@ internal class BoolComparison : BoolComparisonBase, IExecuteComparison<bool>
         return result;
     }
 
-    public override ComparisonResult Compare(bool[] b1, bool[] b2, string t1ExprName, string t2ExprName)
+    public override ComparisonResult Compare(bool[] b1, bool[] b2, string t1ExprName, string t2ExprName, ComparisonResult result)
     {
-        var result = new ComparisonResult();
-
         if (b1 == null)
         {
             result.AddError(ComparisonErrors.NullPassedAsArgument(typeof(bool[])));

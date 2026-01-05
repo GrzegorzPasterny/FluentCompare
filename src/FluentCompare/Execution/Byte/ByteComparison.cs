@@ -3,14 +3,12 @@
 internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>
 {
     public ByteComparison(
-        ComparisonConfiguration configuration, ComparisonResult? comparisonResult = null)
-        : base(configuration, comparisonResult)
+        ComparisonConfiguration configuration)
+        : base(configuration)
     { }
 
-    public override ComparisonResult Compare(byte[] bytes)
+    public override ComparisonResult Compare(byte[] bytes, ComparisonResult result)
     {
-        var result = new ComparisonResult();
-
         if (bytes == null)
         {
             result.AddError(ComparisonErrors.NullPassedAsArgument(typeof(byte)));
@@ -49,10 +47,8 @@ internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>
         return result;
     }
 
-    public override ComparisonResult Compare(byte b1, byte b2, string t1ExprName, string t2ExprName)
+    public override ComparisonResult Compare(byte b1, byte b2, string t1ExprName, string t2ExprName, ComparisonResult result)
     {
-        var result = new ComparisonResult();
-
         byte b1Transformed = ApplyBitwiseOperations(b1, 0, _comparisonConfiguration.ByteConfiguration.BitwiseOperations);
         byte b2Transformed = ApplyBitwiseOperations(b2, 1, _comparisonConfiguration.ByteConfiguration.BitwiseOperations);
 
@@ -71,10 +67,8 @@ internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>
         return result;
     }
 
-    public override ComparisonResult Compare(byte[][] bytes)
+    public override ComparisonResult Compare(byte[][] bytes, ComparisonResult result)
     {
-        var result = new ComparisonResult();
-
         if (bytes == null || bytes.Length < 2)
             return result;
 
@@ -128,10 +122,8 @@ internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>
         return result;
     }
 
-    public override ComparisonResult Compare(byte[] byteArr1, byte[] byteArr2, string byteArr1ExprName, string byteArr2ExprName)
+    public override ComparisonResult Compare(byte[] byteArr1, byte[] byteArr2, string byteArr1ExprName, string byteArr2ExprName, ComparisonResult result)
     {
-        var result = new ComparisonResult();
-
         if (byteArr1.Length != byteArr2.Length)
         {
             result.AddError(ComparisonErrors.InputArrayLengthsDiffer(

@@ -1,11 +1,10 @@
-internal class StringComparison : StringComparisonBase, IExecuteComparison<string>
+internal class StringComparison : StringComparisonBase
 {
-    public StringComparison(ComparisonConfiguration configuration, ComparisonResult? comparisonResult = null)
-        : base(configuration, comparisonResult) { }
+    public StringComparison(ComparisonConfiguration configuration)
+        : base(configuration) { }
 
-    public override ComparisonResult Compare(string s1, string s2, string t1ExprName, string t2ExprName)
+    public override ComparisonResult Compare(string s1, string s2, string t1ExprName, string t2ExprName, ComparisonResult result)
     {
-        ComparisonResult result = new();
         if (s1 == null && s2 == null)
         {
             result.AddWarning(ComparisonErrors.BothObjectsAreNull(t1ExprName, t2ExprName));
@@ -25,10 +24,8 @@ internal class StringComparison : StringComparisonBase, IExecuteComparison<strin
         return result;
     }
 
-    public override ComparisonResult Compare(string[] strings)
+    public override ComparisonResult Compare(string[] strings, ComparisonResult result)
     {
-        ComparisonResult result = new();
-
         if (strings == null)
         {
             result.AddError(ComparisonErrors.NullPassedAsArgument(typeof(string)));
@@ -63,15 +60,14 @@ internal class StringComparison : StringComparisonBase, IExecuteComparison<strin
                     sFirst, sCurrent, i, _comparisonConfiguration.ComparisonType, s => s));
             }
 
-            result.AddComparisonResult(Compare(sFirst, sCurrent, "string[0]", $"string[{i}]"));
+            Compare(sFirst, sCurrent, "string[0]", $"string[{i}]", result);
         }
 
         return result;
     }
 
-    public override ComparisonResult Compare(string[][] strings)
+    public override ComparisonResult Compare(string[][] strings, ComparisonResult result)
     {
-        var result = new ComparisonResult();
         if (strings == null)
         {
             result.AddError(ComparisonErrors.NullPassedAsArgument(typeof(string[])));
@@ -85,16 +81,13 @@ internal class StringComparison : StringComparisonBase, IExecuteComparison<strin
         var first = strings[0];
         for (int i = 1; i < strings.Length; i++)
         {
-            result.AddComparisonResult(
-                Compare(first, strings[i], $"strings[0]", $"strings[{i}]"));
+            Compare(first, strings[i], $"strings[0]", $"strings[{i}]", result);
         }
         return result;
     }
 
-    public override ComparisonResult Compare(string[] sArr1, string[] sArr2, string sArr1ExprName, string sArr2ExprName)
+    public override ComparisonResult Compare(string[] sArr1, string[] sArr2, string sArr1ExprName, string sArr2ExprName, ComparisonResult result)
     {
-        var result = new ComparisonResult();
-
         if (sArr1 is null && sArr2 is null)
         {
             result.AddWarning(ComparisonErrors.BothObjectsAreNull(sArr1ExprName, sArr2ExprName));
