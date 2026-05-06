@@ -1,7 +1,5 @@
 using KellermanSoftware.CompareNetObjects;
 
-using Xunit.Abstractions;
-
 namespace FluentCompare.SolutionComparison.Tests.CompareNetObjectsTests;
 
 public class CompareNetObjectsTests

@@ -1,5 +1,3 @@
-using Xunit.Abstractions;
-
 namespace FluentCompare.UnitTests.Bools;
 
 public class BoolComparisonTests

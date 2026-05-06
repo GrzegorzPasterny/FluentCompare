@@ -10,8 +10,8 @@
 
   <ItemGroup>
 		<PackageReference Include="AnyDiff" Version="1.0.99" />
-		<PackageReference Include="AutoMapper" Version="16.0.0" />
-		<PackageReference Include="BenchmarkDotNet" Version="0.15.4" />
+		<PackageReference Include="AutoMapper" Version="16.1.1" />
+		<PackageReference Include="BenchmarkDotNet" Version="0.15.8" />
     <PackageReference Include="CompareNETObjects" Version="4.84.0" />
   </ItemGroup>
 
