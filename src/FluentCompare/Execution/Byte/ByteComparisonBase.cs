@@ -6,6 +6,8 @@ internal abstract class ByteComparisonBase : ComparisonBase<byte>
     {
     }
 
+    internal new Func<byte, string> _toStringFunc = i => i.ToString("X2");
+
     internal bool Compare(byte valueA, byte valueB, ComparisonType comparisonType)
     {
         int cmp = valueA.CompareTo(valueB);

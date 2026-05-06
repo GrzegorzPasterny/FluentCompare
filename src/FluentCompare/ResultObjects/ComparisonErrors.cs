@@ -12,7 +12,7 @@ public static class ComparisonErrors
     public static string NotEnoughObjectsToCompareCode => $"{Namespace}.{nameof(NotEnoughObjectsToCompare)}";
     internal static ComparisonError NotEnoughObjectsToCompare(int length, Type type)
         => new(NotEnoughObjectsToCompareCode,
-            $"At least two values are required for comparison [Type = {type.Name}");
+            $"At least two values are required for comparison [Type = {type.Name}]");
 
     public static string NullPassedAsArgumentCode => $"{Namespace}.{nameof(NullPassedAsArgument)}";
     internal static ComparisonError NullPassedAsArgument(Type type)

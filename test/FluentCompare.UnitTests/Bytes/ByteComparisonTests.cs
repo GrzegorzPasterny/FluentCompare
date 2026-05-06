@@ -1,5 +1,4 @@
 
-
 namespace FluentCompare.UnitTests.Bytes;
 
 public class ByteComparisonTests
