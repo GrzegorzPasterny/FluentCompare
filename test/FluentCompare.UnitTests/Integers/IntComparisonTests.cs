@@ -2,6 +2,13 @@ namespace FluentCompare.UnitTests.Integers
 {
     public class IntComparisonTests
     {
+        private readonly ITestOutputHelper _output;
+
+        public IntComparisonTests(ITestOutputHelper output)
+        {
+            _output = output;
+        }
+
         [Fact]
         public void Compare_TwoEqualIntegers_ReturnsAllMatchingResult()
         {
@@ -14,6 +21,7 @@ namespace FluentCompare.UnitTests.Integers
                 .Compare(int1, int2);
 
             // Assert
+            _output.WriteLine(result.ToString());
             result.AllMatched.ShouldBeTrue();
         }
 
@@ -25,6 +33,7 @@ namespace FluentCompare.UnitTests.Integers
                 .Compare(0, 1);
 
             // Assert
+            _output.WriteLine(result.ToString());
             result.AllMatched.ShouldBeFalse();
             result.MismatchCount.ShouldBe(1);
             result.Mismatches.First().Code.ShouldBe(ComparisonMismatches<int>.MismatchDetectedCode);
@@ -42,6 +51,7 @@ namespace FluentCompare.UnitTests.Integers
                 .Compare(int1, int2);
 
             // Assert
+            _output.WriteLine(result.ToString());
             result.AllMatched.ShouldBeFalse();
             result.MismatchCount.ShouldBe(1);
             result.Mismatches.First().Code.ShouldBe(ComparisonMismatches<int>.MismatchDetectedCode);
@@ -61,6 +71,7 @@ namespace FluentCompare.UnitTests.Integers
             .Compare(array1, array2);
 
             // Assert
+            _output.WriteLine(result.ToString());
             result.AllMatched.ShouldBeTrue();
         }
 
@@ -76,6 +87,7 @@ namespace FluentCompare.UnitTests.Integers
             .Compare(array1, array2);
 
             // Assert
+            _output.WriteLine(result.ToString());
             result.AllMatched.ShouldBeFalse();
             result.Mismatches.First().Message.ShouldContain($"{nameof(array1)}");
             result.Mismatches.First().Message.ShouldContain($"{nameof(array2)}");
@@ -93,6 +105,7 @@ namespace FluentCompare.UnitTests.Integers
             .Compare(array1, array2);
 
             // Assert
+            _output.WriteLine(result.ToString());
             result.WasSuccessful.ShouldBeFalse();
             result.ErrorCount.ShouldBe(1);
             result.Errors.First().Code.ShouldBe(ComparisonErrors.InputArrayLengthsDifferCode);
@@ -106,12 +119,11 @@ namespace FluentCompare.UnitTests.Integers
                 .Compare<int[]>([1, 2, 3, 4, 5], [1, 2, 3, 4, 6]);
 
             // Assert
+            _output.WriteLine(result.ToString());
             result.WasSuccessful.ShouldBeTrue();
             result.AllMatched.ShouldBeFalse();
             result.MismatchCount.ShouldBe(1);
             result.Mismatches.First().Code.ShouldBe(ComparisonMismatches<int>.MismatchDetectedCode);
-            // Those messages contain the array values, because there are no variable names.
-            // TODO: Consider improving the message formatting for anonymous arrays
             result.Mismatches.First().Message.ShouldContain("[1, 2, 3, 4, 5]");
             result.Mismatches.First().Message.ShouldContain("[1, 2, 3, 4, 6]");
         }
@@ -124,6 +136,7 @@ namespace FluentCompare.UnitTests.Integers
             .Compare<int[]?>([1, 2, 3, 4, 5], null);
 
             // Assert
+            _output.WriteLine(result.ToString());
             result.WasSuccessful.ShouldBeTrue();
             result.AllMatched.ShouldBeFalse();
             result.MismatchCount.ShouldBe(1);

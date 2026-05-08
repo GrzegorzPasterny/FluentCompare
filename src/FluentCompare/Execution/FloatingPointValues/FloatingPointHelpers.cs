@@ -1,8 +1,6 @@
 using System.Numerics;
 using System.Runtime.InteropServices;
 
-namespace FluentCompare.Execution.FloatingPointValues;
-
 internal static class FloatingPointHelpers
 {
     internal static T ToEpsilon<T>(double epsilon)

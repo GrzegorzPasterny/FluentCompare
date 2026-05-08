@@ -2,8 +2,6 @@
 
 using System.Numerics;
 
-namespace FluentCompare.Execution.FloatingPointValues;
-
 internal abstract class FloatingPointComparisonBase<T>
     : ComparisonBase<T>
     where T : struct, IFloatingPoint<T>

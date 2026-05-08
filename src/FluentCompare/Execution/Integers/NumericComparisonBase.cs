@@ -1,5 +1,3 @@
-namespace FluentCompare.Execution.Int;
-
 internal abstract class NumericComparisonBase<T> : ComparisonBase<T> where T : struct, IComparable<T>
 {
     protected NumericComparisonBase(
