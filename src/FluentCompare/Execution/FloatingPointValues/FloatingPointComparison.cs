@@ -1,7 +1,5 @@
 using System.Numerics;
 
-using FluentCompare.Execution.FloatingPointValues;
-
 internal class FloatingPointComparison<T> : FloatingPointComparisonBase<T> where T : struct, IFloatingPoint<T>
 {
     public FloatingPointComparison(

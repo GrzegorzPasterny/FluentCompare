@@ -69,14 +69,3 @@ public static class ComparisonErrors
 
     }
 }
-
-/// <summary>
-/// Type-specific comparison errors repository
-/// </summary>
-/// <typeparam name="T"></typeparam>
-public static class ComparisonErrors<T>
-{
-    public static string Namespace = $"FluentCompare.Error.{typeof(T).Name}";
-
-}
-

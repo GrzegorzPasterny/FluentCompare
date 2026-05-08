@@ -41,6 +41,21 @@ public class ClassArrayComparisonTests
             new ClassWithIntProperty[]
             {
                 new ClassWithIntProperty(1),
+            },
+            false,
+            false,
+            ComparisonErrors.InputArrayLengthsDifferCode
+        };
+        yield return new object[]
+        {
+            new ClassWithIntProperty[]
+            {
+                new ClassWithIntProperty(1),
+                new ClassWithIntProperty(2)
+            },
+            new ClassWithIntProperty[]
+            {
+                new ClassWithIntProperty(1),
                 new ClassWithIntProperty(3)
             },
             false,

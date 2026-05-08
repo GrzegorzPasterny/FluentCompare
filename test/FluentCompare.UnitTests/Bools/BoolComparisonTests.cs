@@ -145,15 +145,117 @@ public class BoolComparisonTests
     [Fact]
     public void Compare_BoolArrays_Mismatch_ShouldDetectMismatch()
     {
-        // Arrange
         var builder = CreateBuilder();
-
-        // Act
         var result = builder.Compare([true, false, true], [true, true, true]);
-
-        // Assert
         _testOutputHelper.WriteLine(result.ToString());
         result.Mismatches.Count.ShouldBe(1);
         result.Mismatches[0].Code.ShouldBe(ComparisonMismatches.Bool.MismatchDetectedCode);
+    }
+
+    [Fact]
+    public void Compare_BoolArray_Null_ShouldAddError()
+    {
+        var builder = CreateBuilder();
+        var result = builder.Compare(null as bool[]);
+        _testOutputHelper.WriteLine(result.ToString());
+        result.Errors.Count.ShouldBe(1);
+        result.Errors[0].Code.ShouldBe(ComparisonErrors.NullPassedAsArgumentCode);
+    }
+
+    [Fact]
+    public void Compare_BoolArray_NotEnoughElements_ShouldAddError()
+    {
+        var builder = CreateBuilder();
+        var result = builder.Compare(new[] { true });
+        _testOutputHelper.WriteLine(result.ToString());
+        result.Errors.Count.ShouldBe(1);
+        result.Errors[0].Code.ShouldBe(ComparisonErrors.NotEnoughObjectsToCompareCode);
+    }
+
+    [Fact]
+    public void Compare_BoolJaggedArray_Null_ShouldAddError()
+    {
+        var builder = CreateBuilder();
+        var result = builder.Compare(null as bool[][]);
+        _testOutputHelper.WriteLine(result.ToString());
+        result.Errors.Count.ShouldBe(1);
+        result.Errors[0].Code.ShouldBe(ComparisonErrors.NullPassedAsArgumentCode);
+    }
+
+    [Fact]
+    public void Compare_BoolJaggedArray_NotEnoughElements_ShouldAddError()
+    {
+        var builder = CreateBuilder();
+        var result = builder.Compare(new[] { new[] { true } });
+        _testOutputHelper.WriteLine(result.ToString());
+        result.Errors.Count.ShouldBe(1);
+        result.Errors[0].Code.ShouldBe(ComparisonErrors.NotEnoughObjectsToCompareCode);
+    }
+
+    [Fact]
+    public void Compare_BoolJaggedArray_InnerNull_ShouldAddError()
+    {
+        var builder = CreateBuilder();
+        var arr = new bool[][] { null!, new[] { true } };
+        var result = builder.Compare(arr);
+        _testOutputHelper.WriteLine(result.ToString());
+        result.MismatchCount.ShouldBe(1);
+        result.Mismatches[0].Code.ShouldBe(ComparisonMismatches.NullPassedAsArgumentCode);
+    }
+
+    [Fact]
+    public void Compare_BoolJaggedArray_InnerLengthMismatch_ShouldAddError()
+    {
+        var builder = CreateBuilder();
+        var arr1 = new[] { new[] { true, false }, new[] { true } };
+        var result = builder.Compare(arr1);
+        _testOutputHelper.WriteLine(result.ToString());
+        result.Errors.Count.ShouldBe(1);
+        result.Errors[0].Code.ShouldBe(ComparisonErrors.InputArrayLengthsDifferCode);
+    }
+
+    [Fact]
+    public void Compare_BoolJaggedArray_InnerMismatch_ShouldDetectMismatch()
+    {
+        var builder = CreateBuilder();
+        var arr = new[] { new[] { true, false }, new[] { true, true } };
+        var result = builder.Compare(arr);
+        _testOutputHelper.WriteLine(result.ToString());
+        result.Mismatches.Count.ShouldBe(1);
+        result.Mismatches[0].Code.ShouldBe(ComparisonMismatches.Bool.MismatchDetectedCode);
+    }
+
+    [Fact]
+    public void Compare_BoolJaggedArray_AllEqual_ShouldMatch()
+    {
+        var builder = CreateBuilder();
+        var arr = new[] { new[] { true, false }, new[] { true, false } };
+        var result = builder.Compare(arr);
+        _testOutputHelper.WriteLine(result.ToString());
+        result.AllMatched.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void Compare_BoolArray_ReferenceEquals_ShouldReturnAllMatched()
+    {
+        var builder = CreateBuilder();
+        var arr = new[] { true, false };
+        var result = builder.Compare(arr, arr);
+        _testOutputHelper.WriteLine(result.ToString());
+        result.AllMatched.ShouldBeTrue();
+        result.Mismatches.ShouldBeEmpty();
+        result.Errors.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void Compare_BoolJaggedArray_ReferenceEquals_ShouldReturnAllMatched()
+    {
+        var builder = CreateBuilder();
+        var arr = new[] { new[] { true, false } };
+        var result = builder.Compare(arr, arr);
+        _testOutputHelper.WriteLine(result.ToString());
+        result.AllMatched.ShouldBeTrue();
+        result.Mismatches.ShouldBeEmpty();
+        result.Errors.ShouldBeEmpty();
     }
 }

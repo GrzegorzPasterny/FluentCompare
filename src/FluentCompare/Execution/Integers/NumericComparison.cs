@@ -1,5 +1,3 @@
-using FluentCompare.Execution.Int;
-
 internal class NumericComparison<T> : NumericComparisonBase<T>, IExecuteComparison<T> where T : struct, IComparable<T>
 {
     internal NumericComparison(
