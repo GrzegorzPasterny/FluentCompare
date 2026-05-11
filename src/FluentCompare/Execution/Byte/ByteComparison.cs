@@ -21,22 +21,26 @@ internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>
             return result;
         }
 
+        // TODO: Code not reached by unit tests - need to add tests for this case
         var first = bytes[0];
         byte transformedFirst = ApplyBitwiseOperations(first, 0, _comparisonConfiguration.ByteConfiguration.BitwiseOperations);
 
         for (byte i = 1; i <= bytes.Length; i++)
         {
+            // TODO: Code not reached by unit tests - need to add tests for this case
             byte transformedCurrent = ApplyBitwiseOperations(bytes[i], i, _comparisonConfiguration.ByteConfiguration.BitwiseOperations);
             if (!Compare(transformedFirst, transformedCurrent, _comparisonConfiguration.ComparisonType))
             {
                 if (_comparisonConfiguration.ByteConfiguration.BitwiseOperations.Count > 0)
                 {
+                    // TODO: Code not reached by unit tests - need to add tests for this case
                     result.AddMismatch(
                         ComparisonMismatches.Byte.MismatchDetected(
                             first, bytes[i], transformedFirst, transformedCurrent, i, _comparisonConfiguration.ComparisonType, _toStringFunc));
                 }
                 else
                 {
+                    // TODO: Code not reached by unit tests - need to add tests for this case
                     result.AddMismatch(
                         ComparisonMismatches<byte>.MismatchDetected(
                             first, bytes[i], i, _comparisonConfiguration.ComparisonType, _toStringFunc));
@@ -44,6 +48,7 @@ internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>
             }
         }
 
+        // TODO: Code not reached by unit tests - need to add tests for this case
         return result;
     }
 

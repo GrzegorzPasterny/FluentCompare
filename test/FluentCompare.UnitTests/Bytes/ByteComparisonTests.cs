@@ -17,6 +17,102 @@ public class ByteComparisonTests
     }
 
     [Fact]
+    public void Compare_Byte_SkipsBitwiseOperation_WhenIndexExcluded()
+    {
+        // Arrange: Exclude index 0 from bitwise OR, so both values are unchanged and not equal
+        var builder = CreateBuilder()
+            .ApplyBitwiseOperation(BitwiseOperation.Or, 0x0F, 0);
+        // Act
+        var result = builder.Compare((byte)0xFF, (byte)0x0F);
+        // Assert: 0xFF is not transformed, 0x0F is transformed (but OR with 0x0F is still 0x0F)
+        result.AllMatched.ShouldBeFalse();
+        result.Mismatches.Count.ShouldBe(1);
+    }
+
+    [Fact]
+    public void Compare_Byte_NotOperation_Works()
+    {
+        // Arrange: Apply NOT operation to both values
+        var builder = CreateBuilder()
+            .ApplyBitwiseOperation(BitwiseOperation.Not, 0);
+        byte left = 0b_1010_1010;
+        byte right = 0b_1010_1010;
+        // Act
+        var result = builder.Compare(left, right);
+        // Assert: ~left == ~right, so should match
+        result.AllMatched.ShouldBeTrue();
+        result.Mismatches.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void Compare_ByteArray_SkipsBitwiseOperation_WhenIndexExcluded()
+    {
+        // Arrange: Exclude index 1 from bitwise AND, so second array is not transformed
+        var builder = CreateBuilder()
+            .ApplyBitwiseOperation(BitwiseOperation.And, 0xAF, 1);
+
+        var arr1 = new byte[] { 0xFB, 0xFC };
+        var arr2 = new byte[] { 0xAB, 0xAC };
+        // Act
+        var result = builder.Compare(arr1, arr2);
+        // Assert: arr2 is not transformed, arr1 is transformed, so both arrays are still equal
+        result.AllMatched.ShouldBeTrue();
+        result.Mismatches.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void Compare_ByteArray_NotOperation_Works()
+    {
+        // Arrange: Apply NOT operation to both arrays
+        var builder = CreateBuilder()
+            .ApplyBitwiseOperation(BitwiseOperation.Not, 0);
+        var arr1 = new byte[] { 0b_0000_1111, 0b_1111_0000 };
+        var arr2 = new byte[] { 0b_0000_1111, 0b_1111_0000 };
+        // Act
+        var result = builder.Compare(arr1, arr2);
+        // Assert: ~arr1 == ~arr2, so should match
+        result.AllMatched.ShouldBeTrue();
+        result.Mismatches.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void Compare_ParamsByte_UsesByteComparisonPath()
+    {
+        // Arrange
+        var builder = CreateBuilder();
+        // Act
+        var result = builder.Compare((byte)1, (byte)2);
+        // Assert
+        result.AllMatched.ShouldBeFalse();
+        result.Mismatches.Count.ShouldBe(1);
+    }
+
+    [Fact]
+    public void Compare_ParamsByteArray_UsesByteArrayComparisonPath()
+    {
+        // Arrange
+        var builder = CreateBuilder();
+        // Act
+        var result = builder.Compare(new byte[] { 1, 2 }, new byte[] { 1, 3 });
+        // Assert
+        result.AllMatched.ShouldBeFalse();
+        result.Mismatches.Count.ShouldBe(1);
+    }
+
+    [Fact]
+    public void Compare_ByteJaggedArray_UsesByteJaggedArrayComparisonPath()
+    {
+        // Arrange
+        var builder = CreateBuilder();
+        byte[][] arr = new byte[][] { new byte[] { 1, 2 }, new byte[] { 1, 2 } };
+        // Act
+        var result = builder.Compare(arr);
+        // Assert
+        result.AllMatched.ShouldBeTrue();
+        result.Mismatches.ShouldBeEmpty();
+    }
+
+    [Fact]
     public void Compare_BothNull_ShouldAddError()
     {
         // Arrange
