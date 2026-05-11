@@ -4,7 +4,7 @@
 - Keep changes minimal and aligned with the existing architecture and layering.
 - Follow existing naming patterns and namespaces.
 - Prefer existing libraries and patterns already used in the solution.
-
+- Use [Ubiquitous language document](../docs/UbiquitousLanguage.md) as a reference for terminology and concepts.
 
 ## Open-source free library
 - Keep this library target multiple .NET versions (e.g., .NET Standard 2.0 or .NET 6) to maximize compatibility.

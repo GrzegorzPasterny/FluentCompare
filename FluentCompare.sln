@@ -26,6 +26,14 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentCompare.Tests.Utilities", "test\FluentCompare.Tests.Utilities\FluentCompare.Tests.Utilities.csproj", "{9EDFB40E-5689-494B-A8D0-6C5D311F6750}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{23D14953-DF2D-4405-A60C-753E60B44F73}"
+	ProjectSection(SolutionItems) = preProject
+		docs\UbiquitousLanguage.md = docs\UbiquitousLanguage.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "instructions", "instructions", "{E62ACCFD-2403-43E4-8881-2F5EA44E697E}"
+	ProjectSection(SolutionItems) = preProject
+		instructions\csharp.instructions.md = instructions\csharp.instructions.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -108,6 +116,7 @@ Global
 		{25EA070A-EB0B-4902-87A6-C07742F1699A} = {0C88DD14-F956-CE84-757C-A364CCF449FC}
 		{3A404F80-473C-4488-B96B-209B23AA1EEE} = {0C88DD14-F956-CE84-757C-A364CCF449FC}
 		{9EDFB40E-5689-494B-A8D0-6C5D311F6750} = {0C88DD14-F956-CE84-757C-A364CCF449FC}
+		{E62ACCFD-2403-43E4-8881-2F5EA44E697E} = {8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8DB2F507-0A6E-44A6-80A4-150B11FB653B}
