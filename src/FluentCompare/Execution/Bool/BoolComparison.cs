@@ -19,6 +19,7 @@ internal class BoolComparison : BoolComparisonBase, IExecuteComparison<bool>
             return result;
         }
 
+        // TODO: Code not reached by unit tests - need to add tests for this case
         var first = bools[0];
 
         for (int i = 1; i < bools.Length; i++)
