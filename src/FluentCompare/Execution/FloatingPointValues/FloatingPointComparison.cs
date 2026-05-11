@@ -8,6 +8,7 @@ internal class FloatingPointComparison<T> : FloatingPointComparisonBase<T> where
     { }
 
     public override ComparisonResult Compare(T[] floats, ComparisonResult result)
+    // TODO: Code not reached by unit tests - need to add tests for this case
     {
         if (floats == null)
         {
@@ -41,6 +42,7 @@ internal class FloatingPointComparison<T> : FloatingPointComparisonBase<T> where
     {
         bool matched;
 
+        // TODO: Code not reached by unit tests - need to add tests for this case
         switch (_comparisonConfiguration.FloatConfiguration.ToleranceMethod)
         {
             case DoubleToleranceMethods.Rounding:
@@ -83,12 +85,14 @@ internal class FloatingPointComparison<T> : FloatingPointComparisonBase<T> where
             return result;
         }
 
+        // TODO: Code not reached by unit tests - need to add tests for this case
         if (doubleArrays.Length < 2)
         {
             result.AddError(ComparisonErrors.NotEnoughObjectsToCompare(doubleArrays.Length, typeof(T[])));
             return result;
         }
 
+        // TODO: Code not reached by unit tests - need to add tests for this case
         var first = doubleArrays[0];
         for (int i = 1; i < doubleArrays.Length; i++)
         {

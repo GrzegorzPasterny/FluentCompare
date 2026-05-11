@@ -135,6 +135,7 @@ internal class BoolComparison : BoolComparisonBase, IExecuteComparison<bool>
 
         if (b1.Length != b2.Length)
         {
+            // TODO: Code not reached by unit tests - need to add tests for this case
             result.AddError(ComparisonErrors.InputArrayLengthsDiffer(b1.Length, b2.Length, t1ExprName, t2ExprName, typeof(bool[])));
             return result;
         }
@@ -143,6 +144,7 @@ internal class BoolComparison : BoolComparisonBase, IExecuteComparison<bool>
         {
             if (!Compare(b1[i], b2[i], _comparisonConfiguration.ComparisonType))
             {
+                // TODO: Code not reached by unit tests - need to add tests for this case
                 result.AddMismatch(ComparisonMismatches.Bool.MismatchDetected(
                     b1[i], b2[i], i, t1ExprName, t2ExprName, _comparisonConfiguration.ComparisonType, _toStringFunc));
             }

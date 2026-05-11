@@ -38,6 +38,7 @@ internal class StringComparison : StringComparisonBase
             return result;
         }
 
+        // TODO: Code not reached by unit tests - need to add tests for this case
         var sFirst = strings[0];
 
         for (int i = 1; i < strings.Length; i++)

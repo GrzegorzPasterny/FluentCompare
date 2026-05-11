@@ -31,6 +31,7 @@ internal abstract class ByteComparisonBase : ComparisonBase<byte>
         {
             if (bitwiseOperationModel.ComparisonObjectIndexesToExclude.Contains(valueIndex))
             {
+                // TODO: Code not reached by unit tests - need to add tests for this case
                 continue;
             }
 
@@ -46,6 +47,7 @@ internal abstract class ByteComparisonBase : ComparisonBase<byte>
                     result ^= bitwiseOperationModel.Value;
                     break;
                 case BitwiseOperation.Not:
+                    // TODO: Code not reached by unit tests - need to add tests for this case
                     result = (byte)~result;
                     break;
                 case BitwiseOperation.ShiftLeft:
@@ -67,6 +69,7 @@ internal abstract class ByteComparisonBase : ComparisonBase<byte>
 
         foreach (var bitwiseOperationModel in bitwiseOperationModels)
         {
+            // TODO: Code not reached by unit tests - need to add tests for this case
             if (bitwiseOperationModel.ComparisonObjectIndexesToExclude.Contains(valueIndex))
             {
                 continue;

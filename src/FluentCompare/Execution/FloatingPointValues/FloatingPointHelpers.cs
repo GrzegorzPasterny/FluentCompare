@@ -16,9 +16,11 @@ internal static class FloatingPointHelpers
         if (typeof(T) == typeof(double))
             return 15;
 
+        // TODO: Code not reached by unit tests - need to add tests for this case
         if (typeof(T) == typeof(Half))
             return 3;
 
+        // TODO: Code not reached by unit tests - need to add tests for this case
         if (typeof(T) == typeof(NFloat))
         {
             // nfloat is platform-dependent:

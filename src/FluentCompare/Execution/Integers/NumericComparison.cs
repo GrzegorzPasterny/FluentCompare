@@ -15,6 +15,7 @@ internal class NumericComparison<T> : NumericComparisonBase<T>, IExecuteComparis
     }
 
     public override ComparisonResult Compare(T[] ints, ComparisonResult result)
+    // TODO: Code not reached by unit tests - need to add tests for this case
     {
         if (ints == null)
         {
@@ -51,6 +52,7 @@ internal class NumericComparison<T> : NumericComparisonBase<T>, IExecuteComparis
     }
 
     public override ComparisonResult Compare(T[][] ints, ComparisonResult result)
+    // TODO: Code not reached by unit tests - need to add tests for this case
     {
         if (ints == null || ints.Length < 2)
             return result;

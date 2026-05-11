@@ -9,6 +9,7 @@ internal abstract class ComparisonBase<T> : IExecuteComparison<T>
 
     // boxing possible value types to object? to handle nullability without exceptions
     // boxing overhead should be negligible
+    // TODO: Code not reached by unit tests - need to add tests for this case
     internal Func<T, string> _toStringFunc = i => ((object?)i)?.ToString() ?? "null";
 
     public abstract ComparisonResult Compare(T[] objects, ComparisonResult result);

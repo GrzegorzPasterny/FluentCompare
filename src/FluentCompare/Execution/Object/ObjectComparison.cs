@@ -146,6 +146,7 @@ internal class ObjectComparison : ObjectComparisonBase
     }
 
     public override ComparisonResult Compare(object[][] objects, ComparisonResult result)
+    // TODO: Code not reached by unit tests - need to add tests for this case
     {
         if (objects == null)
         {
@@ -279,6 +280,7 @@ internal class ObjectComparison : ObjectComparisonBase
     }
 
     private void CompareObjectsByReference(object obj1, object obj2, int i, ComparisonResult result)
+    // TODO: Code not reached by unit tests - need to add tests for this case
     {
         if (!ReferenceEquals(obj1, obj2))
         {

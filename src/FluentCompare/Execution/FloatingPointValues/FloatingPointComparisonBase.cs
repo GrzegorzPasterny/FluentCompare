@@ -49,10 +49,15 @@ internal abstract class FloatingPointComparisonBase<T>
         return comparisonType switch
         {
             ComparisonType.EqualTo => absDiff < epsilonT,
+            // TODO: Code not reached by unit tests - need to add tests for this case
             ComparisonType.NotEqualTo => absDiff >= epsilonT,
+            // TODO: Code not reached by unit tests - need to add tests for this case
             ComparisonType.GreaterThan => diff > epsilonT,
+            // TODO: Code not reached by unit tests - need to add tests for this case
             ComparisonType.LessThan => diff < -epsilonT,
+            // TODO: Code not reached by unit tests - need to add tests for this case
             ComparisonType.GreaterThanOrEqualTo => diff >= -epsilonT,
+            // TODO: Code not reached by unit tests - need to add tests for this case
             ComparisonType.LessThanOrEqualTo => diff <= epsilonT,
             _ => throw new ArgumentOutOfRangeException(nameof(comparisonType))
         };
