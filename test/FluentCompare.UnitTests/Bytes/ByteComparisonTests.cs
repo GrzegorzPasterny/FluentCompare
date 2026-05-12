@@ -1,4 +1,3 @@
-
 namespace FluentCompare.UnitTests.Bytes;
 
 public class ByteComparisonTests
@@ -507,6 +506,64 @@ public class ByteComparisonTests
     }
 
     [Fact]
+    public void Compare_ByteJaggedArray_WithBitwise_Mismatch_CoversByteSpecificMismatch()
+    {
+        // Arrange: Bitwise AND will transform values so that a mismatch is detected
+        var builder = CreateBuilder()
+            .ApplyBitwiseOperation(BitwiseOperation.And, 0x0F);
+
+        // 0xFF & 0x0F = 0x0F, 0x0F & 0x0F = 0x0F (match)
+        // 0xE1 & 0x0F = 0x01, 0xE0 & 0x0F = 0x00 (mismatch at index 1)
+        var arr = new byte[2][] { new byte[] { 0xFF, 0xE1 }, new byte[] { 0x0F, 0xE0 } };
+
+        // Act
+        var result = builder.Compare(arr);
+
+        // Assert: Should hit the Byte-specific mismatch branch
+        result.AllMatched.ShouldBeFalse();
+        result.Mismatches.Count.ShouldBe(1);
+        result.Mismatches[0].Code.ShouldBe(ComparisonMismatches.Byte.MismatchDetectedCode);
+    }
+
+    [Fact]
+    public void Compare_ByteJaggedArray_WithBitwise_OneOfTheArraysIsNull_CoversByteSpecificMismatch()
+    {
+        // Arrange: Bitwise AND will transform values so that a mismatch is detected
+        var builder = CreateBuilder()
+            .ApplyBitwiseOperation(BitwiseOperation.And, 0x0F);
+
+        // Third array is null
+        var arr = new byte[3][] { new byte[] { 0xFF, 0xE1 }, new byte[] { 0x0F, 0xE1 }, null };
+
+        // Act
+        var result = builder.Compare(arr);
+
+        // Assert: Should hit the Byte-specific mismatch branch
+        result.AllMatched.ShouldBeFalse();
+        result.Mismatches.Count.ShouldBe(1);
+        result.Mismatches[0].Code.ShouldBe(ComparisonMismatches.NullPassedAsArgumentCode);
+    }
+
+    [Fact]
+    public void Compare_ByteJaggedArray_WithLengthMismatch_CoversByteSpecificMismatch()
+    {
+        // Arrange: Bitwise AND will transform values so that a mismatch is detected
+        var builder = CreateBuilder()
+            .ApplyBitwiseOperation(BitwiseOperation.And, 0x0F);
+
+        // second array is longer, causing an error
+        var arr = new byte[2][] { new byte[] { 0xFF, 0xE1 }, new byte[] { 0x0F, 0xE1, 0x23 } };
+
+        // Act
+        var result = builder.Compare(arr);
+
+        // Assert: Should hit the Byte-specific mismatch branch
+        result.AllMatched.ShouldBeFalse();
+        result.ErrorCount.ShouldBe(1);
+        result.Errors[0].Code.ShouldBe(ComparisonErrors.InputArrayLengthsDifferCode);
+    }
+
+    [Fact]
     public void Compare_ParamsByte_ThreeBytes_MismatchAtLastIndex_CoversLoopEnd()
     {
         // Arrange
@@ -577,13 +634,12 @@ public class ByteComparisonTests
     {
         var builder = CreateBuilder();
 
-        // Too short case
         var resultEmpty = builder.Compare(new byte[0][]);
-        resultEmpty.Errors.Count.ShouldBe(1); // or whatever is expected
+        resultEmpty.Errors.Count.ShouldBe(1);
         resultEmpty.Errors[0].Code.ShouldBe(ComparisonErrors.NotEnoughObjectsToCompareCode);
 
         var resultOne = builder.Compare(new byte[1][] { new byte[] { 1 } });
-        resultOne.Errors.Count.ShouldBe(1); // or whatever is expected
+        resultOne.Errors.Count.ShouldBe(1);
         resultOne.Errors[0].Code.ShouldBe(ComparisonErrors.NotEnoughObjectsToCompareCode);
     }
 }
