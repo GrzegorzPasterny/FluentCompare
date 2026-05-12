@@ -411,4 +411,164 @@ public class ByteComparisonTests
         result.AllMatched.ShouldBeTrue();
         result.Mismatches.ShouldBeEmpty();
     }
+
+    [Fact]
+    public void Compare_ByteArrays_WithBitwiseOr_ShouldApplyArrayTransform()
+    {
+        // Arrange
+        var builder = CreateBuilder()
+            .ApplyBitwiseOperation(BitwiseOperation.Or, 0x02);
+
+        // Act
+        var result = builder.Compare(new byte[] { 0x00 }, new byte[] { 0x01 });
+
+        // Assert
+        result.AllMatched.ShouldBeFalse();
+        result.Mismatches.Count.ShouldBe(1);
+    }
+
+    [Fact]
+    public void Compare_ByteArrays_WithBitwiseXor_ShouldApplyArrayTransform()
+    {
+        // Arrange
+        var builder = CreateBuilder()
+            .ApplyBitwiseOperation(BitwiseOperation.Xor, 0x01);
+
+        // Act
+        var result = builder.Compare(new byte[] { 0x00 }, new byte[] { 0x01 });
+
+        // Assert
+        result.AllMatched.ShouldBeFalse();
+        result.Mismatches.Count.ShouldBe(1);
+    }
+
+    [Fact]
+    public void Compare_ByteArrays_WithBitwiseShiftLeft_ShouldApplyArrayTransform()
+    {
+        // Arrange
+        var builder = CreateBuilder()
+            .ApplyBitwiseOperation(BitwiseOperation.ShiftLeft, 1);
+
+        // Act
+        var result = builder.Compare(new byte[] { 0x80 }, new byte[] { 0x00 });
+
+        // Assert
+        result.AllMatched.ShouldBeTrue();
+        result.Mismatches.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void Compare_ByteArrays_WithBitwiseShiftRight_ShouldApplyArrayTransform()
+    {
+        // Arrange
+        var builder = CreateBuilder()
+            .ApplyBitwiseOperation(BitwiseOperation.ShiftRight, 1);
+
+        // Act
+        var result = builder.Compare(new byte[] { 0x01 }, new byte[] { 0x00 });
+
+        // Assert
+        result.AllMatched.ShouldBeTrue();
+        result.Mismatches.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void Compare_ByteJaggedArray_MismatchWithoutBitwise_ShouldDetectMismatch()
+    {
+        // Arrange
+        var builder = CreateBuilder();
+
+        // Act
+        var result = builder.Compare(
+            new byte[] { 0x01, 0x02 },
+            new byte[] { 0x01, 0x03 },
+            new byte[] { 0x01, 0x02 });
+
+        // Assert
+        result.AllMatched.ShouldBeFalse();
+        result.Mismatches.Count.ShouldBeGreaterThan(0);
+    }
+
+    [Fact]
+    public void Compare_ByteJaggedArray_MismatchWithBitwise_ShouldDetectMismatch()
+    {
+        // Arrange
+        var builder = CreateBuilder()
+            .ApplyBitwiseOperation(BitwiseOperation.And, 0x0F);
+
+        // Act
+        var result = builder.Compare(
+            new byte[] { 0xFF, 0xE1 },
+            new byte[] { 0x0F, 0xE0 });
+
+        // Assert
+        result.AllMatched.ShouldBeFalse();
+        result.Mismatches.Count.ShouldBe(1);
+    }
+
+    [Fact]
+    public void Compare_ParamsByte_ThreeBytes_MismatchAtLastIndex_CoversLoopEnd()
+    {
+        // Arrange
+        var builder = CreateBuilder();
+        // Act
+        var result = builder.Compare((byte)1, (byte)1, (byte)2);
+        // Assert: mismatch at index 2
+        result.AllMatched.ShouldBeFalse();
+        result.Mismatches.Count.ShouldBe(1);
+        result.Mismatches[0].Code.ShouldBe(ComparisonMismatches<byte>.MismatchDetectedCode);
+        result.Mismatches[0].Message.ShouldContain("ByteValueAtIndex[2] = 02");
+    }
+
+    [Fact]
+    public void Compare_ParamsByte_ThreeBytes_WithBitwise_MismatchAtLastIndex_CoversLoopEnd()
+    {
+        // Arrange
+        var builder = CreateBuilder().ApplyBitwiseOperation(BitwiseOperation.Xor, 0x01);
+        // Act
+        var result = builder.Compare((byte)0x01, (byte)0x01, (byte)0x03);
+        // Assert: mismatch at index 2
+        result.AllMatched.ShouldBeFalse();
+        result.Mismatches.Count.ShouldBe(1);
+        result.Mismatches[0].Code.ShouldBe(ComparisonMismatches.Byte.MismatchDetectedCode);
+        result.Mismatches[0].Message.ShouldContain("ByteValueAtIndex[2] = 03");
+    }
+
+    [Fact]
+    public void Compare_ByteJaggedArray_NullArray_CoversNullBranch()
+    {
+        // Arrange
+        var builder = CreateBuilder();
+        // Act
+        var result = builder.Compare(new byte[] { 1, 2 }, null);
+        // Assert
+        result.Mismatches.Count.ShouldBe(1);
+        result.Mismatches[0].Code.ShouldBe(ComparisonMismatches.NullPassedAsArgumentCode);
+    }
+
+    [Fact]
+    public void Compare_ByteJaggedArray_DifferentLengths_CoversLengthErrorBranch()
+    {
+        // Arrange
+        var builder = CreateBuilder();
+        // Act
+        var result = builder.Compare(new byte[] { 1, 2 }, new byte[] { 1 });
+        // Assert
+        result.Errors.Count.ShouldBe(1);
+        result.Errors[0].Code.ShouldBe(ComparisonErrors.InputArrayLengthsDifferCode);
+    }
+
+    [Fact]
+    public void Compare_ByteJaggedArray_MismatchAtNonZeroIndex_CoversMismatchBranch()
+    {
+        // Arrange
+        var builder = CreateBuilder();
+        // Act
+        var result = builder.Compare(new byte[] { 1, 2, 3 }, new byte[] { 1, 9, 3 });
+        // Assert: mismatch at index 1
+        result.AllMatched.ShouldBeFalse();
+        result.Mismatches.Count.ShouldBe(1);
+        result.Mismatches[0].Code.ShouldBe(ComparisonMismatches<byte>.MismatchDetectedCode);
+        result.Mismatches[0].Message.ShouldContain("[new byte[] { 1, 2, 3 }[1] = 02, new byte[] { 1, 9, 3 }[1] = 09");
+    }
 }

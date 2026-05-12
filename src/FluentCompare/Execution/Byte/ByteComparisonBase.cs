@@ -46,7 +46,6 @@ internal abstract class ByteComparisonBase : ComparisonBase<byte>
                     result ^= bitwiseOperationModel.Value;
                     break;
                 case BitwiseOperation.Not:
-                    // TODO: Code not reached by unit tests - need to add tests for this case
                     result = (byte)~result;
                     break;
                 case BitwiseOperation.ShiftLeft:
@@ -81,22 +80,18 @@ internal abstract class ByteComparisonBase : ComparisonBase<byte>
                         result[i] &= bitwiseOperationModel.Value;
                         break;
                     case BitwiseOperation.Or:
-                        // TODO: Code not reached by unit tests - need to add tests for this case
                         result[i] |= bitwiseOperationModel.Value;
                         break;
                     case BitwiseOperation.Xor:
-                        // TODO: Code not reached by unit tests - need to add tests for this case
                         result[i] ^= bitwiseOperationModel.Value;
                         break;
                     case BitwiseOperation.Not:
                         result[i] = (byte)~result[i];
                         break;
                     case BitwiseOperation.ShiftLeft:
-                        // TODO: Code not reached by unit tests - need to add tests for this case
                         result[i] = (byte)(result[i] << bitwiseOperationModel.Value);
                         break;
                     case BitwiseOperation.ShiftRight:
-                        // TODO: Code not reached by unit tests - need to add tests for this case
                         result[i] = (byte)(result[i] >> bitwiseOperationModel.Value);
                         break;
                     default:

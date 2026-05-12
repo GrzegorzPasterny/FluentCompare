@@ -77,12 +77,10 @@ public partial class ComparisonBuilder : IComparisonBuilder
                 .Compare((bool[][])(object)t, _result);
 
         if (typeof(T) == typeof(byte))
-            // TODO: Code not reached by unit tests - need to add tests for this case
             return new ByteComparison(Configuration)
                 .Compare((byte[])(object)t, _result);
 
         if (typeof(T) == typeof(byte[]))
-            // TODO: Code not reached by unit tests - need to add tests for this case
             return new ByteComparison(Configuration)
                 .Compare((byte[][])(object)t, _result);
 

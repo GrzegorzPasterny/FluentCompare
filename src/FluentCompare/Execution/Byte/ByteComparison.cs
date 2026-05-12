@@ -21,26 +21,22 @@ internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>
             return result;
         }
 
-        // TODO: Code not reached by unit tests - need to add tests for this case
         var first = bytes[0];
         byte transformedFirst = ApplyBitwiseOperations(first, 0, _comparisonConfiguration.ByteConfiguration.BitwiseOperations);
 
-        for (byte i = 1; i <= bytes.Length; i++)
+        for (byte i = 1; i < bytes.Length; i++)
         {
-            // TODO: Code not reached by unit tests - need to add tests for this case
             byte transformedCurrent = ApplyBitwiseOperations(bytes[i], i, _comparisonConfiguration.ByteConfiguration.BitwiseOperations);
             if (!Compare(transformedFirst, transformedCurrent, _comparisonConfiguration.ComparisonType))
             {
                 if (_comparisonConfiguration.ByteConfiguration.BitwiseOperations.Count > 0)
                 {
-                    // TODO: Code not reached by unit tests - need to add tests for this case
                     result.AddMismatch(
                         ComparisonMismatches.Byte.MismatchDetected(
                             first, bytes[i], transformedFirst, transformedCurrent, i, _comparisonConfiguration.ComparisonType, _toStringFunc));
                 }
                 else
                 {
-                    // TODO: Code not reached by unit tests - need to add tests for this case
                     result.AddMismatch(
                         ComparisonMismatches<byte>.MismatchDetected(
                             first, bytes[i], i, _comparisonConfiguration.ComparisonType, _toStringFunc));
@@ -75,6 +71,7 @@ internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>
     public override ComparisonResult Compare(byte[][] bytes, ComparisonResult result)
     {
         if (bytes == null || bytes.Length < 2)
+            // TODO: Code not reached by unit tests - need to add tests for this case
             return result;
 
         // All arrays are compared against the first one
@@ -100,6 +97,7 @@ internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>
 
             if (first.Length != current.Length)
             {
+                // TODO: Code not reached by unit tests - need to add tests for this case
                 result.AddError(ComparisonErrors.InputArrayLengthsDiffer(first.Length, current.Length, 0, i, typeof(byte[])));
                 return result;
             }
@@ -112,6 +110,7 @@ internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>
                 {
                     if (_comparisonConfiguration.ByteConfiguration.BitwiseOperations.Count > 0)
                     {
+                        // TODO: Code not reached by unit tests - need to add tests for this case
                         result.AddMismatch(ComparisonMismatches.Byte.MismatchDetected(
                             first[j], current[j], firstTransformed[j], currentTransformed[j], j, 0, i, _comparisonConfiguration.ComparisonType, _toStringFunc));
                     }
