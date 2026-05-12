@@ -44,7 +44,6 @@ internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>
             }
         }
 
-        // TODO: Code not reached by unit tests - need to add tests for this case
         return result;
     }
 
@@ -70,9 +69,11 @@ internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>
 
     public override ComparisonResult Compare(byte[][] bytes, ComparisonResult result)
     {
-        if (bytes == null || bytes.Length < 2)
-            // TODO: Code not reached by unit tests - need to add tests for this case
+        if (bytes.Length < 2)
+        {
+            result.AddError(ComparisonErrors.NotEnoughObjectsToCompare(bytes.Length, typeof(byte[])));
             return result;
+        }
 
         // All arrays are compared against the first one
         var first = bytes[0];

@@ -30,7 +30,7 @@ internal class NumericComparison<T> : NumericComparisonBase<T>, IExecuteComparis
         }
 
         var first = ints[0];
-        for (int i = 1; i <= ints.Length; i++)
+        for (int i = 1; i < ints.Length; i++)
         {
             if (!Compare(first, ints[i], _comparisonConfiguration.ComparisonType))
             {

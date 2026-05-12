@@ -571,4 +571,19 @@ public class ByteComparisonTests
         result.Mismatches[0].Code.ShouldBe(ComparisonMismatches<byte>.MismatchDetectedCode);
         result.Mismatches[0].Message.ShouldContain("[new byte[] { 1, 2, 3 }[1] = 02, new byte[] { 1, 9, 3 }[1] = 09");
     }
+
+    [Fact]
+    public void Compare_ByteJaggedArray_TooShort_CoversGuardClause()
+    {
+        var builder = CreateBuilder();
+
+        // Too short case
+        var resultEmpty = builder.Compare(new byte[0][]);
+        resultEmpty.Errors.Count.ShouldBe(1); // or whatever is expected
+        resultEmpty.Errors[0].Code.ShouldBe(ComparisonErrors.NotEnoughObjectsToCompareCode);
+
+        var resultOne = builder.Compare(new byte[1][] { new byte[] { 1 } });
+        resultOne.Errors.Count.ShouldBe(1); // or whatever is expected
+        resultOne.Errors[0].Code.ShouldBe(ComparisonErrors.NotEnoughObjectsToCompareCode);
+    }
 }

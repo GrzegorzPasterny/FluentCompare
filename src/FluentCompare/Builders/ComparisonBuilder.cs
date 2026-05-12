@@ -16,7 +16,6 @@ public partial class ComparisonBuilder : IComparisonBuilder
     /// </summary>
     public ComparisonConfiguration Configuration { get; private set; } = new();
 
-    internal ComparisonResult _result = new();
 
     /// <summary>
     /// Starting point to begin configuring and performing comparisons.
@@ -49,90 +48,91 @@ public partial class ComparisonBuilder : IComparisonBuilder
     /// <exception cref="NotImplementedException">Thrown if the type is not supported.</exception>
     public ComparisonResult Compare<T>(params T[]? t)
     {
+        var result = new ComparisonResult();
         if (t is null)
         {
-            _result.AddError(ComparisonErrors.NullPassedAsArgument(typeof(T)));
-            return _result;
+            result.AddError(ComparisonErrors.NullPassedAsArgument(typeof(T)));
+            return result;
         }
         if (typeof(T).Name == typeof(Nullable<>).Name)
         {
-            _result.AddError(ComparisonErrors.NullPassedAsArgument(typeof(T)));
-            return _result;
+            result.AddError(ComparisonErrors.NullPassedAsArgument(typeof(T)));
+            return result;
         }
 
         if (typeof(T) == typeof(string))
             return new StringComparison(Configuration)
-                .Compare((string[])(object)t, _result);
+                .Compare((string[])(object)t, result);
 
         if (typeof(T) == typeof(string[]))
             return new StringComparison(Configuration)
-                .Compare((string[][])(object)t, _result);
+                .Compare((string[][])(object)t, result);
 
         if (typeof(T) == typeof(bool))
             return new BoolComparison(Configuration)
-                .Compare((bool[])(object)t, _result);
+                .Compare((bool[])(object)t, result);
 
         if (typeof(T) == typeof(bool[]))
             return new BoolComparison(Configuration)
-                .Compare((bool[][])(object)t, _result);
+                .Compare((bool[][])(object)t, result);
 
         if (typeof(T) == typeof(byte))
             return new ByteComparison(Configuration)
-                .Compare((byte[])(object)t, _result);
+                .Compare((byte[])(object)t, result);
 
         if (typeof(T) == typeof(byte[]))
             return new ByteComparison(Configuration)
-                .Compare((byte[][])(object)t, _result);
+                .Compare((byte[][])(object)t, result);
 
         if (typeof(T) == typeof(short))
             return new NumericComparison<short>(Configuration)
-                .Compare((short[])(object)t, _result);
+                .Compare((short[])(object)t, result);
 
         if (typeof(T) == typeof(short[]))
             return new NumericComparison<short>(Configuration)
-                .Compare((short[][])(object)t, _result);
+                .Compare((short[][])(object)t, result);
 
         if (typeof(T) == typeof(int))
             return new NumericComparison<int>(Configuration)
-                .Compare((int[])(object)t, _result);
+                .Compare((int[])(object)t, result);
 
         if (typeof(T) == typeof(int[]))
             return new NumericComparison<int>(Configuration)
-                .Compare((int[][])(object)t, _result);
+                .Compare((int[][])(object)t, result);
 
         if (typeof(T) == typeof(long))
             return new NumericComparison<long>(Configuration)
-                .Compare((long[])(object)t, _result);
+                .Compare((long[])(object)t, result);
 
         if (typeof(T) == typeof(long[]))
             return new NumericComparison<long>(Configuration)
-                .Compare((long[][])(object)t, _result);
+                .Compare((long[][])(object)t, result);
 
         if (typeof(T) == typeof(float))
             return new FloatingPointComparison<float>(Configuration)
-                .Compare((float[])(object)t, _result);
+                .Compare((float[])(object)t, result);
 
         if (typeof(T) == typeof(float[]))
             return new FloatingPointComparison<float>(Configuration)
-                .Compare((float[][])(object)t, _result);
+                .Compare((float[][])(object)t, result);
 
         if (typeof(T) == typeof(double))
             return new FloatingPointComparison<double>(Configuration)
-                .Compare((double[])(object)t, _result);
+                .Compare((double[])(object)t, result);
 
         if (typeof(T) == typeof(double[]))
             return new FloatingPointComparison<double>(Configuration)
-                .Compare((double[][])(object)t, _result);
+                .Compare((double[][])(object)t, result);
 
         if (typeof(T) == typeof(object[]))
             return new ObjectComparison(Configuration)
-                .Compare((object[][])(object)t, _result);
+                .Compare((object[][])(object)t, result);
 
         if (IsPrimitiveOrEnum(typeof(T)))
             throw new NotImplementedException(typeof(T).Name);
 
         return new ObjectComparison(Configuration)
-            .Compare((object[])(object)t, _result);
+            .Compare((object[])(object)t, result);
     }
 
     /// <summary>
@@ -149,21 +149,22 @@ public partial class ComparisonBuilder : IComparisonBuilder
         [CallerArgumentExpression(nameof(t1))] string? t1Expr = null,
         [CallerArgumentExpression(nameof(t2))] string? t2Expr = null)
     {
-        HandleNullability(t1, t2, t1Expr, t2Expr, _result);
+        var result = new ComparisonResult();
+        HandleNullability(t1, t2, t1Expr, t2Expr, result);
 
         // Check basic nullability results first
-        if (_result.WasSuccessful == false)
+        if (result.WasSuccessful == false)
         {
-            return _result;
+            return result;
         }
-        if (_result.AllMatched == false &&
-            _result.Mismatches.First().Code == ComparisonMismatches.NullPassedAsArgumentCode)
+        if (result.AllMatched == false &&
+            result.Mismatches.First().Code == ComparisonMismatches.NullPassedAsArgumentCode)
         {
-            return _result;
+            return result;
         }
-        if (_result.WarningCount > 0 && _result.Warnings.Any(warning => warning.Code == ComparisonErrors.BothObjectsAreNullCode))
+        if (result.WarningCount > 0 && result.Warnings.Any(warning => warning.Code == ComparisonErrors.BothObjectsAreNullCode))
         {
-            return _result;
+            return result;
         }
 
         if (typeof(T) == typeof(string))
@@ -174,7 +175,7 @@ public partial class ComparisonBuilder : IComparisonBuilder
             string t2ExprName = t2Expr ?? "StringTwo";
 
             return new StringComparison(Configuration)
-                .Compare(s1, s2, t1ExprName, t2ExprName, _result);
+                .Compare(s1, s2, t1ExprName, t2ExprName, result);
         }
         if (typeof(T) == typeof(string[]))
         {
@@ -184,7 +185,7 @@ public partial class ComparisonBuilder : IComparisonBuilder
             string t2ExprName = t2Expr ?? "StringArrayTwo";
 
             return new StringComparison(Configuration)
-                .Compare(sArr1, sArr2, t1ExprName, t2ExprName, _result);
+                .Compare(sArr1, sArr2, t1ExprName, t2ExprName, result);
         }
         if (typeof(T) == typeof(bool))
         {
@@ -194,7 +195,7 @@ public partial class ComparisonBuilder : IComparisonBuilder
             string t2ExprName = t2Expr ?? "BoolTwo";
 
             return new BoolComparison(Configuration)
-                .Compare(s1, s2, t1ExprName, t2ExprName, _result);
+                .Compare(s1, s2, t1ExprName, t2ExprName, result);
         }
         if (typeof(T) == typeof(bool[]))
         {
@@ -204,7 +205,7 @@ public partial class ComparisonBuilder : IComparisonBuilder
             string t2ExprName = t2Expr ?? "BoolArrayTwo";
 
             return new BoolComparison(Configuration)
-                .Compare(s1, s2, t1ExprName, t2ExprName, _result);
+                .Compare(s1, s2, t1ExprName, t2ExprName, result);
         }
         if (typeof(T) == typeof(byte))
         {
@@ -214,7 +215,7 @@ public partial class ComparisonBuilder : IComparisonBuilder
             string t2ExprName = t2Expr ?? "ByteTwo";
 
             return new ByteComparison(Configuration)
-                .Compare(s1, s2, t1ExprName, t2ExprName, _result);
+                .Compare(s1, s2, t1ExprName, t2ExprName, result);
         }
         if (typeof(T) == typeof(byte[]))
         {
@@ -224,7 +225,7 @@ public partial class ComparisonBuilder : IComparisonBuilder
             string t2ExprName = t2Expr ?? "ByteArrayTwo";
 
             return new ByteComparison(Configuration)
-                .Compare(s1, s2, t1ExprName, t2ExprName, _result);
+                .Compare(s1, s2, t1ExprName, t2ExprName, result);
         }
         if (typeof(T) == typeof(short))
         {
@@ -234,7 +235,7 @@ public partial class ComparisonBuilder : IComparisonBuilder
             string t2ExprName = t2Expr ?? "ShortTwo";
 
             return new NumericComparison<short>(Configuration)
-                .Compare(o1, o2, t1ExprName, t2ExprName, _result);
+                .Compare(o1, o2, t1ExprName, t2ExprName, result);
         }
         if (typeof(T) == typeof(short[]))
         {
@@ -244,7 +245,7 @@ public partial class ComparisonBuilder : IComparisonBuilder
             string t2ExprName = t2Expr ?? "ShortArrayTwo";
 
             return new NumericComparison<short>(Configuration)
-                .Compare(oArr1, oArr2, t1ExprName, t2ExprName, _result);
+                .Compare(oArr1, oArr2, t1ExprName, t2ExprName, result);
         }
         if (typeof(T) == typeof(int))
         {
@@ -254,7 +255,7 @@ public partial class ComparisonBuilder : IComparisonBuilder
             string t2ExprName = t2Expr ?? "IntTwo";
 
             return new NumericComparison<int>(Configuration)
-                .Compare(o1, o2, t1ExprName, t2ExprName, _result);
+                .Compare(o1, o2, t1ExprName, t2ExprName, result);
         }
         if (typeof(T) == typeof(int[]))
         {
@@ -264,7 +265,7 @@ public partial class ComparisonBuilder : IComparisonBuilder
             string t2ExprName = t2Expr ?? "IntArrayTwo";
 
             return new NumericComparison<int>(Configuration)
-                .Compare(oArr1, oArr2, t1ExprName, t2ExprName, _result);
+                .Compare(oArr1, oArr2, t1ExprName, t2ExprName, result);
         }
         if (typeof(T) == typeof(long))
         {
@@ -274,7 +275,7 @@ public partial class ComparisonBuilder : IComparisonBuilder
             string t2ExprName = t2Expr ?? "LongTwo";
 
             return new NumericComparison<long>(Configuration)
-                .Compare(o1, o2, t1ExprName, t2ExprName, _result);
+                .Compare(o1, o2, t1ExprName, t2ExprName, result);
         }
         if (typeof(T) == typeof(long[]))
         {
@@ -284,7 +285,7 @@ public partial class ComparisonBuilder : IComparisonBuilder
             string t2ExprName = t2Expr ?? "LongArrayTwo";
 
             return new NumericComparison<long>(Configuration)
-                .Compare(oArr1, oArr2, t1ExprName, t2ExprName, _result);
+                .Compare(oArr1, oArr2, t1ExprName, t2ExprName, result);
         }
         if (typeof(T) == typeof(float))
         {
@@ -294,7 +295,7 @@ public partial class ComparisonBuilder : IComparisonBuilder
             string t2ExprName = t2Expr ?? "FloatTwo";
 
             return new FloatingPointComparison<float>(Configuration)
-                .Compare(o1, o2, t1ExprName, t2ExprName, _result);
+                .Compare(o1, o2, t1ExprName, t2ExprName, result);
         }
         if (typeof(T) == typeof(float[]))
         {
@@ -304,7 +305,7 @@ public partial class ComparisonBuilder : IComparisonBuilder
             string t2ExprName = t2Expr ?? "FloatArrayTwo";
 
             return new FloatingPointComparison<float>(Configuration)
-                .Compare(oArr1, oArr2, t1ExprName, t2ExprName, _result);
+                .Compare(oArr1, oArr2, t1ExprName, t2ExprName, result);
         }
         if (typeof(T) == typeof(double))
         {
@@ -314,7 +315,7 @@ public partial class ComparisonBuilder : IComparisonBuilder
             string t2ExprName = t2Expr ?? "DoubleTwo";
 
             return new FloatingPointComparison<double>(Configuration)
-                .Compare(o1, o2, t1ExprName, t2ExprName, _result);
+                .Compare(o1, o2, t1ExprName, t2ExprName, result);
         }
         if (typeof(T) == typeof(double[]))
         {
@@ -324,7 +325,7 @@ public partial class ComparisonBuilder : IComparisonBuilder
             string t2ExprName = t2Expr ?? "DoubleArrayTwo";
 
             return new FloatingPointComparison<double>(Configuration)
-                .Compare(oArr1, oArr2, t1ExprName, t2ExprName, _result);
+                .Compare(oArr1, oArr2, t1ExprName, t2ExprName, result);
         }
         if (typeof(T) == typeof(object[]))
         // TODO: Code not reached by unit tests - need to add tests for this case
@@ -335,7 +336,7 @@ public partial class ComparisonBuilder : IComparisonBuilder
             string t2ExprName = t2Expr ?? "ArrayTwo";
 
             return new ObjectComparison(Configuration)
-                .Compare(oArr1, oArr2, t1ExprName, t2ExprName, _result);
+                .Compare(oArr1, oArr2, t1ExprName, t2ExprName, result);
         }
         if (IsPrimitiveOrEnum(typeof(T)))
         {
@@ -347,7 +348,7 @@ public partial class ComparisonBuilder : IComparisonBuilder
             string t2ExprName = t2Expr ?? "ObjectTwo";
 
             return new ObjectComparison(Configuration)
-                .Compare(t1!, t2!, t1ExprName, t2ExprName, _result);
+                .Compare(t1!, t2!, t1ExprName, t2ExprName, result);
         }
     }
 
@@ -363,17 +364,18 @@ public partial class ComparisonBuilder : IComparisonBuilder
         [CallerArgumentExpression(nameof(o1))] string? o1Expr = null,
         [CallerArgumentExpression(nameof(o2))] string? o2Expr = null)
     {
-        HandleNullability(o1, o2, o1Expr, o2Expr, _result);
+        var result = new ComparisonResult();
+        HandleNullability(o1, o2, o1Expr, o2Expr, result);
 
         // Check basic nullability results first
-        if (_result.WasSuccessful == false || _result.AllMatched == false)
+        if (result.WasSuccessful == false || result.AllMatched == false)
         {
-            return _result;
+            return result;
         }
-        if (_result.WarningCount > 0 &&
-            _result.Warnings.Any(warning => warning.Code == ComparisonErrors.BothObjectsAreNullCode))
+        if (result.WarningCount > 0 &&
+            result.Warnings.Any(warning => warning.Code == ComparisonErrors.BothObjectsAreNullCode))
         {
-            return _result;
+            return result;
         }
 
         Type type = o1!.GetType();
@@ -382,60 +384,60 @@ public partial class ComparisonBuilder : IComparisonBuilder
 
         // Primitives
         if (type == typeof(string))
-            return new StringComparison(Configuration).Compare((string)o1, (string)o2!, t1ExprName, t2ExprName, _result);
+            return new StringComparison(Configuration).Compare((string)o1, (string)o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(bool))
-            return new BoolComparison(Configuration).Compare((bool)o1, (bool)o2!, t1ExprName, t2ExprName, _result);
+            return new BoolComparison(Configuration).Compare((bool)o1, (bool)o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(byte))
-            return new ByteComparison(Configuration).Compare((byte)o1, (byte)o2!, t1ExprName, t2ExprName, _result);
+            return new ByteComparison(Configuration).Compare((byte)o1, (byte)o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(short))
-            return new NumericComparison<short>(Configuration).Compare((short)o1, (short)o2!, t1ExprName, t2ExprName, _result);
+            return new NumericComparison<short>(Configuration).Compare((short)o1, (short)o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(int))
-            return new NumericComparison<int>(Configuration).Compare((int)o1, (int)o2!, t1ExprName, t2ExprName, _result);
+            return new NumericComparison<int>(Configuration).Compare((int)o1, (int)o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(long))
-            return new NumericComparison<long>(Configuration).Compare((long)o1, (long)o2!, t1ExprName, t2ExprName, _result);
+            return new NumericComparison<long>(Configuration).Compare((long)o1, (long)o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(float))
-            return new FloatingPointComparison<float>(Configuration).Compare((float)o1, (float)o2!, t1ExprName, t2ExprName, _result);
+            return new FloatingPointComparison<float>(Configuration).Compare((float)o1, (float)o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(double))
-            return new FloatingPointComparison<double>(Configuration).Compare((double)o1, (double)o2!, t1ExprName, t2ExprName, _result);
+            return new FloatingPointComparison<double>(Configuration).Compare((double)o1, (double)o2!, t1ExprName, t2ExprName, result);
 
         // Array types
         if (type == typeof(string[]))
-            return new StringComparison(Configuration).Compare((string[])o1, (string[])o2!, t1ExprName, t2ExprName, _result);
+            return new StringComparison(Configuration).Compare((string[])o1, (string[])o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(bool[]))
-            return new BoolComparison(Configuration).Compare((bool[])o1, (bool[])o2!, t1ExprName, t2ExprName, _result);
+            return new BoolComparison(Configuration).Compare((bool[])o1, (bool[])o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(byte[]))
-            return new ByteComparison(Configuration).Compare((byte[])o1, (byte[])o2!, t1ExprName, t2ExprName, _result);
+            return new ByteComparison(Configuration).Compare((byte[])o1, (byte[])o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(short[]))
             // TODO: Code not reached by unit tests - need to add tests for this case
-            return new NumericComparison<short>(Configuration).Compare((short[])o1, (short[])o2!, t1ExprName, t2ExprName, _result);
+            return new NumericComparison<short>(Configuration).Compare((short[])o1, (short[])o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(int[]))
             // TODO: Code not reached by unit tests - need to add tests for this case
-            return new NumericComparison<int>(Configuration).Compare((int[])o1, (int[])o2!, t1ExprName, t2ExprName, _result);
+            return new NumericComparison<int>(Configuration).Compare((int[])o1, (int[])o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(long[]))
-            return new NumericComparison<long>(Configuration).Compare((long[])o1, (long[])o2!, t1ExprName, t2ExprName, _result);
+            return new NumericComparison<long>(Configuration).Compare((long[])o1, (long[])o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(float[]))
-            return new FloatingPointComparison<float>(Configuration).Compare((float[])o1, (float[])o2!, t1ExprName, t2ExprName, _result);
+            return new FloatingPointComparison<float>(Configuration).Compare((float[])o1, (float[])o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(double[]))
-            return new FloatingPointComparison<double>(Configuration).Compare((double[])o1, (double[])o2!, t1ExprName, t2ExprName, _result);
+            return new FloatingPointComparison<double>(Configuration).Compare((double[])o1, (double[])o2!, t1ExprName, t2ExprName, result);
 
 
         if (type == typeof(object[]))
             return new ObjectComparison(Configuration)
-                .Compare((object[])o1, (object[])o2!, t1ExprName, t2ExprName, _result);
+                .Compare((object[])o1, (object[])o2!, t1ExprName, t2ExprName, result);
 
 
         if (IsPrimitiveOrEnum(type))
@@ -443,7 +445,7 @@ public partial class ComparisonBuilder : IComparisonBuilder
 
 
         return new ObjectComparison(Configuration)
-            .Compare(o1, o2, t1ExprName, t2ExprName, _result);
+            .Compare(o1, o2, t1ExprName, t2ExprName, result);
     }
 
     /// <summary>
@@ -458,25 +460,26 @@ public partial class ComparisonBuilder : IComparisonBuilder
         [CallerArgumentExpression(nameof(o1Arr))] string? o1ArrExpr = null,
         [CallerArgumentExpression(nameof(o2Arr))] string? o2ArrExpr = null)
     {
-        HandleNullability(o1Arr, o2Arr, o1ArrExpr, o2ArrExpr, _result);
+        var result = new ComparisonResult();
+        HandleNullability(o1Arr, o2Arr, o1ArrExpr, o2ArrExpr, result);
 
         // Check basic nullability results first
-        if (_result.WasSuccessful == false)
+        if (result.WasSuccessful == false)
         {
             // TODO: Code not reached by unit tests - need to add tests for this case
-            return _result;
+            return result;
         }
-        if (_result.AllMatched == false &&
-            _result.Mismatches.First().Code == ComparisonMismatches.NullPassedAsArgumentCode)
+        if (result.AllMatched == false &&
+            result.Mismatches.First().Code == ComparisonMismatches.NullPassedAsArgumentCode)
         {
-            return _result;
+            return result;
         }
 
         string t1ExprName = o1ArrExpr ?? "ObjectArrayOne";
         string t2ExprName = o2ArrExpr ?? "ObjectArrayTwo";
 
         return new ObjectComparison(Configuration)
-            .Compare(o1Arr, o2Arr, t1ExprName, t2ExprName, _result);
+            .Compare(o1Arr, o2Arr, t1ExprName, t2ExprName, result);
     }
 
 
