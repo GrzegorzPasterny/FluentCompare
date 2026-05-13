@@ -15,6 +15,135 @@ public class ByteComparisonTests
             .UseComparisonType(comparisonType);
     }
 
+    // Entry point: Compare<T>(T t1, T t2) : where T is byte
+    public static TheoryData<Func<ComparisonBuilder, ComparisonBuilder>, byte, byte, int, string?> SingleByteBitwiseCases =>
+        new()
+        {
+            { b => b.ApplyBitwiseOperation(BitwiseOperation.And, 0x0F), 0x3F, 0x1F, 0, null },
+            { b => b.ApplyBitwiseOperation(BitwiseOperation.Or, 0xF0), 0x0A, 0x0B, 1, ComparisonMismatches.Byte.MismatchDetectedCode },
+            { b => b.ApplyBitwiseOperation(BitwiseOperation.Xor, 0x0F), 0xF0, 0xF0, 0, null },
+            { b => b.ApplyBitwiseOperation(BitwiseOperation.Not, 0x00), 0b_1010_1010, 0b_1010_1010, 0, null },
+            { b => b.ApplyBitwiseOperation(BitwiseOperation.ShiftLeft, 1), 0b_0000_0010, 0b_0000_0010, 0, null },
+            { b => b.ApplyBitwiseOperation(BitwiseOperation.ShiftRight, 1), 0b_0000_0100, 0b_0000_0100, 0, null },
+        };
+
+    // Entry point: Compare<T>(T t1, T t2) : where T is byte[]
+    public static TheoryData<Func<ComparisonBuilder, ComparisonBuilder>, byte[], byte[], int, string?> ByteArrayBitwiseCases =>
+        new()
+        {
+            { b => b.ApplyBitwiseOperation(BitwiseOperation.Or, 0x02), new byte[] { 0x00 }, new byte[] { 0x01 }, 1, ComparisonMismatches.Byte.MismatchDetectedCode },
+            { b => b.ApplyBitwiseOperation(BitwiseOperation.Xor, 0x01), new byte[] { 0x00 }, new byte[] { 0x01 }, 1, ComparisonMismatches.Byte.MismatchDetectedCode },
+            { b => b.ApplyBitwiseOperation(BitwiseOperation.ShiftLeft, 1), new byte[] { 0x80 }, new byte[] { 0x00 }, 0, null },
+            { b => b.ApplyBitwiseOperation(BitwiseOperation.ShiftRight, 1), new byte[] { 0x01 }, new byte[] { 0x00 }, 0, null },
+            { b => b.ApplyBitwiseOperation(BitwiseOperation.Not, 0x00), new byte[] { 0b_0000_1111, 0b_1111_0000 }, new byte[] { 0b_0000_1111, 0b_1111_0000 }, 0, null },
+        };
+
+    // Entry point: Compare<T>(params T[]? t) : where T is byte
+    public static TheoryData<Func<ComparisonBuilder, ComparisonBuilder>, byte, byte, byte, string, string> ParamsByteMismatchCases =>
+        new()
+        {
+            { b => b, 1, 1, 2, ComparisonMismatches<byte>.MismatchDetectedCode, "ByteValueAtIndex[2] = 02" },
+            { b => b.ApplyBitwiseOperation(BitwiseOperation.Xor, 0x01), 0x01, 0x01, 0x03, ComparisonMismatches.Byte.MismatchDetectedCode, "ByteValueAtIndex[2] = 03" },
+        };
+
+    private void LogResult(params ComparisonResult[] results)
+    {
+        foreach (var result in results)
+        {
+            _testOutputHelper.WriteLine(result.ToString());
+        }
+    }
+
+    private void AssertFirstMismatchCode(ComparisonResult result, string expectedCode)
+    {
+        LogResult(result);
+        result.MismatchCount.ShouldBeGreaterThan(0, result.ToString());
+        result.Mismatches[0].Code.ShouldBe(expectedCode, result.Mismatches[0].Message);
+    }
+
+    private void AssertFirstErrorCode(ComparisonResult result, string expectedCode)
+    {
+        LogResult(result);
+        result.ErrorCount.ShouldBeGreaterThan(0, result.ToString());
+        result.Errors[0].Code.ShouldBe(expectedCode, result.Errors[0].Message);
+    }
+
+    [Theory]
+    [MemberData(nameof(SingleByteBitwiseCases))]
+    public void Compare_Byte_WithBitwiseOperations_UsesExpectedOutcome(
+        Func<ComparisonBuilder, ComparisonBuilder> configure,
+        byte left,
+        byte right,
+        int expectedMismatches,
+        string? expectedMismatchCode)
+    {
+        // Arrange
+        var builder = configure(CreateBuilder());
+
+        // Act
+        var result = builder.Compare(left, right);
+        LogResult(result);
+
+        // Assert
+        result.MismatchCount.ShouldBe(expectedMismatches);
+        result.AllMatched.ShouldBe(expectedMismatches == 0);
+
+        if (expectedMismatchCode is not null)
+        {
+            AssertFirstMismatchCode(result, expectedMismatchCode);
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(ByteArrayBitwiseCases))]
+    public void Compare_ByteArrays_WithBitwiseOperations_UsesExpectedOutcome(
+        Func<ComparisonBuilder, ComparisonBuilder> configure,
+        byte[] first,
+        byte[] second,
+        int expectedMismatches,
+        string? expectedMismatchCode)
+    {
+        // Arrange
+        var builder = configure(CreateBuilder());
+
+        // Act
+        var result = builder.Compare(first, second);
+        LogResult(result);
+
+        // Assert
+        result.MismatchCount.ShouldBe(expectedMismatches);
+        result.AllMatched.ShouldBe(expectedMismatches == 0);
+
+        if (expectedMismatchCode is not null)
+        {
+            AssertFirstMismatchCode(result, expectedMismatchCode);
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(ParamsByteMismatchCases))]
+    public void Compare_ParamsByte_ThreeBytes_MismatchAtLastIndex_CoversLoopEnd(
+        Func<ComparisonBuilder, ComparisonBuilder> configure,
+        byte first,
+        byte second,
+        byte third,
+        string expectedMismatchCode,
+        string expectedMessagePart)
+    {
+        // Arrange
+        var builder = configure(CreateBuilder());
+
+        // Act
+        var result = builder.Compare(first, second, third);
+        LogResult(result);
+
+        // Assert: mismatch at index 2
+        result.AllMatched.ShouldBeFalse();
+        result.MismatchCount.ShouldBe(1);
+        AssertFirstMismatchCode(result, expectedMismatchCode);
+        result.Mismatches[0].Message.ShouldContain(expectedMessagePart);
+    }
+
     [Fact]
     public void Compare_Byte_SkipsBitwiseOperation_WhenIndexExcluded()
     {
@@ -23,24 +152,10 @@ public class ByteComparisonTests
             .ApplyBitwiseOperation(BitwiseOperation.Or, 0x0F, 0);
         // Act
         var result = builder.Compare((byte)0xFF, (byte)0x0F);
+        LogResult(result);
         // Assert: 0xFF is not transformed, 0x0F is transformed (but OR with 0x0F is still 0x0F)
         result.AllMatched.ShouldBeFalse();
-        result.Mismatches.Count.ShouldBe(1);
-    }
-
-    [Fact]
-    public void Compare_Byte_NotOperation_Works()
-    {
-        // Arrange: Apply NOT operation to both values
-        var builder = CreateBuilder()
-            .ApplyBitwiseOperation(BitwiseOperation.Not, 0);
-        byte left = 0b_1010_1010;
-        byte right = 0b_1010_1010;
-        // Act
-        var result = builder.Compare(left, right);
-        // Assert: ~left == ~right, so should match
-        result.AllMatched.ShouldBeTrue();
-        result.Mismatches.ShouldBeEmpty();
+        result.MismatchCount.ShouldBe(1);
     }
 
     [Fact]
@@ -54,22 +169,8 @@ public class ByteComparisonTests
         var arr2 = new byte[] { 0xAB, 0xAC };
         // Act
         var result = builder.Compare(arr1, arr2);
+        LogResult(result);
         // Assert: arr2 is not transformed, arr1 is transformed, so both arrays are still equal
-        result.AllMatched.ShouldBeTrue();
-        result.Mismatches.ShouldBeEmpty();
-    }
-
-    [Fact]
-    public void Compare_ByteArray_NotOperation_Works()
-    {
-        // Arrange: Apply NOT operation to both arrays
-        var builder = CreateBuilder()
-            .ApplyBitwiseOperation(BitwiseOperation.Not, 0);
-        var arr1 = new byte[] { 0b_0000_1111, 0b_1111_0000 };
-        var arr2 = new byte[] { 0b_0000_1111, 0b_1111_0000 };
-        // Act
-        var result = builder.Compare(arr1, arr2);
-        // Assert: ~arr1 == ~arr2, so should match
         result.AllMatched.ShouldBeTrue();
         result.Mismatches.ShouldBeEmpty();
     }
@@ -81,9 +182,10 @@ public class ByteComparisonTests
         var builder = CreateBuilder();
         // Act
         var result = builder.Compare((byte)1, (byte)2);
+        LogResult(result);
         // Assert
         result.AllMatched.ShouldBeFalse();
-        result.Mismatches.Count.ShouldBe(1);
+        result.MismatchCount.ShouldBe(1);
     }
 
     [Fact]
@@ -93,9 +195,10 @@ public class ByteComparisonTests
         var builder = CreateBuilder();
         // Act
         var result = builder.Compare(new byte[] { 1, 2 }, new byte[] { 1, 3 });
+        LogResult(result);
         // Assert
         result.AllMatched.ShouldBeFalse();
-        result.Mismatches.Count.ShouldBe(1);
+        result.MismatchCount.ShouldBe(1);
     }
 
     [Fact]
@@ -106,6 +209,7 @@ public class ByteComparisonTests
         byte[][] arr = new byte[][] { new byte[] { 1, 2 }, new byte[] { 1, 2 } };
         // Act
         var result = builder.Compare(arr);
+        LogResult(result);
         // Assert
         result.AllMatched.ShouldBeTrue();
         result.Mismatches.ShouldBeEmpty();
@@ -122,8 +226,8 @@ public class ByteComparisonTests
 
         // Assert
         _testOutputHelper.WriteLine(result.ToString());
-        result.Errors.Count.ShouldBe(1);
-        result.Errors[0].Code.ShouldBe(ComparisonErrors.NullPassedAsArgumentCode);
+        result.ErrorCount.ShouldBe(1);
+        AssertFirstErrorCode(result, ComparisonErrors.NullPassedAsArgumentCode);
     }
 
     [Fact]
@@ -137,8 +241,8 @@ public class ByteComparisonTests
 
         // Assert
         _testOutputHelper.WriteLine(result.ToString());
-        result.Errors.Count.ShouldBe(1);
-        result.Errors[0].Code.ShouldBe(ComparisonErrors.NotEnoughObjectsToCompareCode);
+        result.ErrorCount.ShouldBe(1);
+        AssertFirstErrorCode(result, ComparisonErrors.NotEnoughObjectsToCompareCode);
     }
 
     [Fact]
@@ -170,7 +274,8 @@ public class ByteComparisonTests
 
         // Assert
         _testOutputHelper.WriteLine(result.ToString());
-        result.Mismatches.Count.ShouldBe(1);
+        result.MismatchCount.ShouldBe(1);
+        AssertFirstMismatchCode(result, ComparisonMismatches<byte>.MismatchDetectedCode);
         result.AllMatched.ShouldBeFalse();
         result.WasSuccessful.ShouldBeTrue();
     }
@@ -202,7 +307,7 @@ public class ByteComparisonTests
         else
         {
             result.AllMatched.ShouldBeFalse();
-            result.Mismatches.Count.ShouldBeGreaterThan(0);
+            result.MismatchCount.ShouldBeGreaterThan(0);
         }
     }
 
@@ -234,7 +339,8 @@ public class ByteComparisonTests
 
         // Assert
         _testOutputHelper.WriteLine(result.ToString());
-        result.Errors.Count.ShouldBe(1);
+        result.ErrorCount.ShouldBe(1);
+        AssertFirstErrorCode(result, ComparisonErrors.InputArrayLengthsDifferCode);
         result.AllMatched.ShouldBeFalse();
         result.WasSuccessful.ShouldBeFalse();
     }
@@ -250,58 +356,12 @@ public class ByteComparisonTests
 
         // Assert
         _testOutputHelper.WriteLine(result.ToString());
-        result.Mismatches.Count.ShouldBe(1);
+        result.MismatchCount.ShouldBe(1);
+        AssertFirstMismatchCode(result, ComparisonMismatches<byte>.MismatchDetectedCode);
         result.AllMatched.ShouldBeFalse();
         result.WasSuccessful.ShouldBeTrue();
     }
 
-    [Fact]
-    public void Compare_WithBitwiseAndOperation_ShouldTransformAndMatch()
-    {
-        // Arrange
-        var builder = CreateBuilder()
-            .ApplyBitwiseOperation(BitwiseOperation.And, 0x0F);
-
-        // Act
-        var result = builder.Compare((byte)0x3F, (byte)0x1F); // 0x3F & 0x0F == 0x0F, 0x1F & 0x0F == 0x0F
-
-        // Assert
-        _testOutputHelper.WriteLine(result.ToString());
-        result.AllMatched.ShouldBeTrue();
-        result.Mismatches.ShouldBeEmpty();
-    }
-
-    [Fact]
-    public void Compare_WithBitwiseOrOperation_ShouldTransformAndMatch()
-    {
-        // Arrange
-        var builder = CreateBuilder()
-            .ApplyBitwiseOperation(BitwiseOperation.Or, 0xF0);
-
-        // Act
-        var result = builder.Compare((byte)0x0A, (byte)0x0B); // (0x0A | 0xF0) == 0xFA, (0x0B | 0xF0) == 0xFB
-
-        // Assert
-        _testOutputHelper.WriteLine(result.ToString());
-        result.AllMatched.ShouldBeFalse();
-        result.Mismatches.Count.ShouldBe(1);
-    }
-
-    [Fact]
-    public void Compare_WithBitwiseXorOperation_ShouldTransformAndMatch()
-    {
-        // Arrange
-        var builder = CreateBuilder()
-            .ApplyBitwiseOperation(BitwiseOperation.Xor, 0x0F);
-
-        // Act
-        var result = builder.Compare((byte)0xF0, (byte)0xF0);
-
-        // Assert
-        _testOutputHelper.WriteLine(result.ToString());
-        result.AllMatched.ShouldBeTrue();
-        result.Mismatches.ShouldBeEmpty();
-    }
 
     [Fact]
     public void Compare_MultipleBitwiseOperations_ShouldApplyInOrder()
@@ -338,7 +398,7 @@ public class ByteComparisonTests
         // Assert
         _testOutputHelper.WriteLine(result.ToString());
         result.AllMatched.ShouldBeFalse();
-        result.Mismatches.Count.ShouldBe(1);
+        result.MismatchCount.ShouldBe(1);
     }
 
     [Fact]
@@ -381,95 +441,7 @@ public class ByteComparisonTests
         rightResult.Mismatches.Count.ShouldBeGreaterThan(0);
     }
 
-    [Fact]
-    public void Compare_ShiftLeft_ShiftingBothEqualInputs_ShouldMatch()
-    {
-        // Arrange
-        var shiftLeft = CreateBuilder().ApplyBitwiseOperation(BitwiseOperation.ShiftLeft, 1);
 
-        // Act
-        var result = shiftLeft.Compare((byte)0b_0000_0010, (byte)0b_0000_0010);  // both 2 -> both 4 after <<1
-
-        // Assert
-        _testOutputHelper.WriteLine(result.ToString());
-        result.AllMatched.ShouldBeTrue();
-        result.Mismatches.ShouldBeEmpty();
-    }
-
-    [Fact]
-    public void Compare_ShiftRight_ShiftingBothEqualInputs_ShouldMatch()
-    {
-        // Arrange
-        var shiftRight = CreateBuilder().ApplyBitwiseOperation(BitwiseOperation.ShiftRight, 1);
-
-        // Act
-        var result = shiftRight.Compare((byte)0b_0000_0100, (byte)0b_0000_0100);  // both 4 -> both 2 after >>1
-
-        // Assert
-        _testOutputHelper.WriteLine(result.ToString());
-        result.AllMatched.ShouldBeTrue();
-        result.Mismatches.ShouldBeEmpty();
-    }
-
-    [Fact]
-    public void Compare_ByteArrays_WithBitwiseOr_ShouldApplyArrayTransform()
-    {
-        // Arrange
-        var builder = CreateBuilder()
-            .ApplyBitwiseOperation(BitwiseOperation.Or, 0x02);
-
-        // Act
-        var result = builder.Compare(new byte[] { 0x00 }, new byte[] { 0x01 });
-
-        // Assert
-        result.AllMatched.ShouldBeFalse();
-        result.Mismatches.Count.ShouldBe(1);
-    }
-
-    [Fact]
-    public void Compare_ByteArrays_WithBitwiseXor_ShouldApplyArrayTransform()
-    {
-        // Arrange
-        var builder = CreateBuilder()
-            .ApplyBitwiseOperation(BitwiseOperation.Xor, 0x01);
-
-        // Act
-        var result = builder.Compare(new byte[] { 0x00 }, new byte[] { 0x01 });
-
-        // Assert
-        result.AllMatched.ShouldBeFalse();
-        result.Mismatches.Count.ShouldBe(1);
-    }
-
-    [Fact]
-    public void Compare_ByteArrays_WithBitwiseShiftLeft_ShouldApplyArrayTransform()
-    {
-        // Arrange
-        var builder = CreateBuilder()
-            .ApplyBitwiseOperation(BitwiseOperation.ShiftLeft, 1);
-
-        // Act
-        var result = builder.Compare(new byte[] { 0x80 }, new byte[] { 0x00 });
-
-        // Assert
-        result.AllMatched.ShouldBeTrue();
-        result.Mismatches.ShouldBeEmpty();
-    }
-
-    [Fact]
-    public void Compare_ByteArrays_WithBitwiseShiftRight_ShouldApplyArrayTransform()
-    {
-        // Arrange
-        var builder = CreateBuilder()
-            .ApplyBitwiseOperation(BitwiseOperation.ShiftRight, 1);
-
-        // Act
-        var result = builder.Compare(new byte[] { 0x01 }, new byte[] { 0x00 });
-
-        // Assert
-        result.AllMatched.ShouldBeTrue();
-        result.Mismatches.ShouldBeEmpty();
-    }
 
     [Fact]
     public void Compare_ByteJaggedArray_MismatchWithoutBitwise_ShouldDetectMismatch()
@@ -482,10 +454,11 @@ public class ByteComparisonTests
             new byte[] { 0x01, 0x02 },
             new byte[] { 0x01, 0x03 },
             new byte[] { 0x01, 0x02 });
+        LogResult(result);
 
         // Assert
         result.AllMatched.ShouldBeFalse();
-        result.Mismatches.Count.ShouldBeGreaterThan(0);
+        result.MismatchCount.ShouldBeGreaterThan(0);
     }
 
     [Fact]
@@ -499,10 +472,11 @@ public class ByteComparisonTests
         var result = builder.Compare(
             new byte[] { 0xFF, 0xE1 },
             new byte[] { 0x0F, 0xE0 });
+        LogResult(result);
 
         // Assert
         result.AllMatched.ShouldBeFalse();
-        result.Mismatches.Count.ShouldBe(1);
+        result.MismatchCount.ShouldBe(1);
     }
 
     [Fact]
@@ -521,8 +495,8 @@ public class ByteComparisonTests
 
         // Assert: Should hit the Byte-specific mismatch branch
         result.AllMatched.ShouldBeFalse();
-        result.Mismatches.Count.ShouldBe(1);
-        result.Mismatches[0].Code.ShouldBe(ComparisonMismatches.Byte.MismatchDetectedCode);
+        result.MismatchCount.ShouldBe(1);
+        AssertFirstMismatchCode(result, ComparisonMismatches.Byte.MismatchDetectedCode);
     }
 
     [Fact]
@@ -540,8 +514,8 @@ public class ByteComparisonTests
 
         // Assert: Should hit the Byte-specific mismatch branch
         result.AllMatched.ShouldBeFalse();
-        result.Mismatches.Count.ShouldBe(1);
-        result.Mismatches[0].Code.ShouldBe(ComparisonMismatches.NullPassedAsArgumentCode);
+        result.MismatchCount.ShouldBe(1);
+        AssertFirstMismatchCode(result, ComparisonMismatches.NullPassedAsArgumentCode);
     }
 
     [Fact]
@@ -560,35 +534,7 @@ public class ByteComparisonTests
         // Assert: Should hit the Byte-specific mismatch branch
         result.AllMatched.ShouldBeFalse();
         result.ErrorCount.ShouldBe(1);
-        result.Errors[0].Code.ShouldBe(ComparisonErrors.InputArrayLengthsDifferCode);
-    }
-
-    [Fact]
-    public void Compare_ParamsByte_ThreeBytes_MismatchAtLastIndex_CoversLoopEnd()
-    {
-        // Arrange
-        var builder = CreateBuilder();
-        // Act
-        var result = builder.Compare((byte)1, (byte)1, (byte)2);
-        // Assert: mismatch at index 2
-        result.AllMatched.ShouldBeFalse();
-        result.Mismatches.Count.ShouldBe(1);
-        result.Mismatches[0].Code.ShouldBe(ComparisonMismatches<byte>.MismatchDetectedCode);
-        result.Mismatches[0].Message.ShouldContain("ByteValueAtIndex[2] = 02");
-    }
-
-    [Fact]
-    public void Compare_ParamsByte_ThreeBytes_WithBitwise_MismatchAtLastIndex_CoversLoopEnd()
-    {
-        // Arrange
-        var builder = CreateBuilder().ApplyBitwiseOperation(BitwiseOperation.Xor, 0x01);
-        // Act
-        var result = builder.Compare((byte)0x01, (byte)0x01, (byte)0x03);
-        // Assert: mismatch at index 2
-        result.AllMatched.ShouldBeFalse();
-        result.Mismatches.Count.ShouldBe(1);
-        result.Mismatches[0].Code.ShouldBe(ComparisonMismatches.Byte.MismatchDetectedCode);
-        result.Mismatches[0].Message.ShouldContain("ByteValueAtIndex[2] = 03");
+        AssertFirstErrorCode(result, ComparisonErrors.InputArrayLengthsDifferCode);
     }
 
     [Fact]
@@ -599,8 +545,8 @@ public class ByteComparisonTests
         // Act
         var result = builder.Compare(new byte[] { 1, 2 }, null);
         // Assert
-        result.Mismatches.Count.ShouldBe(1);
-        result.Mismatches[0].Code.ShouldBe(ComparisonMismatches.NullPassedAsArgumentCode);
+        result.MismatchCount.ShouldBe(1);
+        AssertFirstMismatchCode(result, ComparisonMismatches.NullPassedAsArgumentCode);
     }
 
     [Fact]
@@ -611,8 +557,8 @@ public class ByteComparisonTests
         // Act
         var result = builder.Compare(new byte[] { 1, 2 }, new byte[] { 1 });
         // Assert
-        result.Errors.Count.ShouldBe(1);
-        result.Errors[0].Code.ShouldBe(ComparisonErrors.InputArrayLengthsDifferCode);
+        result.ErrorCount.ShouldBe(1);
+        AssertFirstErrorCode(result, ComparisonErrors.InputArrayLengthsDifferCode);
     }
 
     [Fact]
@@ -624,9 +570,8 @@ public class ByteComparisonTests
         var result = builder.Compare(new byte[] { 1, 2, 3 }, new byte[] { 1, 9, 3 });
         // Assert: mismatch at index 1
         result.AllMatched.ShouldBeFalse();
-        result.Mismatches.Count.ShouldBe(1);
-        result.Mismatches[0].Code.ShouldBe(ComparisonMismatches<byte>.MismatchDetectedCode);
-        result.Mismatches[0].Message.ShouldContain("[new byte[] { 1, 2, 3 }[1] = 02, new byte[] { 1, 9, 3 }[1] = 09");
+        result.MismatchCount.ShouldBe(1);
+        AssertFirstMismatchCode(result, ComparisonMismatches<byte>.MismatchDetectedCode);
     }
 
     [Fact]
@@ -636,10 +581,93 @@ public class ByteComparisonTests
 
         var resultEmpty = builder.Compare(new byte[0][]);
         resultEmpty.Errors.Count.ShouldBe(1);
-        resultEmpty.Errors[0].Code.ShouldBe(ComparisonErrors.NotEnoughObjectsToCompareCode);
+        AssertFirstErrorCode(resultEmpty, ComparisonErrors.NotEnoughObjectsToCompareCode);
 
         var resultOne = builder.Compare(new byte[1][] { new byte[] { 1 } });
         resultOne.Errors.Count.ShouldBe(1);
-        resultOne.Errors[0].Code.ShouldBe(ComparisonErrors.NotEnoughObjectsToCompareCode);
+        AssertFirstErrorCode(resultOne, ComparisonErrors.NotEnoughObjectsToCompareCode);
+    }
+
+    [Fact]
+    public void Compare_NullableByteArrays_WithValues_ShouldCompareAsBytes()
+    {
+        var builder = CreateBuilder();
+
+        byte?[] left = [1, 2, 3];
+        byte?[] right = [1, 9, 3];
+
+        var result = builder.Compare(left, right);
+        LogResult(result);
+
+        result.AllMatched.ShouldBeFalse();
+        result.MismatchCount.ShouldBe(1);
+        AssertFirstMismatchCode(result, ComparisonMismatches<byte>.MismatchDetectedCode);
+    }
+
+    [Fact]
+    public void Compare_NullableByteArrays_WithNullElement_ShouldReturnError()
+    {
+        var builder = CreateBuilder();
+
+        byte?[] left = [1, null, 3];
+        byte?[] right = [1, 2, 3];
+
+        var result = builder.Compare(left, right);
+        LogResult(result);
+
+        result.WasSuccessful.ShouldBeFalse();
+        result.ErrorCount.ShouldBe(1);
+        AssertFirstErrorCode(result, ComparisonErrors.NullPassedAsArgumentCode);
+    }
+
+    [Fact]
+    public void Compare_ParamsNullableByteArrays_WithNullArray_ShouldReturnMismatch()
+    {
+        var builder = CreateBuilder();
+
+        byte?[][] arrays =
+        [
+            [1, 2],
+            null
+        ];
+
+        var result = builder.Compare(arrays);
+        LogResult(result);
+
+        result.AllMatched.ShouldBeFalse();
+        result.MismatchCount.ShouldBe(1);
+        AssertFirstMismatchCode(result, ComparisonMismatches.NullPassedAsArgumentCode);
+    }
+
+    [Fact]
+    public void Compare_ObjectOverload_NullableBytes_WithDifferentValues_ShouldReturnMismatch()
+    {
+        var builder = CreateBuilder();
+
+        object left = (byte?)1;
+        object right = (byte?)2;
+
+        var result = builder.Compare(left, right);
+        LogResult(result);
+
+        result.AllMatched.ShouldBeFalse();
+        result.MismatchCount.ShouldBe(1);
+        AssertFirstMismatchCode(result, ComparisonMismatches<byte>.MismatchDetectedCode);
+    }
+
+    [Fact]
+    public void Compare_ObjectOverload_NullableBytes_WithEqualValues_ShouldMatch()
+    {
+        var builder = CreateBuilder();
+
+        object left = (byte?)7;
+        object right = (byte?)7;
+
+        var result = builder.Compare(left, right);
+        LogResult(result);
+
+        result.AllMatched.ShouldBeTrue();
+        result.Mismatches.ShouldBeEmpty();
+        result.Errors.ShouldBeEmpty();
     }
 }

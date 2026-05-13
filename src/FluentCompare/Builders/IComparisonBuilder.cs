@@ -15,10 +15,4 @@ public interface IComparisonBuilder
     ComparisonResult Compare<T>(T t1, T t2,
         string? t1Expr = null,
         string? t2Expr = null);
-
-    //ComparisonResult Compare<T>(T[][] t);
-
-    //ComparisonResult Compare<T>(T[] tArr1, T[] tArr2,
-    //    string? tArr1Expr = null,
-    //    string? tArr2Expr = null);
 }

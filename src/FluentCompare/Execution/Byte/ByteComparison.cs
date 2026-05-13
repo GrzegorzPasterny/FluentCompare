@@ -1,6 +1,6 @@
 
 
-internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>
+internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>, IExecuteNullableComparison<byte>
 {
     public ByteComparison(
         ComparisonConfiguration configuration)
@@ -47,6 +47,23 @@ internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>
         return result;
     }
 
+    public ComparisonResult Compare(byte? b1, byte? b2, string t1ExprName, string t2ExprName, ComparisonResult result)
+    {
+        if (b1 is null)
+        {
+            result.AddError(ComparisonErrors.NullPassedAsArgument(t1ExprName, typeof(byte?)));
+            return result;
+        }
+
+        if (b2 is null)
+        {
+            result.AddError(ComparisonErrors.NullPassedAsArgument(t2ExprName, typeof(byte?)));
+            return result;
+        }
+
+        return Compare(b1.Value, b2.Value, t1ExprName, t2ExprName, result);
+    }
+
     public override ComparisonResult Compare(byte b1, byte b2, string t1ExprName, string t2ExprName, ComparisonResult result)
     {
         byte b1Transformed = ApplyBitwiseOperations(b1, 0, _comparisonConfiguration.ByteConfiguration.BitwiseOperations);
@@ -69,6 +86,12 @@ internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>
 
     public override ComparisonResult Compare(byte[][] bytes, ComparisonResult result)
     {
+        if (bytes == null)
+        {
+            result.AddError(ComparisonErrors.NullPassedAsArgument(typeof(byte[])));
+            return result;
+        }
+
         if (bytes.Length < 2)
         {
             result.AddError(ComparisonErrors.NotEnoughObjectsToCompare(bytes.Length, typeof(byte[])));
@@ -98,7 +121,6 @@ internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>
 
             if (first.Length != current.Length)
             {
-                // TODO: Code not reached by unit tests - need to add tests for this case
                 result.AddError(ComparisonErrors.InputArrayLengthsDiffer(first.Length, current.Length, 0, i, typeof(byte[])));
                 return result;
             }
@@ -111,7 +133,6 @@ internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>
                 {
                     if (_comparisonConfiguration.ByteConfiguration.BitwiseOperations.Count > 0)
                     {
-                        // TODO: Code not reached by unit tests - need to add tests for this case
                         result.AddMismatch(ComparisonMismatches.Byte.MismatchDetected(
                             first[j], current[j], firstTransformed[j], currentTransformed[j], j, 0, i, _comparisonConfiguration.ComparisonType, _toStringFunc));
                     }
@@ -129,6 +150,18 @@ internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>
 
     public override ComparisonResult Compare(byte[] byteArr1, byte[] byteArr2, string byteArr1ExprName, string byteArr2ExprName, ComparisonResult result)
     {
+        if (byteArr1 == null)
+        {
+            result.AddError(ComparisonErrors.NullPassedAsArgument(byteArr1ExprName, typeof(byte[])));
+            return result;
+        }
+
+        if (byteArr2 == null)
+        {
+            result.AddError(ComparisonErrors.NullPassedAsArgument(byteArr2ExprName, typeof(byte[])));
+            return result;
+        }
+
         if (byteArr1.Length != byteArr2.Length)
         {
             result.AddError(ComparisonErrors.InputArrayLengthsDiffer(
@@ -157,5 +190,88 @@ internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>
         }
 
         return result;
+    }
+
+    public ComparisonResult Compare(byte?[]? byteArr1, byte?[]? byteArr2, string byteArr1ExprName, string byteArr2ExprName, ComparisonResult result)
+    {
+        if (byteArr1 == null)
+        {
+            result.AddError(ComparisonErrors.NullPassedAsArgument(byteArr1ExprName, typeof(byte?[])));
+            return result;
+        }
+
+        if (byteArr2 == null)
+        {
+            result.AddError(ComparisonErrors.NullPassedAsArgument(byteArr2ExprName, typeof(byte?[])));
+            return result;
+        }
+
+        if (byteArr1.Length != byteArr2.Length)
+        {
+            result.AddError(ComparisonErrors.InputArrayLengthsDiffer(
+                byteArr1.Length, byteArr2.Length, byteArr1ExprName, byteArr2ExprName, typeof(byte?[])));
+            return result;
+        }
+
+        for (var i = 0; i < byteArr1.Length; i++)
+        {
+            if (byteArr1[i] is null)
+            {
+                result.AddError(ComparisonErrors.NullPassedAsArgument($"{byteArr1ExprName}[{i}]", typeof(byte?)));
+                return result;
+            }
+
+            if (byteArr2[i] is null)
+            {
+                result.AddError(ComparisonErrors.NullPassedAsArgument($"{byteArr2ExprName}[{i}]", typeof(byte?)));
+                return result;
+            }
+        }
+
+        var normalizedByteArr1 = byteArr1.Select(value => value!.Value).ToArray();
+        var normalizedByteArr2 = byteArr2.Select(value => value!.Value).ToArray();
+
+        return Compare(normalizedByteArr1, normalizedByteArr2, byteArr1ExprName, byteArr2ExprName, result);
+    }
+
+    public ComparisonResult Compare(byte?[][]? bytes, ComparisonResult result)
+    {
+        if (bytes == null)
+        {
+            result.AddError(ComparisonErrors.NullPassedAsArgument(typeof(byte?[])));
+            return result;
+        }
+
+        if (bytes.Length < 2)
+        {
+            result.AddError(ComparisonErrors.NotEnoughObjectsToCompare(bytes.Length, typeof(byte?[])));
+            return result;
+        }
+
+        var normalized = new byte[bytes.Length][];
+
+        for (var i = 0; i < bytes.Length; i++)
+        {
+            var current = bytes[i];
+            if (current == null)
+            {
+                result.AddMismatch(ComparisonMismatches.NullPassedAsArgument(i, typeof(byte?[])));
+                return result;
+            }
+
+            normalized[i] = new byte[current.Length];
+            for (var j = 0; j < current.Length; j++)
+            {
+                if (current[j] is null)
+                {
+                    result.AddError(ComparisonErrors.NullPassedAsArgument($"Array[{i}][{j}]", typeof(byte?)));
+                    return result;
+                }
+
+                normalized[i][j] = current[j]!.Value;
+            }
+        }
+
+        return Compare(normalized, result);
     }
 }

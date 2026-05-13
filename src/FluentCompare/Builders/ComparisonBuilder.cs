@@ -84,6 +84,10 @@ public partial class ComparisonBuilder : IComparisonBuilder
             return new ByteComparison(Configuration)
                 .Compare((byte[][])(object)t, result);
 
+        if (typeof(T) == typeof(byte?[]))
+            return new ByteComparison(Configuration)
+                .Compare((byte?[][])(object)t, result);
+
         if (typeof(T) == typeof(short))
             return new NumericComparison<short>(Configuration)
                 .Compare((short[])(object)t, result);
@@ -150,6 +154,8 @@ public partial class ComparisonBuilder : IComparisonBuilder
         [CallerArgumentExpression(nameof(t2))] string? t2Expr = null)
     {
         var result = new ComparisonResult();
+
+
         HandleNullability(t1, t2, t1Expr, t2Expr, result);
 
         // Check basic nullability results first
@@ -226,6 +232,14 @@ public partial class ComparisonBuilder : IComparisonBuilder
 
             return new ByteComparison(Configuration)
                 .Compare(s1, s2, t1ExprName, t2ExprName, result);
+        }
+        if (typeof(T) == typeof(byte?[]))
+        {
+            string t1ExprName = t1Expr ?? "NullableByteArrayOne";
+            string t2ExprName = t2Expr ?? "NullableByteArrayTwo";
+
+            return new ByteComparison(Configuration)
+                .Compare((byte?[]?)(object?)t1, (byte?[]?)(object?)t2, t1ExprName, t2ExprName, result);
         }
         if (typeof(T) == typeof(short))
         {
@@ -391,6 +405,9 @@ public partial class ComparisonBuilder : IComparisonBuilder
 
         if (type == typeof(byte))
             return new ByteComparison(Configuration).Compare((byte)o1, (byte)o2!, t1ExprName, t2ExprName, result);
+
+        if (type == typeof(byte?))
+            return new ByteComparison(Configuration).Compare((byte?)o1, (byte?)o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(short))
             return new NumericComparison<short>(Configuration).Compare((short)o1, (short)o2!, t1ExprName, t2ExprName, result);
