@@ -434,6 +434,9 @@ public partial class ComparisonBuilder : IComparisonBuilder
         if (type == typeof(byte[]))
             return new ByteComparison(Configuration).Compare((byte[])o1, (byte[])o2!, t1ExprName, t2ExprName, result);
 
+        if (type == typeof(byte?[]))
+            return new ByteComparison(Configuration).Compare((byte?[]?)o1, (byte?[]?)o2!, t1ExprName, t2ExprName, result);
+
         if (type == typeof(short[]))
             // TODO: Code not reached by unit tests - need to add tests for this case
             return new NumericComparison<short>(Configuration).Compare((short[])o1, (short[])o2!, t1ExprName, t2ExprName, result);

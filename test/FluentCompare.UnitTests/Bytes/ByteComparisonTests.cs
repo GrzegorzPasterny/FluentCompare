@@ -670,4 +670,44 @@ public class ByteComparisonTests
         result.Mismatches.ShouldBeEmpty();
         result.Errors.ShouldBeEmpty();
     }
+
+    [Fact]
+    public void Compare_ObjectOverload_NullableByteArrays_WithDifferentValues_ShouldReturnMismatch()
+    {
+        var builder = CreateBuilder();
+
+        object left = new byte?[] { 1, 2, 3 };
+        object right = new byte?[] { 1, 9, 3 };
+
+        var result = builder.Compare(left, right);
+        LogResult(result);
+
+        result.AllMatched.ShouldBeFalse();
+        result.MismatchCount.ShouldBe(1);
+        AssertFirstMismatchCode(result, ComparisonMismatches<byte>.MismatchDetectedCode);
+    }
+
+    [Fact(Skip = "No support for type ?[][] yet, which is treated as an object. The actual content of the arrays are not checked. TODO: Decide how to handle that.")]
+    public void Compare_ObjectOverload_NullableByteJaggedArrays_WithInnerNullArray_ShouldReturnMismatch()
+    {
+        var builder = CreateBuilder();
+
+        object left = new byte?[][]
+        {
+            new byte?[] { 1, 2 },
+            null
+        };
+        object right = new byte?[][]
+        {
+            new byte?[] { 1, 2 },
+            new byte?[] { 1, 2 }
+        };
+
+        var result = builder.Compare(left, right);
+        LogResult(result);
+
+        result.AllMatched.ShouldBeFalse();
+        result.MismatchCount.ShouldBe(1);
+        AssertFirstMismatchCode(result, ComparisonMismatches.NullPassedAsArgumentCode);
+    }
 }

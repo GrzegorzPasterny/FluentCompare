@@ -1,6 +1,6 @@
 
 
-internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>, IExecuteNullableComparison<byte>
+internal class ByteComparison : ByteComparisonBase
 {
     public ByteComparison(
         ComparisonConfiguration configuration)
@@ -24,7 +24,7 @@ internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>, IE
         var first = bytes[0];
         byte transformedFirst = ApplyBitwiseOperations(first, 0, _comparisonConfiguration.ByteConfiguration.BitwiseOperations);
 
-        for (byte i = 1; i < bytes.Length; i++)
+        for (var i = 1; i < bytes.Length; i++)
         {
             byte transformedCurrent = ApplyBitwiseOperations(bytes[i], i, _comparisonConfiguration.ByteConfiguration.BitwiseOperations);
             if (!Compare(transformedFirst, transformedCurrent, _comparisonConfiguration.ComparisonType))
@@ -47,7 +47,7 @@ internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>, IE
         return result;
     }
 
-    public ComparisonResult Compare(byte? b1, byte? b2, string t1ExprName, string t2ExprName, ComparisonResult result)
+    public override ComparisonResult Compare(byte? b1, byte? b2, string t1ExprName, string t2ExprName, ComparisonResult result)
     {
         if (b1 is null)
         {
@@ -61,10 +61,15 @@ internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>, IE
             return result;
         }
 
-        return Compare(b1.Value, b2.Value, t1ExprName, t2ExprName, result);
+        return CompareNonNullable(b1.Value, b2.Value, t1ExprName, t2ExprName, result);
     }
 
     public override ComparisonResult Compare(byte b1, byte b2, string t1ExprName, string t2ExprName, ComparisonResult result)
+    {
+        return CompareNonNullable(b1, b2, t1ExprName, t2ExprName, result);
+    }
+
+    private ComparisonResult CompareNonNullable(byte b1, byte b2, string t1ExprName, string t2ExprName, ComparisonResult result)
     {
         byte b1Transformed = ApplyBitwiseOperations(b1, 0, _comparisonConfiguration.ByteConfiguration.BitwiseOperations);
         byte b2Transformed = ApplyBitwiseOperations(b2, 1, _comparisonConfiguration.ByteConfiguration.BitwiseOperations);
@@ -109,7 +114,7 @@ internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>, IE
 
         var firstTransformed = ApplyBitwiseOperations(first, 0, _comparisonConfiguration.ByteConfiguration.BitwiseOperations);
 
-        for (byte i = 1; i < bytes.Length; i++)
+        for (var i = 1; i < bytes.Length; i++)
         {
             var current = bytes[i];
 
@@ -127,7 +132,7 @@ internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>, IE
 
             var currentTransformed = ApplyBitwiseOperations(current, i, _comparisonConfiguration.ByteConfiguration.BitwiseOperations);
 
-            for (byte j = 0; j < first.Length; j++)
+            for (var j = 0; j < first.Length; j++)
             {
                 if (!Compare(firstTransformed[j], currentTransformed[j], _comparisonConfiguration.ComparisonType))
                 {
@@ -172,7 +177,7 @@ internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>, IE
         byte[] byteArr1Transformed = ApplyBitwiseOperations(byteArr1, 0, _comparisonConfiguration.ByteConfiguration.BitwiseOperations);
         byte[] byteArr2Transformed = ApplyBitwiseOperations(byteArr2, 1, _comparisonConfiguration.ByteConfiguration.BitwiseOperations);
 
-        for (byte i = 0; i < byteArr1.Length; i++)
+        for (var i = 0; i < byteArr1.Length; i++)
         {
             if (!Compare(byteArr1Transformed[i], byteArr2Transformed[i], _comparisonConfiguration.ComparisonType))
             {
@@ -192,7 +197,7 @@ internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>, IE
         return result;
     }
 
-    public ComparisonResult Compare(byte?[]? byteArr1, byte?[]? byteArr2, string byteArr1ExprName, string byteArr2ExprName, ComparisonResult result)
+    public override ComparisonResult Compare(byte?[]? byteArr1, byte?[]? byteArr2, string byteArr1ExprName, string byteArr2ExprName, ComparisonResult result)
     {
         if (byteArr1 == null)
         {
@@ -234,7 +239,7 @@ internal class ByteComparison : ByteComparisonBase, IExecuteComparison<byte>, IE
         return Compare(normalizedByteArr1, normalizedByteArr2, byteArr1ExprName, byteArr2ExprName, result);
     }
 
-    public ComparisonResult Compare(byte?[][]? bytes, ComparisonResult result)
+    public override ComparisonResult Compare(byte?[][]? bytes, ComparisonResult result)
     {
         if (bytes == null)
         {
