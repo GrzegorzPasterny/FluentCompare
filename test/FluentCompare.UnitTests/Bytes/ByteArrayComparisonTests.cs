@@ -15,48 +15,48 @@ public class ByteArrayComparisonTests
             .UseComparisonType(comparisonType);
     }
 
-    public static TheoryData<Func<ComparisonBuilder, ComparisonBuilder>, byte[]?, byte[]?, int, int, string?, bool> ByteArrayPairCases =>
+    public static TheoryData<Func<ComparisonBuilder, ComparisonBuilder>, byte[]?, byte[]?, int, int, string?> ByteArrayPairCases =>
         new()
         {
-            { b => b, new byte[] { 1, 2, 3 }, new byte[] { 1, 2, 3 }, 0, 0, null, false },
-            { b => b, new byte[] { 1, 2, 3 }, new byte[] { 1, 9, 3 }, 1, 0, ComparisonMismatches<byte>.MismatchDetectedCode, false },
-            { b => b, new byte[] { 1, 2 }, new byte[] { 1, 2, 3 }, 0, 1, ComparisonErrors.InputArrayLengthsDifferCode, true },
-            { b => b.ApplyBitwiseOperation(BitwiseOperation.And, 0xAF, 1), new byte[] { 0xFB, 0xFC }, new byte[] { 0xAB, 0xAC }, 0, 0, null, false },
-            { b => b.ApplyBitwiseOperation(BitwiseOperation.Or, 0x02), new byte[] { 0x00 }, new byte[] { 0x01 }, 1, 0, ComparisonMismatches.Byte.MismatchDetectedCode, false },
-            { b => b.ApplyBitwiseOperation(BitwiseOperation.Xor, 0x01), new byte[] { 0x00 }, new byte[] { 0x01 }, 1, 0, ComparisonMismatches.Byte.MismatchDetectedCode, false },
-            { b => b.ApplyBitwiseOperation(BitwiseOperation.ShiftLeft, 1), new byte[] { 0x80 }, new byte[] { 0x00 }, 0, 0, null, false },
-            { b => b.ApplyBitwiseOperation(BitwiseOperation.ShiftRight, 1), new byte[] { 0x01 }, new byte[] { 0x00 }, 0, 0, null, false },
-            { b => b.ApplyBitwiseOperation(BitwiseOperation.Not, 0x00), new byte[] { 0b_0000_1111, 0b_1111_0000 }, new byte[] { 0b_0000_1111, 0b_1111_0000 }, 0, 0, null, false },
+            { b => b, new byte[] { 1, 2, 3 }, new byte[] { 1, 2, 3 }, 0, 0, null },
+            { b => b, new byte[] { 1, 2, 3 }, new byte[] { 1, 9, 3 }, 1, 0, ComparisonMismatches<byte>.MismatchDetectedCode },
+            { b => b, new byte[] { 1, 2 }, new byte[] { 1, 2, 3 }, 0, 1, ComparisonErrors.InputArrayLengthsDifferCode },
+            { b => b.ApplyBitwiseOperation(BitwiseOperation.And, 0xAF, 1), new byte[] { 0xFB, 0xFC }, new byte[] { 0xAB, 0xAC }, 0, 0, null },
+            { b => b.ApplyBitwiseOperation(BitwiseOperation.Or, 0x02), new byte[] { 0x00 }, new byte[] { 0x01 }, 1, 0, ComparisonMismatches.Byte.MismatchDetectedCode },
+            { b => b.ApplyBitwiseOperation(BitwiseOperation.Xor, 0x01), new byte[] { 0x00 }, new byte[] { 0x01 }, 1, 0, ComparisonMismatches.Byte.MismatchDetectedCode },
+            { b => b.ApplyBitwiseOperation(BitwiseOperation.ShiftLeft, 1), new byte[] { 0x80 }, new byte[] { 0x00 }, 0, 0, null },
+            { b => b.ApplyBitwiseOperation(BitwiseOperation.ShiftRight, 1), new byte[] { 0x01 }, new byte[] { 0x00 }, 0, 0, null },
+            { b => b.ApplyBitwiseOperation(BitwiseOperation.Not, 0x00), new byte[] { 0b_0000_1111, 0b_1111_0000 }, new byte[] { 0b_0000_1111, 0b_1111_0000 }, 0, 0, null },
         };
 
-    public static TheoryData<Func<ComparisonBuilder, ComparisonBuilder>, byte[][]?, int, int, string?, bool> ByteArrayParamsCases =>
+    public static TheoryData<Func<ComparisonBuilder, ComparisonBuilder>, byte[][]?, int, int, string?> ByteArrayParamsCases =>
         new()
         {
-            { b => b, null, 0, 1, ComparisonErrors.NullPassedAsArgumentCode, true },
-            { b => b, new byte[0][], 0, 1, ComparisonErrors.NotEnoughObjectsToCompareCode, true },
-            { b => b, new byte[1][] { new byte[] { 1 } }, 0, 1, ComparisonErrors.NotEnoughObjectsToCompareCode, true },
-            { b => b, new byte[2][] { new byte[] { 1, 2 }, new byte[] { 1, 2 } }, 0, 0, null, false },
-            { b => b, new byte[2][] { new byte[] { 1, 2, 3 }, new byte[] { 1, 9, 3 } }, 1, 0, ComparisonMismatches<byte>.MismatchDetectedCode, false },
-            { b => b, new byte[2][] { new byte[] { 1, 2 }, null! }, 1, 0, ComparisonMismatches.NullPassedAsArgumentCode, false },
-            { b => b, new byte[2][] { new byte[] { 1, 2 }, new byte[] { 1 } }, 0, 1, ComparisonErrors.InputArrayLengthsDifferCode, true },
-            { b => b.ApplyBitwiseOperation(BitwiseOperation.And, 0x0F), new byte[2][] { new byte[] { 0xFF, 0xE1 }, new byte[] { 0x0F, 0xE0 } }, 1, 0, ComparisonMismatches.Byte.MismatchDetectedCode, false },
-            { b => b.ApplyBitwiseOperation(BitwiseOperation.And, 0x0F), new byte[3][] { new byte[] { 0xFF, 0xE1 }, new byte[] { 0x0F, 0xE1 }, null! }, 1, 0, ComparisonMismatches.NullPassedAsArgumentCode, false },
-            { b => b.ApplyBitwiseOperation(BitwiseOperation.And, 0x0F), new byte[2][] { new byte[] { 0xFF, 0xE1 }, new byte[] { 0x0F, 0xE1, 0x23 } }, 0, 1, ComparisonErrors.InputArrayLengthsDifferCode, true },
+            { b => b, null, 0, 1, ComparisonErrors.NullPassedAsArgumentCode },
+            { b => b, new byte[0][], 0, 1, ComparisonErrors.NotEnoughObjectsToCompareCode },
+            { b => b, new byte[1][] { new byte[] { 1 } }, 0, 1, ComparisonErrors.NotEnoughObjectsToCompareCode },
+            { b => b, new byte[2][] { new byte[] { 1, 2 }, new byte[] { 1, 2 } }, 0, 0, null },
+            { b => b, new byte[2][] { new byte[] { 1, 2, 3 }, new byte[] { 1, 9, 3 } }, 1, 0, ComparisonMismatches<byte>.MismatchDetectedCode },
+            { b => b, new byte[2][] { new byte[] { 1, 2 }, null! }, 1, 0, ComparisonMismatches.NullPassedAsArgumentCode },
+            { b => b, new byte[2][] { new byte[] { 1, 2 }, new byte[] { 1 } }, 0, 1, ComparisonErrors.InputArrayLengthsDifferCode },
+            { b => b.ApplyBitwiseOperation(BitwiseOperation.And, 0x0F), new byte[2][] { new byte[] { 0xFF, 0xE1 }, new byte[] { 0x0F, 0xE0 } }, 1, 0, ComparisonMismatches.Byte.MismatchDetectedCode },
+            { b => b.ApplyBitwiseOperation(BitwiseOperation.And, 0x0F), new byte[3][] { new byte[] { 0xFF, 0xE1 }, new byte[] { 0x0F, 0xE1 }, null! }, 1, 0, ComparisonMismatches.NullPassedAsArgumentCode },
+            { b => b.ApplyBitwiseOperation(BitwiseOperation.And, 0x0F), new byte[2][] { new byte[] { 0xFF, 0xE1 }, new byte[] { 0x0F, 0xE1, 0x23 } }, 0, 1, ComparisonErrors.InputArrayLengthsDifferCode },
         };
 
-    public static TheoryData<byte?[]?, byte?[]?, bool, int, int, string?, bool> NullableByteArrayPairCases =>
+    public static TheoryData<byte?[]?, byte?[]?, bool, int, int, string?> NullableByteArrayPairCases =>
         new()
         {
-            { new byte?[] { 1, 2, 3 }, new byte?[] { 1, 9, 3 }, false, 1, 0, ComparisonMismatches<byte>.MismatchDetectedCode, false },
-            { new byte?[] { 1, null, 3 }, new byte?[] { 1, 2, 3 }, false, 0, 1, ComparisonErrors.NullPassedAsArgumentCode, true },
-            { new byte?[] { 1, 2, 3 }, new byte?[] { 1, 9, 3 }, true, 1, 0, ComparisonMismatches<byte>.MismatchDetectedCode, false },
+            { new byte?[] { 1, 2, 3 }, new byte?[] { 1, 9, 3 }, false, 1, 0, ComparisonMismatches<byte>.MismatchDetectedCode },
+            { new byte?[] { 1, null, 3 }, new byte?[] { 1, 2, 3 }, false, 0, 1, ComparisonErrors.NullPassedAsArgumentCode },
+            { new byte?[] { 1, 2, 3 }, new byte?[] { 1, 9, 3 }, true, 1, 0, ComparisonMismatches<byte>.MismatchDetectedCode },
         };
 
-    public static TheoryData<byte?[][]?, int, int, string?, bool> NullableByteArrayParamsCases =>
+    public static TheoryData<byte?[][]?, int, int, string?> NullableByteArrayParamsCases =>
         new()
         {
-            { new byte?[][] { new byte?[] { 1, 2 }, new byte?[] { 1, 2 } }, 0, 0, null, false },
-            { new byte?[][] { new byte?[] { 1, 2 }, null! }, 1, 0, ComparisonMismatches.NullPassedAsArgumentCode, false },
+            { new byte?[][] { new byte?[] { 1, 2 }, new byte?[] { 1, 2 } }, 0, 0, null },
+            { new byte?[][] { new byte?[] { 1, 2 }, null! }, 1, 0, ComparisonMismatches.NullPassedAsArgumentCode },
         };
 
     private void LogResult(params ComparisonResult[] results)
@@ -89,8 +89,7 @@ public class ByteArrayComparisonTests
         byte[]? second,
         int expectedMismatches,
         int expectedErrors,
-        string? expectedCode,
-        bool expectedCodeIsError)
+        string? expectedCode)
     {
         var builder = configure(CreateBuilder());
         var result = builder.Compare(first, second);
@@ -100,7 +99,7 @@ public class ByteArrayComparisonTests
 
         if (expectedCode is not null)
         {
-            if (expectedCodeIsError)
+            if (expectedErrors > 0)
             {
                 AssertFirstErrorCode(result, expectedCode);
             }
@@ -118,8 +117,7 @@ public class ByteArrayComparisonTests
         byte[][]? bytes,
         int expectedMismatches,
         int expectedErrors,
-        string? expectedCode,
-        bool expectedCodeIsError)
+        string? expectedCode)
     {
         var builder = configure(CreateBuilder());
         var result = bytes is null
@@ -131,7 +129,7 @@ public class ByteArrayComparisonTests
 
         if (expectedCode is not null)
         {
-            if (expectedCodeIsError)
+            if (expectedErrors > 0)
             {
                 AssertFirstErrorCode(result, expectedCode);
             }
@@ -150,8 +148,7 @@ public class ByteArrayComparisonTests
         bool useObjectOverload,
         int expectedMismatches,
         int expectedErrors,
-        string? expectedCode,
-        bool expectedCodeIsError)
+        string? expectedCode)
     {
         var builder = CreateBuilder();
 
@@ -164,7 +161,7 @@ public class ByteArrayComparisonTests
 
         if (expectedCode is not null)
         {
-            if (expectedCodeIsError)
+            if (expectedErrors > 0)
             {
                 AssertFirstErrorCode(result, expectedCode);
             }
@@ -181,8 +178,7 @@ public class ByteArrayComparisonTests
         byte?[][]? bytes,
         int expectedMismatches,
         int expectedErrors,
-        string? expectedCode,
-        bool expectedCodeIsError)
+        string? expectedCode)
     {
         var builder = CreateBuilder();
         var result = builder.Compare(bytes);
@@ -192,7 +188,7 @@ public class ByteArrayComparisonTests
 
         if (expectedCode is not null)
         {
-            if (expectedCodeIsError)
+            if (expectedErrors > 0)
             {
                 AssertFirstErrorCode(result, expectedCode);
             }
