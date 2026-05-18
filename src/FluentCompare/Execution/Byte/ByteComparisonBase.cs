@@ -102,7 +102,7 @@ internal abstract class ByteComparisonBase : ComparisonBase<byte>, IExecuteNulla
         return result;
     }
 
-    public abstract ComparisonResult Compare(byte? t1, byte? t2, string t1ExprName, string t2ExprName, ComparisonResult result);
+    public abstract ComparisonResult CompareNullable(byte? t1, byte? t2, string t1ExprName, string t2ExprName, ComparisonResult result);
     public abstract ComparisonResult Compare(byte?[]? t1, byte?[]? t2, string t1ExprName, string t2ExprName, ComparisonResult result);
     public abstract ComparisonResult Compare(byte?[][]? objects, ComparisonResult result);
 }

@@ -221,7 +221,7 @@ public partial class ComparisonBuilder : IComparisonBuilder
             string t2ExprName = t2Expr ?? "ByteTwo";
 
             return new ByteComparison(Configuration)
-                .Compare(s1, s2, t1ExprName, t2ExprName, result);
+                .CompareNullable(s1, s2, t1ExprName, t2ExprName, result);
         }
         if (typeof(T) == typeof(byte[]))
         {
@@ -404,10 +404,10 @@ public partial class ComparisonBuilder : IComparisonBuilder
             return new BoolComparison(Configuration).Compare((bool)o1, (bool)o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(byte))
-            return new ByteComparison(Configuration).Compare((byte)o1, (byte)o2!, t1ExprName, t2ExprName, result);
+            return new ByteComparison(Configuration).CompareNullable((byte)o1, (byte)o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(byte?))
-            return new ByteComparison(Configuration).Compare((byte?)o1, (byte?)o2!, t1ExprName, t2ExprName, result);
+            return new ByteComparison(Configuration).CompareNullable((byte?)o1, (byte?)o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(short))
             return new NumericComparison<short>(Configuration).Compare((short)o1, (short)o2!, t1ExprName, t2ExprName, result);

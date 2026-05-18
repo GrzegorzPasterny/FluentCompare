@@ -47,7 +47,7 @@ internal class ByteComparison : ByteComparisonBase
         return result;
     }
 
-    public override ComparisonResult Compare(byte? b1, byte? b2, string t1ExprName, string t2ExprName, ComparisonResult result)
+    public override ComparisonResult CompareNullable(byte? b1, byte? b2, string t1ExprName, string t2ExprName, ComparisonResult result)
     {
         if (b1 is null)
         {
@@ -61,15 +61,10 @@ internal class ByteComparison : ByteComparisonBase
             return result;
         }
 
-        return CompareNonNullable(b1.Value, b2.Value, t1ExprName, t2ExprName, result);
+        return Compare(b1.Value, b2.Value, t1ExprName, t2ExprName, result);
     }
 
     public override ComparisonResult Compare(byte b1, byte b2, string t1ExprName, string t2ExprName, ComparisonResult result)
-    {
-        return CompareNonNullable(b1, b2, t1ExprName, t2ExprName, result);
-    }
-
-    private ComparisonResult CompareNonNullable(byte b1, byte b2, string t1ExprName, string t2ExprName, ComparisonResult result)
     {
         byte b1Transformed = ApplyBitwiseOperations(b1, 0, _comparisonConfiguration.ByteConfiguration.BitwiseOperations);
         byte b2Transformed = ApplyBitwiseOperations(b2, 1, _comparisonConfiguration.ByteConfiguration.BitwiseOperations);

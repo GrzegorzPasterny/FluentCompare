@@ -216,6 +216,24 @@ public class ByteComparisonTests
     }
 
     [Fact]
+    public void Compare_ByteJaggedArray_UseNullableTypes_UsesByteJaggedArrayComparisonPath()
+    {
+        // Arrange
+        var builder = CreateBuilder();
+        byte?[][]? arr =
+        [
+            [1, 2],
+            [1, 2]
+        ];
+        // Act
+        var result = builder.Compare(arr);
+        LogResult(result);
+        // Assert
+        result.AllMatched.ShouldBeTrue();
+        result.Mismatches.ShouldBeEmpty();
+    }
+
+    [Fact]
     public void Compare_BothNull_ShouldAddError()
     {
         // Arrange
