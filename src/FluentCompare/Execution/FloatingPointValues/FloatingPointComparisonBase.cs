@@ -62,6 +62,7 @@ internal abstract class FloatingPointComparisonBase<T>
             _ => throw new ArgumentOutOfRangeException(nameof(comparisonType))
         };
     }
+
 }
 
 #endif

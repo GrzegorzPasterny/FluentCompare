@@ -1,4 +1,4 @@
-internal abstract class NumericComparisonBase<T> : ComparisonBase<T> where T : struct, IComparable<T>
+internal abstract class NumericComparisonBase<T> : ComparisonBase<T>, IExecuteNullableComparison<T> where T : struct, IComparable<T>
 {
     protected NumericComparisonBase(
         ComparisonConfiguration comparisonConfiguration)
@@ -27,4 +27,8 @@ internal abstract class NumericComparisonBase<T> : ComparisonBase<T> where T : s
             _ => throw new ArgumentOutOfRangeException(nameof(comparisonType), comparisonType, null)
         };
     }
+
+    public abstract ComparisonResult CompareNullable(T? t1, T? t2, string t1ExprName, string t2ExprName, ComparisonResult result);
+    public abstract ComparisonResult Compare(T?[]? t1, T?[]? t2, string t1ExprName, string t2ExprName, ComparisonResult result);
+    public abstract ComparisonResult Compare(T?[][]? objects, ComparisonResult result);
 }

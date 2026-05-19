@@ -148,4 +148,5 @@ internal class StringComparison : StringComparisonBase
 
         return result;
     }
+
 }

@@ -38,6 +38,23 @@ internal class FloatingPointComparison<T> : FloatingPointComparisonBase<T> where
         return result;
     }
 
+    public ComparisonResult CompareNullable(T? d1, T? d2, string d1ExprName, string d2ExprName, ComparisonResult result)
+    {
+        if (d1 is null)
+        {
+            result.AddError(ComparisonErrors.NullPassedAsArgument(d1ExprName, typeof(T?)));
+            return result;
+        }
+
+        if (d2 is null)
+        {
+            result.AddError(ComparisonErrors.NullPassedAsArgument(d2ExprName, typeof(T?)));
+            return result;
+        }
+
+        return Compare(d1.Value, d2.Value, d1ExprName, d2ExprName, result);
+    }
+
     private void Compare(T d1, T d2, ComparisonType comparisonType, ComparisonResult result)
     {
         bool matched;
@@ -75,6 +92,92 @@ internal class FloatingPointComparison<T> : FloatingPointComparisonBase<T> where
         Compare(d1, d2, d1ExprName, d2ExprName, comparisonType, result);
 
         return result;
+    }
+
+    public ComparisonResult Compare(T?[]? dArr1, T?[]? dArr2, string dArr1ExprName, string dArr2ExprName, ComparisonResult result)
+    {
+        if (dArr1 == null)
+        {
+            result.AddError(ComparisonErrors.NullPassedAsArgument(dArr1ExprName, typeof(T?[])));
+            return result;
+        }
+
+        if (dArr2 == null)
+        {
+            result.AddError(ComparisonErrors.NullPassedAsArgument(dArr2ExprName, typeof(T?[])));
+            return result;
+        }
+
+        if (dArr1.Length != dArr2.Length)
+        {
+            result.AddWarning(ComparisonErrors.InputArrayLengthsDiffer(dArr1.Length, dArr2.Length, dArr1ExprName, dArr2ExprName, typeof(T?[])));
+            return result;
+        }
+
+        for (int i = 0; i < dArr1.Length; i++)
+        {
+            if (dArr1[i] is null)
+            {
+                result.AddError(ComparisonErrors.NullPassedAsArgument($"{dArr1ExprName}[{i}]", typeof(T?)));
+                return result;
+            }
+
+            if (dArr2[i] is null)
+            {
+                result.AddError(ComparisonErrors.NullPassedAsArgument($"{dArr2ExprName}[{i}]", typeof(T?)));
+                return result;
+            }
+
+            Compare(dArr1[i]!.Value, dArr2[i]!.Value, dArr1ExprName, dArr2ExprName, i, _comparisonConfiguration.ComparisonType, result);
+        }
+
+        return result;
+    }
+
+    public ComparisonResult Compare(T?[][]? doubleArrays, ComparisonResult result)
+    {
+        if (doubleArrays == null)
+        {
+            result.AddError(ComparisonErrors.NullPassedAsArgument(typeof(T?[])));
+            return result;
+        }
+
+        if (doubleArrays.Length < 2)
+        {
+            result.AddError(ComparisonErrors.NotEnoughObjectsToCompare(doubleArrays.Length, typeof(T?[])));
+            return result;
+        }
+
+        var normalized = new T[doubleArrays.Length][];
+        for (var i = 0; i < doubleArrays.Length; i++)
+        {
+            var current = doubleArrays[i];
+            if (current == null)
+            {
+                if (_comparisonConfiguration.AllowNullComparison == false)
+                {
+                    result.AddError(ComparisonErrors.OneOfTheObjectsIsNull<T?[]>());
+                    return result;
+                }
+
+                result.AddMismatch(ComparisonMismatches.NullPassedAsArgument(i, typeof(T?[])));
+                return result;
+            }
+
+            normalized[i] = new T[current.Length];
+            for (var j = 0; j < current.Length; j++)
+            {
+                if (current[j] is null)
+                {
+                    result.AddError(ComparisonErrors.NullPassedAsArgument($"Array[{i}][{j}]", typeof(T?)));
+                    return result;
+                }
+
+                normalized[i][j] = current[j]!.Value;
+            }
+        }
+
+        return Compare(normalized, result);
     }
 
     public override ComparisonResult Compare(T[][] doubleArrays, ComparisonResult result)
