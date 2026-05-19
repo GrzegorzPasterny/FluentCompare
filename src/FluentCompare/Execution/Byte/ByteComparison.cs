@@ -103,6 +103,12 @@ internal class ByteComparison : ByteComparisonBase
 
         if (first == null)
         {
+            if (_comparisonConfiguration.AllowNullComparison == false)
+            {
+                result.AddError(ComparisonErrors.OneOfTheObjectsIsNull<byte[]>());
+                return result;
+            }
+
             result.AddMismatch(ComparisonMismatches.NullPassedAsArgument(0, typeof(byte[])));
             return result;
         }
@@ -115,6 +121,12 @@ internal class ByteComparison : ByteComparisonBase
 
             if (current == null)
             {
+                if (_comparisonConfiguration.AllowNullComparison == false)
+                {
+                    result.AddError(ComparisonErrors.OneOfTheObjectsIsNull<byte[]>());
+                    return result;
+                }
+
                 result.AddMismatch(ComparisonMismatches.NullPassedAsArgument(i, typeof(byte[])));
                 return result;
             }
@@ -255,6 +267,12 @@ internal class ByteComparison : ByteComparisonBase
             var current = bytes[i];
             if (current == null)
             {
+                if (_comparisonConfiguration.AllowNullComparison == false)
+                {
+                    result.AddError(ComparisonErrors.OneOfTheObjectsIsNull<byte?[]>());
+                    return result;
+                }
+
                 result.AddMismatch(ComparisonMismatches.NullPassedAsArgument(i, typeof(byte?[])));
                 return result;
             }

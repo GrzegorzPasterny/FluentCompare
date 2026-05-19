@@ -76,6 +76,10 @@ public partial class ComparisonBuilder : IComparisonBuilder
             return new BoolComparison(Configuration)
                 .Compare((bool[][])(object)t, result);
 
+        if (typeof(T) == typeof(bool?[]))
+            return new BoolComparison(Configuration)
+                .Compare((bool?[][])(object)t, result);
+
         if (typeof(T) == typeof(byte))
             return new ByteComparison(Configuration)
                 .Compare((byte[])(object)t, result);
@@ -202,6 +206,14 @@ public partial class ComparisonBuilder : IComparisonBuilder
 
             return new BoolComparison(Configuration)
                 .Compare(s1, s2, t1ExprName, t2ExprName, result);
+        }
+        if (typeof(T) == typeof(bool?[]))
+        {
+            string t1ExprName = t1Expr ?? "NullableBoolArrayOne";
+            string t2ExprName = t2Expr ?? "NullableBoolArrayTwo";
+
+            return new BoolComparison(Configuration)
+                .Compare((bool?[]?)(object?)t1, (bool?[]?)(object?)t2, t1ExprName, t2ExprName, result);
         }
         if (typeof(T) == typeof(bool[]))
         {
@@ -403,6 +415,9 @@ public partial class ComparisonBuilder : IComparisonBuilder
         if (type == typeof(bool))
             return new BoolComparison(Configuration).Compare((bool)o1, (bool)o2!, t1ExprName, t2ExprName, result);
 
+        if (type == typeof(bool?))
+            return new BoolComparison(Configuration).CompareNullable((bool?)o1, (bool?)o2!, t1ExprName, t2ExprName, result);
+
         if (type == typeof(byte))
             return new ByteComparison(Configuration).CompareNullable((byte)o1, (byte)o2!, t1ExprName, t2ExprName, result);
 
@@ -430,6 +445,9 @@ public partial class ComparisonBuilder : IComparisonBuilder
 
         if (type == typeof(bool[]))
             return new BoolComparison(Configuration).Compare((bool[])o1, (bool[])o2!, t1ExprName, t2ExprName, result);
+
+        if (type == typeof(bool?[]))
+            return new BoolComparison(Configuration).Compare((bool?[]?)o1, (bool?[]?)o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(byte[]))
             return new ByteComparison(Configuration).Compare((byte[])o1, (byte[])o2!, t1ExprName, t2ExprName, result);

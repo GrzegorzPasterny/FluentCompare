@@ -1,4 +1,4 @@
-internal abstract class BoolComparisonBase : ComparisonBase<bool>
+internal abstract class BoolComparisonBase : ComparisonBase<bool>, IExecuteNullableComparison<bool>
 {
     protected BoolComparisonBase(
         ComparisonConfiguration configuration)
@@ -21,4 +21,8 @@ internal abstract class BoolComparisonBase : ComparisonBase<bool>
             _ => throw new ArgumentOutOfRangeException(nameof(comparisonType), comparisonType, null)
         };
     }
+
+    public abstract ComparisonResult CompareNullable(bool? t1, bool? t2, string t1ExprName, string t2ExprName, ComparisonResult result);
+    public abstract ComparisonResult Compare(bool?[]? t1, bool?[]? t2, string t1ExprName, string t2ExprName, ComparisonResult result);
+    public abstract ComparisonResult Compare(bool?[][]? objects, ComparisonResult result);
 }

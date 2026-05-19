@@ -24,3 +24,4 @@
 ## Testing
 - Tests use xUnit with Shouldly and Moq.
 - Prefer data-driven tests with `MemberData`, or `TheoryData` when applicable.
+- Aggregate inputs and outputs into `TheoryData` classes for each `ComparisonBuilder` entry point.

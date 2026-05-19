@@ -42,6 +42,7 @@ public class ByteArrayComparisonTests
             { b => b.ApplyBitwiseOperation(BitwiseOperation.And, 0x0F), new byte[2][] { new byte[] { 0xFF, 0xE1 }, new byte[] { 0x0F, 0xE0 } }, 1, 0, ComparisonMismatches.Byte.MismatchDetectedCode },
             { b => b.ApplyBitwiseOperation(BitwiseOperation.And, 0x0F), new byte[3][] { new byte[] { 0xFF, 0xE1 }, new byte[] { 0x0F, 0xE1 }, null! }, 1, 0, ComparisonMismatches.NullPassedAsArgumentCode },
             { b => b.ApplyBitwiseOperation(BitwiseOperation.And, 0x0F), new byte[2][] { new byte[] { 0xFF, 0xE1 }, new byte[] { 0x0F, 0xE1, 0x23 } }, 0, 1, ComparisonErrors.InputArrayLengthsDifferCode },
+            { b => b.DisallowNullComparison(), new byte[2][] { new byte[] { 1, 2 }, null! }, 0, 1, ComparisonErrors.OneOfTheObjectsIsNullCode },
         };
 
     public static TheoryData<byte?[]?, byte?[]?, bool, int, int, string?> NullableByteArrayPairCases =>
@@ -52,11 +53,12 @@ public class ByteArrayComparisonTests
             { new byte?[] { 1, 2, 3 }, new byte?[] { 1, 9, 3 }, true, 1, 0, ComparisonMismatches<byte>.MismatchDetectedCode },
         };
 
-    public static TheoryData<byte?[][]?, int, int, string?> NullableByteArrayParamsCases =>
+    public static TheoryData<Func<ComparisonBuilder, ComparisonBuilder>, byte?[][]?, int, int, string?> NullableByteArrayParamsCases =>
         new()
         {
-            { new byte?[][] { new byte?[] { 1, 2 }, new byte?[] { 1, 2 } }, 0, 0, null },
-            { new byte?[][] { new byte?[] { 1, 2 }, null! }, 1, 0, ComparisonMismatches.NullPassedAsArgumentCode },
+            { b => b, new byte?[][] { new byte?[] { 1, 2 }, new byte?[] { 1, 2 } }, 0, 0, null },
+            { b => b, new byte?[][] { new byte?[] { 1, 2 }, null! }, 1, 0, ComparisonMismatches.NullPassedAsArgumentCode },
+            { b => b.DisallowNullComparison(), new byte?[][] { new byte?[] { 1, 2 }, null! }, 0, 1, ComparisonErrors.OneOfTheObjectsIsNullCode },
         };
 
     private void LogResult(params ComparisonResult[] results)
@@ -175,12 +177,13 @@ public class ByteArrayComparisonTests
     [Theory]
     [MemberData(nameof(NullableByteArrayParamsCases))]
     public void Compare_NullableByteArrayParams_UsesExpectedOutcome(
+        Func<ComparisonBuilder, ComparisonBuilder> configure,
         byte?[][]? bytes,
         int expectedMismatches,
         int expectedErrors,
         string? expectedCode)
     {
-        var builder = CreateBuilder();
+        var builder = configure(CreateBuilder());
         var result = builder.Compare(bytes);
 
         result.MismatchCount.ShouldBe(expectedMismatches);
