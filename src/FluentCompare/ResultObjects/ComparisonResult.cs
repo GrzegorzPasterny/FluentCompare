@@ -24,20 +24,25 @@ public class ComparisonResult
 
     public override string ToString()
     {
-        if (!AllMatched)
-        {
-            StringBuilder stringBuilder = new();
-            if (!WasSuccessful)
-            {
-                _errors.ForEach(e => stringBuilder.AppendLine(e.ToString()));
-                return stringBuilder.ToString();
-            }
+        StringBuilder stringBuilder = new();
+        stringBuilder.AppendLine($"[WasSuccessful={WasSuccessful}, AllMatched={AllMatched}, MismatchCount={MismatchCount}, ErrorCount={ErrorCount}, WarningCount={WarningCount}]");
 
-            _mismatches.ForEach(m => stringBuilder.AppendLine(m.ToString()));
-            return stringBuilder.ToString();
+        if (_errors.Count > 0)
+        {
+            _errors.ForEach(e => stringBuilder.AppendLine(e.ToString()));
         }
 
-        return $"[WasSuccessful={WasSuccessful}, AllMatched={AllMatched}, WarningsCount={Warnings.Count}]";
+        if (_mismatches.Count > 0)
+        {
+            _mismatches.ForEach(m => stringBuilder.AppendLine(m.ToString()));
+        }
+
+        if (_warnings.Count > 0)
+        {
+            _warnings.ForEach(w => stringBuilder.AppendLine(w.ToString()));
+        }
+
+        return stringBuilder.ToString().TrimEnd();
     }
 
     internal void AddMismatch(ComparisonMismatch mismatch) => _mismatches.Add(mismatch);

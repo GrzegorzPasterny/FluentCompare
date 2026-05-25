@@ -15,7 +15,7 @@ public class ByteComparisonTests
             .UseComparisonType(comparisonType);
     }
 
-    public static TheoryData<Func<ComparisonBuilder, ComparisonBuilder>, byte, byte, int, int, string?> SingleByteCases =>
+    public static TheoryData<Func<ComparisonBuilder, ComparisonBuilder>, byte, byte, int, int, string?> BytePairCases =>
         new()
         {
             { b => b, 5, 5, 0, 0, null },
@@ -56,6 +56,21 @@ public class ByteComparisonTests
         foreach (var result in results)
         {
             _testOutputHelper.WriteLine(result.ToString());
+
+            foreach (var mismatch in result.Mismatches)
+            {
+                _testOutputHelper.WriteLine($"Mismatch [{mismatch.Code}]: {mismatch.Message}");
+            }
+
+            foreach (var error in result.Errors)
+            {
+                _testOutputHelper.WriteLine($"Error [{error.Code}]: {error.Message}");
+            }
+
+            foreach (var warning in result.Warnings)
+            {
+                _testOutputHelper.WriteLine($"Warning [{warning.Code}]: {warning.Message}");
+            }
         }
     }
 
@@ -74,8 +89,8 @@ public class ByteComparisonTests
     }
 
     [Theory]
-    [MemberData(nameof(SingleByteCases))]
-    public void Compare_Byte_WithConfigurations_UsesExpectedOutcome(
+    [MemberData(nameof(BytePairCases))]
+    public void Compare_BytePair_UsesExpectedOutcome(
         Func<ComparisonBuilder, ComparisonBuilder> configure,
         byte left,
         byte right,
@@ -100,6 +115,21 @@ public class ByteComparisonTests
                 AssertFirstMismatchCode(result, expectedCode);
             }
         }
+
+    }
+
+    [Fact]
+    public void Compare_BytePair_LiteralInvocation_ShouldUseLiteralExpressionInMismatchMessage()
+    {
+        var builder = CreateBuilder();
+
+        var result = builder.Compare((byte)10, (byte)20);
+
+        result.MismatchCount.ShouldBe(1);
+        result.ErrorCount.ShouldBe(0);
+        AssertFirstMismatchCode(result, ComparisonMismatches<byte>.MismatchDetectedCode);
+        result.Mismatches[0].Message.ShouldContain("10");
+        result.Mismatches[0].Message.ShouldContain("20");
     }
 
     [Theory]

@@ -52,24 +52,18 @@ public class BoolArrayComparisonTests
             { b => b.DisallowNullComparison(), new bool?[][] { new bool?[] { true, false }, null! }, 0, 1, ComparisonErrors.OneOfTheObjectsIsNullCode },
         };
 
-    private void LogResult(params ComparisonResult[] results)
-    {
-        foreach (var result in results)
-        {
-            _testOutputHelper.WriteLine(result.ToString());
-        }
-    }
-
     private void AssertFirstMismatchCode(ComparisonResult result, string expectedCode)
     {
-        LogResult(result);
+        _testOutputHelper.WriteLine(result.ToString());
+
         result.MismatchCount.ShouldBeGreaterThan(0, result.ToString());
         result.Mismatches[0].Code.ShouldBe(expectedCode, result.Mismatches[0].Message);
     }
 
     private void AssertFirstErrorCode(ComparisonResult result, string expectedCode)
     {
-        LogResult(result);
+        _testOutputHelper.WriteLine(result.ToString());
+
         result.ErrorCount.ShouldBeGreaterThan(0, result.ToString());
         result.Errors[0].Code.ShouldBe(expectedCode, result.Errors[0].Message);
     }

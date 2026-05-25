@@ -28,6 +28,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{23D14953-DF2D-4405-A60C-753E60B44F73}"
 	ProjectSection(SolutionItems) = preProject
 		docs\UbiquitousLanguage.md = docs\UbiquitousLanguage.md
+		docs\UnitTestingGuide.md = docs\UnitTestingGuide.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "instructions", "instructions", "{E62ACCFD-2403-43E4-8881-2F5EA44E697E}"

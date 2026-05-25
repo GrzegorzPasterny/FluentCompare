@@ -66,6 +66,21 @@ public class ByteArrayComparisonTests
         foreach (var result in results)
         {
             _testOutputHelper.WriteLine(result.ToString());
+
+            foreach (var mismatch in result.Mismatches)
+            {
+                _testOutputHelper.WriteLine($"Mismatch [{mismatch.Code}]: {mismatch.Message}");
+            }
+
+            foreach (var error in result.Errors)
+            {
+                _testOutputHelper.WriteLine($"Error [{error.Code}]: {error.Message}");
+            }
+
+            foreach (var warning in result.Warnings)
+            {
+                _testOutputHelper.WriteLine($"Warning [{warning.Code}]: {warning.Message}");
+            }
         }
     }
 

@@ -15,19 +15,19 @@ public class BoolComparisonTests
             .UseComparisonType(comparisonType);
     }
 
-    public static TheoryData<bool, bool, ComparisonType, int, int, string?> BoolPairCases =>
+    public static TheoryData<Func<ComparisonBuilder, ComparisonBuilder>, bool, bool, int, int, string?> BoolPairCases =>
         new()
         {
-            { true, true, ComparisonType.EqualTo, 0, 0, null },
-            { true, false, ComparisonType.EqualTo, 1, 0, ComparisonMismatches.Bool.MismatchDetectedCode },
-            { true, false, ComparisonType.NotEqualTo, 0, 0, null },
-            { false, true, ComparisonType.NotEqualTo, 0, 0, null },
-            { true, false, ComparisonType.GreaterThan, 0, 0, null },
-            { true, true, ComparisonType.GreaterThan, 1, 0, ComparisonMismatches.Bool.MismatchDetectedCode },
-            { false, true, ComparisonType.LessThan, 0, 0, null },
-            { false, false, ComparisonType.LessThan, 1, 0, ComparisonMismatches.Bool.MismatchDetectedCode },
-            { true, true, ComparisonType.GreaterThanOrEqualTo, 0, 0, null },
-            { false, false, ComparisonType.LessThanOrEqualTo, 0, 0, null },
+            { b => b.UseComparisonType(ComparisonType.EqualTo), true, true, 0, 0, null },
+            { b => b.UseComparisonType(ComparisonType.EqualTo), true, false, 1, 0, ComparisonMismatches.Bool.MismatchDetectedCode },
+            { b => b.UseComparisonType(ComparisonType.NotEqualTo), true, false, 0, 0, null },
+            { b => b.UseComparisonType(ComparisonType.NotEqualTo), false, true, 0, 0, null },
+            { b => b.UseComparisonType(ComparisonType.GreaterThan), true, false, 0, 0, null },
+            { b => b.UseComparisonType(ComparisonType.GreaterThan), true, true, 1, 0, ComparisonMismatches.Bool.MismatchDetectedCode },
+            { b => b.UseComparisonType(ComparisonType.LessThan), false, true, 0, 0, null },
+            { b => b.UseComparisonType(ComparisonType.LessThan), false, false, 1, 0, ComparisonMismatches.Bool.MismatchDetectedCode },
+            { b => b.UseComparisonType(ComparisonType.GreaterThanOrEqualTo), true, true, 0, 0, null },
+            { b => b.UseComparisonType(ComparisonType.LessThanOrEqualTo), false, false, 0, 0, null },
         };
 
     public static TheoryData<bool[]?, int, int, string?> ParamsBoolCases =>
@@ -47,24 +47,42 @@ public class BoolComparisonTests
             { true, false, 1, 0, ComparisonMismatches.Bool.MismatchDetectedCode },
         };
 
-    private void LogResult(params ComparisonResult[] results)
-    {
-        foreach (var result in results)
-        {
-            _testOutputHelper.WriteLine(result.ToString());
-        }
-    }
-
     private void AssertFirstMismatchCode(ComparisonResult result, string expectedCode)
     {
-        LogResult(result);
+        _testOutputHelper.WriteLine(result.ToString());
+        foreach (var mismatch in result.Mismatches)
+        {
+            _testOutputHelper.WriteLine($"Mismatch [{mismatch.Code}]: {mismatch.Message}");
+        }
+        foreach (var error in result.Errors)
+        {
+            _testOutputHelper.WriteLine($"Error [{error.Code}]: {error.Message}");
+        }
+        foreach (var warning in result.Warnings)
+        {
+            _testOutputHelper.WriteLine($"Warning [{warning.Code}]: {warning.Message}");
+        }
+
         result.MismatchCount.ShouldBeGreaterThan(0, result.ToString());
         result.Mismatches[0].Code.ShouldBe(expectedCode, result.Mismatches[0].Message);
     }
 
     private void AssertFirstErrorCode(ComparisonResult result, string expectedCode)
     {
-        LogResult(result);
+        _testOutputHelper.WriteLine(result.ToString());
+        foreach (var mismatch in result.Mismatches)
+        {
+            _testOutputHelper.WriteLine($"Mismatch [{mismatch.Code}]: {mismatch.Message}");
+        }
+        foreach (var error in result.Errors)
+        {
+            _testOutputHelper.WriteLine($"Error [{error.Code}]: {error.Message}");
+        }
+        foreach (var warning in result.Warnings)
+        {
+            _testOutputHelper.WriteLine($"Warning [{warning.Code}]: {warning.Message}");
+        }
+
         result.ErrorCount.ShouldBeGreaterThan(0, result.ToString());
         result.Errors[0].Code.ShouldBe(expectedCode, result.Errors[0].Message);
     }
@@ -72,14 +90,14 @@ public class BoolComparisonTests
     [Theory]
     [MemberData(nameof(BoolPairCases))]
     public void Compare_BoolPair_UsesExpectedOutcome(
+        Func<ComparisonBuilder, ComparisonBuilder> configure,
         bool left,
         bool right,
-        ComparisonType comparisonType,
         int expectedMismatches,
         int expectedErrors,
         string? expectedCode)
     {
-        var builder = CreateBuilder(comparisonType);
+        var builder = configure(CreateBuilder());
         var result = builder.Compare(left, right);
 
         result.MismatchCount.ShouldBe(expectedMismatches);
@@ -96,6 +114,20 @@ public class BoolComparisonTests
                 AssertFirstMismatchCode(result, expectedCode);
             }
         }
+    }
+
+    [Fact]
+    public void Compare_BoolPair_LiteralInvocation_ShouldUseLiteralExpressionInMismatchMessage()
+    {
+        var builder = CreateBuilder();
+
+        var result = builder.Compare(true, false);
+
+        result.MismatchCount.ShouldBe(1);
+        result.ErrorCount.ShouldBe(0);
+        AssertFirstMismatchCode(result, ComparisonMismatches.Bool.MismatchDetectedCode);
+        result.Mismatches[0].Message.ToLowerInvariant().ShouldContain("true");
+        result.Mismatches[0].Message.ToLowerInvariant().ShouldContain("false");
     }
 
     [Theory]

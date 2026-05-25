@@ -25,3 +25,5 @@
 - Tests use xUnit with Shouldly and Moq.
 - Prefer data-driven tests with `MemberData`, or `TheoryData` when applicable.
 - Aggregate inputs and outputs into `TheoryData` classes for each `ComparisonBuilder` entry point.
+- Include separate cases for `Compare(variableName1, variableName2)` vs `Compare(literal1, literal2)` because caller argument expressions affect mismatch/error messages.
+- Always log mismatch/error/warning messages via `ITestOutputHelper` in tests.
