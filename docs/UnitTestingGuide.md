@@ -131,6 +131,8 @@ Each applicable entry point must include rows for:
 
 For primitive and numeric types, the scalar pair and array-pair entry points must include, for every `ComparisonType` value, at least one match case and one not-match case.
 
+For the integer family, apply this to all supported integer widths/signs (not only `int`), including `short`, `long`, and unsigned variants where supported by the API.
+
 ### Message-validation requirement
 
 If the compared entry point includes expression names in generated messages, tests must validate message behavior for both invocation forms:
@@ -180,9 +182,11 @@ This ensures test output contains actionable diagnostics in CI and local runs.
 |---|---:|---:|---:|---:|---|
 | Bool | ✅ `BoolComparisonTests.cs` | ✅ `BoolArrayComparisonTests.cs` | ✅ | ✅ | ✅ |
 | Byte | ✅ `ByteComparisonTests.cs` | ✅ `ByteArrayComparisonTests.cs` | ✅ | ✅ | ✅ |
-| Int | ✅ `IntComparisonTests.cs` | ✅ `IntArrayComparisonTests.cs` | ✅ | ✅ | ✅ |
+| Int (`int`) | ✅ `IntComparisonTests.cs` | ✅ `IntArrayComparisonTests.cs` | ✅ | ✅ | ✅ |
+| Short (`short`) | ✅ `ShortComparisonTests.cs` | ✅ `ShortArrayComparisonTests.cs` | ✅ | ✅ | ✅ |
+| Long (`long`) | ✅ `LongComparisonTests.cs` | ✅ `LongArrayComparisonTests.cs` | ✅ | ✅ | ✅ |
 | Double | ✅ `DoubleComparisonTests.cs` | ❌ | ❌ | ❌ (mostly Fact-based) | ❌ |
-| String | ✅ `StringComparisonTests.cs` | ✅ `StringArrayComparisonTests.cs` | 🟡 (legacy names) | 🟡 | 🟡 |
+| String | ✅ `StringComparisonTests.cs` | ✅ `StringArrayComparisonTests.cs` | ✅ | ✅ | ✅ |
 | Object/Complex | 🟡 (multiple split-by-shape files) | 🟡 | ❌ | 🟡 | 🟡 |
 
 ### Explicit known gap still present
@@ -200,11 +204,7 @@ This ensures test output contains actionable diagnostics in CI and local runs.
      - `DoubleArrayComparisonTests.cs` (array pair/params jagged/nullable arrays if supported)
    - Convert repeated `[Fact]` cases into `TheoryData` matrices.
 
-2. **Strings**
-   - Keep the two-file split (already good).
-   - Gradually normalize method names to strict template in section 3.
-
-3. **Objects**
+2. **Objects**
    - Define explicit type tokens for object comparison families (e.g., `Object`, `ObjectClass`, `ObjectAnonymous`) and enforce the 2-file rule within each family.
 
 ---
@@ -222,6 +222,10 @@ This ensures test output contains actionable diagnostics in CI and local runs.
 ### Integers
 - `test/FluentCompare.UnitTests/Integers/IntComparisonTests.cs`
 - `test/FluentCompare.UnitTests/Integers/IntArrayComparisonTests.cs`
+- `test/FluentCompare.UnitTests/Integers/ShortComparisonTests.cs`
+- `test/FluentCompare.UnitTests/Integers/ShortArrayComparisonTests.cs`
+- `test/FluentCompare.UnitTests/Integers/LongComparisonTests.cs`
+- `test/FluentCompare.UnitTests/Integers/LongArrayComparisonTests.cs`
 
 ### Doubles
 - `test/FluentCompare.UnitTests/Doubles/DoubleComparisonTests.cs` *(currently mixed scalar+array, Fact-heavy)*
@@ -253,3 +257,71 @@ When adding support for a new primitive or comparable type:
 5. Ensure object-overload coverage where relevant.
 6. Ensure configuration-specific rows where relevant.
 7. Run full test suite and update status table in section 7.
+
+---
+
+## 11. Additional type-specific test ideas (current + future)
+
+This section defines extra, type-focused scenarios to improve confidence beyond the baseline matrix in section 5.
+
+## Bools
+
+- Cross-check all `ComparisonType` semantics against a simple truth table.
+- Validate stable message wording for all mismatch outcomes.
+- Validate nullable-object overload behavior when one side is `null` and nulls are disallowed.
+
+## Bytes
+
+- Bitwise operation composition order (e.g., AND->XOR vs XOR->AND) should produce distinct outcomes.
+- Boundary bit patterns (`0x00`, `0xFF`, alternating bits) for each bitwise operation.
+- Shift behavior with shift count edge values (`0`, `7`, `8`, very large values).
+- Future: if per-index bitwise configuration is added, validate mixed per-index masks in one array.
+
+## Integers
+
+- Full signed range edge checks (`int.MinValue`, `int.MaxValue`) for all comparison types.
+- Overflow-adjacent comparisons (without overflow operations) to verify ordering logic only.
+- Mirror the full baseline matrix for all integer-family types (at minimum: `short`, `int`, `long`; plus unsigned types if/when exposed by `ComparisonBuilder`).
+- Include type-specific edge values for each integral type (`MinValue`, `MaxValue`, zero, negative/positive boundaries where applicable).
+- Future: if tolerance/range-window comparison is added for integer families, validate inclusive/exclusive boundaries.
+
+## Doubles / Floating-point
+
+- `NaN`, `+Infinity`, `-Infinity`, `-0.0` vs `0.0` handling per comparison type.
+- Rounding mode coverage by precision and tie-breaking boundaries.
+- Epsilon mode around threshold boundaries (`diff < eps`, `diff == eps`, `diff > eps`).
+- Future: if ULP-based tolerance is introduced, add ULP-distance boundary tests.
+
+## Strings
+
+- Culture-sensitive cases (e.g., Turkish-I style casing) across configured `StringComparison` modes.
+- Unicode normalization differences (composed vs decomposed forms).
+- Whitespace and control character differences (`\t`, `\r\n`, zero-width characters).
+- Future: if optional normalization/trim rules are introduced, validate enabled vs disabled behavior.
+
+## Arrays (all primitive/reference types)
+
+- Empty array vs empty array behavior for pair and params forms.
+- Very large arrays for aggregation behavior and deterministic mismatch indexing.
+- Multiple mismatches in one run: verify ordering and count consistency.
+- Future: if early-stop mode is introduced, validate first-mismatch short-circuit behavior.
+
+## Nullable arrays and jagged arrays
+
+- Mixed null placements in jagged structures (null row, null element, both sides null).
+- Validate `DisallowNullComparison()` escalation path (mismatch->error expectations by API contract).
+- Future: if per-level null policy is introduced, validate root vs inner-level null-policy precedence.
+
+## Object / Complex types
+
+- Recursive graphs with cycles (if supported) and depth limiting behavior.
+- Property order independence and ignored-property configuration (if introduced).
+- Reference-equality vs property-equality mode deltas for identical value objects.
+- Future: if custom property comparers are introduced, validate comparer precedence and fallback.
+
+## Cross-cutting / diagnostics
+
+- Snapshot tests for `ComparisonResult.ToString()` output shape (summary + sections).
+- Verify mismatch/error/warning codes remain stable (contract tests for public error-code surface).
+- Verify caller-argument-expression rendering for named variables, literals, and complex expressions.
+- Future: if localization is introduced, validate code stability independent from message language.

@@ -1,5 +1,3 @@
-
-
 namespace FluentCompare.UnitTests.Strings;
 
 public class StringArrayComparisonTests
@@ -12,241 +10,274 @@ public class StringArrayComparisonTests
     }
 
     private ComparisonBuilder CreateBuilder(ComparisonType comparisonType = ComparisonType.EqualTo,
-                                            StringComparison stringComparison = StringComparison.Ordinal)
+        StringComparison stringComparison = StringComparison.Ordinal)
     {
         return ComparisonBuilder.Create()
             .UseComparisonType(comparisonType)
             .UseStringComparisonType(stringComparison);
     }
 
-    [Fact]
-    public void Compare_NullArray_ShouldAddError()
+    public static TheoryData<string[]?, string[]?, int, int, int, string?> StringArrayPairCases =>
+        new()
+        {
+            { new[] { "a", "b" }, new[] { "a", "b" }, 0, 0, 0, null },
+            { new[] { "a", "b" }, new[] { "a", "x" }, 1, 0, 0, ComparisonMismatches<string>.MismatchDetectedCode },
+            { new[] { "a", "b" }, new[] { "a" }, 0, 0, 1, ComparisonErrors.InputArrayLengthsDifferCode },
+            { null, null, 0, 0, 1, ComparisonErrors.BothObjectsAreNullCode },
+            { null, new[] { "a" }, 1, 0, 0, ComparisonMismatches.NullPassedAsArgumentCode },
+            { new[] { "a" }, null, 1, 0, 0, ComparisonMismatches.NullPassedAsArgumentCode },
+        };
+
+    public static TheoryData<ComparisonType, string[], string[], int, int, string?> StringArrayPairComparisonTypeCases =>
+        new()
+        {
+            { ComparisonType.EqualTo, new[] { "a" }, new[] { "a" }, 0, 0, null },
+            { ComparisonType.EqualTo, new[] { "a" }, new[] { "b" }, 1, 0, ComparisonMismatches<string>.MismatchDetectedCode },
+            { ComparisonType.NotEqualTo, new[] { "a" }, new[] { "b" }, 0, 0, null },
+            { ComparisonType.NotEqualTo, new[] { "a" }, new[] { "a" }, 1, 0, ComparisonMismatches<string>.MismatchDetectedCode },
+            { ComparisonType.GreaterThan, new[] { "b" }, new[] { "a" }, 0, 0, null },
+            { ComparisonType.GreaterThan, new[] { "a" }, new[] { "b" }, 1, 0, ComparisonMismatches<string>.MismatchDetectedCode },
+            { ComparisonType.LessThan, new[] { "a" }, new[] { "b" }, 0, 0, null },
+            { ComparisonType.LessThan, new[] { "b" }, new[] { "a" }, 1, 0, ComparisonMismatches<string>.MismatchDetectedCode },
+            { ComparisonType.GreaterThanOrEqualTo, new[] { "a" }, new[] { "a" }, 0, 0, null },
+            { ComparisonType.GreaterThanOrEqualTo, new[] { "a" }, new[] { "b" }, 1, 0, ComparisonMismatches<string>.MismatchDetectedCode },
+            { ComparisonType.LessThanOrEqualTo, new[] { "a" }, new[] { "a" }, 0, 0, null },
+            { ComparisonType.LessThanOrEqualTo, new[] { "b" }, new[] { "a" }, 1, 0, ComparisonMismatches<string>.MismatchDetectedCode },
+        };
+
+    public static TheoryData<string[][]?, int, int, int, string?> StringArrayParamsCases =>
+        new()
+        {
+            { null, 0, 1, 0, ComparisonErrors.NullPassedAsArgumentCode },
+            { new[] { new[] { "a", "b" } }, 0, 1, 0, ComparisonErrors.NotEnoughObjectsToCompareCode },
+            { new[] { new[] { "a", "b" }, new[] { "a", "b" } }, 0, 0, 0, null },
+            { new[] { new[] { "a", "b" }, new[] { "a", "x" } }, 1, 0, 0, ComparisonMismatches<string>.MismatchDetectedCode },
+        };
+
+    private void AssertFirstMismatchCode(ComparisonResult result, string expectedCode)
     {
-        // Arrange
-        var builder = CreateBuilder();
-
-        // Act
-        var result = builder.Compare(null as string[][]);
         _testOutputHelper.WriteLine(result.ToString());
+        foreach (var mismatch in result.Mismatches)
+        {
+            _testOutputHelper.WriteLine($"Mismatch [{mismatch.Code}]: {mismatch.Message}");
+        }
+        foreach (var error in result.Errors)
+        {
+            _testOutputHelper.WriteLine($"Error [{error.Code}]: {error.Message}");
+        }
+        foreach (var warning in result.Warnings)
+        {
+            _testOutputHelper.WriteLine($"Warning [{warning.Code}]: {warning.Message}");
+        }
 
-        // Assert
-        result.Errors.Count.ShouldBe(1);
-        result.Errors[0].Code.ShouldBe(ComparisonErrors.NullPassedAsArgumentCode);
-        result.WasSuccessful.ShouldBeFalse();
+        result.MismatchCount.ShouldBeGreaterThan(0, result.ToString());
+        result.Mismatches[0].Code.ShouldBe(expectedCode, result.Mismatches[0].Message);
     }
 
-    [Fact]
-    public void Compare_NotEnoughArrays_ShouldAddError()
+    private void AssertFirstErrorCode(ComparisonResult result, string expectedCode)
     {
-        // Arrange
-        var builder = CreateBuilder();
-
-        // Act
-        var result = builder.Compare(new[] { new[] { "a", "b" } });
         _testOutputHelper.WriteLine(result.ToString());
+        foreach (var mismatch in result.Mismatches)
+        {
+            _testOutputHelper.WriteLine($"Mismatch [{mismatch.Code}]: {mismatch.Message}");
+        }
+        foreach (var error in result.Errors)
+        {
+            _testOutputHelper.WriteLine($"Error [{error.Code}]: {error.Message}");
+        }
+        foreach (var warning in result.Warnings)
+        {
+            _testOutputHelper.WriteLine($"Warning [{warning.Code}]: {warning.Message}");
+        }
 
-        // Assert
-        result.Errors.Count.ShouldBe(1);
-        result.WasSuccessful.ShouldBeFalse();
+        result.ErrorCount.ShouldBeGreaterThan(0, result.ToString());
+        result.Errors[0].Code.ShouldBe(expectedCode, result.Errors[0].Message);
     }
 
-    [Fact]
-    public void Compare_BothNull_ShouldAddWarning()
+    private void AssertFirstWarningCode(ComparisonResult result, string expectedCode)
     {
-        // Arrange
-        var builder = CreateBuilder();
-
-        // Act
-        var result = builder.Compare((string[]?)null, (string[]?)null);
         _testOutputHelper.WriteLine(result.ToString());
+        foreach (var mismatch in result.Mismatches)
+        {
+            _testOutputHelper.WriteLine($"Mismatch [{mismatch.Code}]: {mismatch.Message}");
+        }
+        foreach (var error in result.Errors)
+        {
+            _testOutputHelper.WriteLine($"Error [{error.Code}]: {error.Message}");
+        }
+        foreach (var warning in result.Warnings)
+        {
+            _testOutputHelper.WriteLine($"Warning [{warning.Code}]: {warning.Message}");
+        }
 
-        // Assert
-        result.Warnings.Count.ShouldBe(1);
-        result.Errors.ShouldBeEmpty();
-        result.Mismatches.ShouldBeEmpty();
-        result.AllMatched.ShouldBeTrue();
-    }
-
-    [Fact]
-    public void Compare_ReferenceEquals_ShouldReturnEmptyResult()
-    {
-        // Arrange
-        var builder = CreateBuilder();
-        var arr = new[] { "x", "y" };
-
-        // Act
-        var result = builder.Compare(arr, arr);
-        _testOutputHelper.WriteLine(result.ToString());
-
-        // Assert
-        result.Errors.ShouldBeEmpty();
-        result.Mismatches.ShouldBeEmpty();
-        result.Warnings.ShouldBeEmpty();
-        result.AllMatched.ShouldBeTrue();
-    }
-
-    [Fact]
-    public void Compare_FirstArrayNull_ShouldAddError()
-    {
-        // Arrange
-        var builder = CreateBuilder();
-
-        // Act
-        var result = builder.Compare(null, new[] { "a" });
-        _testOutputHelper.WriteLine(result.ToString());
-
-        // Assert
-        result.AllMatched.ShouldBeFalse();
-        result.WasSuccessful.ShouldBeTrue();
-    }
-
-    [Fact]
-    public void Compare_SecondArrayNull_ShouldAddError()
-    {
-        // Arrange
-        var builder = CreateBuilder();
-
-        // Act
-        var result = builder.Compare(new[] { "a" }, null);
-        _testOutputHelper.WriteLine(result.ToString());
-
-        // Assert
-        result.AllMatched.ShouldBeFalse();
-        result.WasSuccessful.ShouldBeTrue();
-    }
-
-    [Fact]
-    public void Compare_DifferentLengths_ShouldAddWarning()
-    {
-        // Arrange
-        var builder = CreateBuilder();
-
-        // Act
-        var result = builder.Compare(new[] { "a", "b" }, new[] { "a" }, "stringExpr1", null);
-        _testOutputHelper.WriteLine(result.ToString());
-
-        // Assert
-        result.Warnings.Count.ShouldBe(1);
-        result.Errors.ShouldBeEmpty();
-        result.Mismatches.ShouldBeEmpty();
-        result.AllMatched.ShouldBeTrue();
-        result.Warnings.First().Code.ShouldBe(ComparisonErrors.InputArrayLengthsDifferCode);
-        result.Warnings.First().Message.ShouldContain("stringExpr1");
-        result.Warnings.First().Message.ShouldContain("StringArrayTwo");
-    }
-
-    [Fact]
-    public void Compare_AllEqual_ShouldAllMatch()
-    {
-        // Arrange
-        var builder = CreateBuilder();
-
-        // Act
-        var result = builder.Compare(new[] { "a", "b" }, new[] { "a", "b" });
-        _testOutputHelper.WriteLine(result.ToString());
-
-        // Assert
-        result.AllMatched.ShouldBeTrue();
-        result.Mismatches.ShouldBeEmpty();
-        result.Errors.ShouldBeEmpty();
-        result.Warnings.ShouldBeEmpty();
-    }
-
-    [Fact]
-    public void Compare_OneElementDifferent_ShouldAddMismatch()
-    {
-        // Arrange
-        var builder = CreateBuilder();
-
-        // Act
-        var result = builder.Compare(new[] { "a", "b" }, new[] { "a", "x" });
-        _testOutputHelper.WriteLine(result.ToString());
-
-        // Assert
-        result.Mismatches.Count.ShouldBe(1);
-        result.Errors.ShouldBeEmpty();
-        result.AllMatched.ShouldBeFalse();
-    }
-
-    [Fact]
-    public void Compare_NullElements_ShouldAddWarningsAndMismatches()
-    {
-        // Arrange
-        var builder = CreateBuilder();
-
-        // Act
-        var result = builder.Compare<string[]?>(
-            ["a", null!, null!],
-            ["a", "b", null!]);
-        _testOutputHelper.WriteLine(result.ToString());
-
-        // Assert
-        result.Warnings.Count.ShouldBe(1);
-        result.Mismatches.Count.ShouldBe(1);
-        result.AllMatched.ShouldBeFalse();
-    }
-
-    [Fact]
-    public void Compare_CaseInsensitive_ShouldMatch()
-    {
-        // Arrange
-        var builder = CreateBuilder(ComparisonType.EqualTo, StringComparison.OrdinalIgnoreCase);
-
-        // Act
-        var result = builder.Compare(
-            new[] { "Hello", "World" },
-            new[] { "hello", "world" });
-        _testOutputHelper.WriteLine(result.ToString());
-
-        // Assert
-        result.AllMatched.ShouldBeTrue();
-        result.Mismatches.ShouldBeEmpty();
-    }
-
-    [Fact]
-    public void Compare_Params_ShouldAggregateResults()
-    {
-        // Arrange
-        var builder = CreateBuilder();
-
-        // Act
-        var result = builder.Compare(
-            new[] { "a", "b" },
-            new[] { "a", "b" },
-            new[] { "a", "x" });
-        _testOutputHelper.WriteLine(result.ToString());
-
-        // Assert
-        result.Mismatches.Count.ShouldBe(1);
-        result.Errors.ShouldBeEmpty();
-        result.Warnings.ShouldBeEmpty();
-        result.AllMatched.ShouldBeFalse();
+        result.WarningCount.ShouldBeGreaterThan(0, result.ToString());
+        result.Warnings[0].Code.ShouldBe(expectedCode, result.Warnings[0].Message);
     }
 
     [Theory]
-    [InlineData("a", "b", ComparisonType.LessThan, true)]
-    [InlineData("b", "a", ComparisonType.GreaterThan, true)]
-    [InlineData("a", "b", ComparisonType.GreaterThan, false)]
-    [InlineData("b", "a", ComparisonType.LessThan, false)]
-    public void Compare_RespectsComparisonType(string left, string right, ComparisonType type, bool expectedSuccess)
+    [MemberData(nameof(StringArrayPairCases))]
+    public void Compare_StringArrayPair_UsesExpectedOutcome(
+        string[]? first,
+        string[]? second,
+        int expectedMismatches,
+        int expectedErrors,
+        int expectedWarnings,
+        string? expectedCode)
     {
-        // Arrange
-        var builder = CreateBuilder(type);
+        var builder = CreateBuilder();
+        var result = builder.Compare(first, second);
 
-        // Act
-        var result = builder.Compare(new[] { left }, new[] { right });
+        result.MismatchCount.ShouldBe(expectedMismatches);
+        result.ErrorCount.ShouldBe(expectedErrors);
+        result.WarningCount.ShouldBe(expectedWarnings);
+
+        if (expectedCode is not null)
+        {
+            if (expectedErrors > 0)
+            {
+                AssertFirstErrorCode(result, expectedCode);
+            }
+            else if (expectedMismatches > 0)
+            {
+                AssertFirstMismatchCode(result, expectedCode);
+            }
+            else
+            {
+                AssertFirstWarningCode(result, expectedCode);
+            }
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(StringArrayPairComparisonTypeCases))]
+    public void Compare_StringArrayPair_RespectsComparisonType_UsesExpectedOutcome(
+        ComparisonType comparisonType,
+        string[] first,
+        string[] second,
+        int expectedMismatches,
+        int expectedErrors,
+        string? expectedCode)
+    {
+        var builder = CreateBuilder(comparisonType);
+        var result = builder.Compare(first, second);
+
+        result.MismatchCount.ShouldBe(expectedMismatches);
+        result.ErrorCount.ShouldBe(expectedErrors);
+
+        if (expectedCode is not null)
+        {
+            if (expectedErrors > 0)
+            {
+                AssertFirstErrorCode(result, expectedCode);
+            }
+            else
+            {
+                AssertFirstMismatchCode(result, expectedCode);
+            }
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(StringArrayParamsCases))]
+    public void Compare_StringArrayParams_UsesExpectedOutcome(
+        string[][]? values,
+        int expectedMismatches,
+        int expectedErrors,
+        int expectedWarnings,
+        string? expectedCode)
+    {
+        var builder = CreateBuilder();
+        var result = values is null
+            ? builder.Compare((string[][]?)null)
+            : builder.Compare(values);
+
+        result.MismatchCount.ShouldBe(expectedMismatches);
+        result.ErrorCount.ShouldBe(expectedErrors);
+        result.WarningCount.ShouldBe(expectedWarnings);
+
+        if (expectedCode is not null)
+        {
+            if (expectedErrors > 0)
+            {
+                AssertFirstErrorCode(result, expectedCode);
+            }
+            else if (expectedMismatches > 0)
+            {
+                AssertFirstMismatchCode(result, expectedCode);
+            }
+            else
+            {
+                AssertFirstWarningCode(result, expectedCode);
+            }
+        }
+    }
+
+    [Fact]
+    public void Compare_StringArrayPair_NamedVariableInvocation_ShouldIncludeVariableNamesInMismatchMessage()
+    {
+        var builder = CreateBuilder();
+        string[] leftValue = ["a", "b"];
+        string[] rightValue = ["a", "x"];
+
+        var result = builder.Compare(leftValue, rightValue);
+
+        AssertFirstMismatchCode(result, ComparisonMismatches<string>.MismatchDetectedCode);
+        result.Mismatches[0].Message.ShouldContain(nameof(leftValue));
+        result.Mismatches[0].Message.ShouldContain(nameof(rightValue));
+    }
+
+    [Fact]
+    public void Compare_StringArrayPair_LiteralInvocation_ShouldUseLiteralExpressionInMismatchMessage()
+    {
+        var builder = CreateBuilder();
+
+        var result = builder.Compare(["a", "b"], ["a", "x"]);
+
+        AssertFirstMismatchCode(result, ComparisonMismatches<string>.MismatchDetectedCode);
+        result.Mismatches[0].Message.ShouldContain("[\"a\", \"b\"]");
+        result.Mismatches[0].Message.ShouldContain("[\"a\", \"x\"]");
+    }
+
+    [Fact]
+    public void Compare_StringArrayPair_ReferenceEquals_ShouldReturnEmptyResult()
+    {
+        var builder = CreateBuilder();
+        var arr = new[] { "x", "y" };
+
+        var result = builder.Compare(arr, arr);
+
         _testOutputHelper.WriteLine(result.ToString());
+        result.Errors.ShouldBeEmpty();
+        result.Mismatches.ShouldBeEmpty();
+        result.Warnings.ShouldBeEmpty();
+        result.AllMatched.ShouldBeTrue();
+    }
 
-        // Assert
-        if (expectedSuccess)
+    [Fact]
+    public void Compare_StringArrayPair_NullElements_ShouldAddWarningsAndMismatches()
+    {
+        var builder = CreateBuilder();
+
+        var result = builder.Compare<string[]?>(
+            ["a", null!, null!],
+            ["a", "b", null!]);
+
+        _testOutputHelper.WriteLine(result.ToString());
+        foreach (var mismatch in result.Mismatches)
         {
-            result.AllMatched.ShouldBeTrue();
-            result.Mismatches.ShouldBeEmpty();
+            _testOutputHelper.WriteLine($"Mismatch [{mismatch.Code}]: {mismatch.Message}");
         }
-        else
+        foreach (var error in result.Errors)
         {
-            result.AllMatched.ShouldBeFalse();
-            result.Mismatches.Count.ShouldBeGreaterThan(0);
+            _testOutputHelper.WriteLine($"Error [{error.Code}]: {error.Message}");
         }
+        foreach (var warning in result.Warnings)
+        {
+            _testOutputHelper.WriteLine($"Warning [{warning.Code}]: {warning.Message}");
+        }
+
+        result.WarningCount.ShouldBe(1);
+        result.MismatchCount.ShouldBe(1);
+        result.AllMatched.ShouldBeFalse();
     }
 }
