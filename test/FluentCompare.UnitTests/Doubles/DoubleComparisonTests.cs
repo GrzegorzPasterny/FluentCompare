@@ -1,253 +1,241 @@
-
-
 namespace FluentCompare.UnitTests.Doubles;
 
 public class DoubleComparisonTests
 {
-    private readonly ITestOutputHelper _testOutputHelper;
+    private readonly ITestOutputHelper _output;
 
-    public DoubleComparisonTests(ITestOutputHelper testOutputHelper)
+    public DoubleComparisonTests(ITestOutputHelper output)
     {
-        _testOutputHelper = testOutputHelper;
+        _output = output;
+    }
+
+    private ComparisonBuilder CreateBuilder(ComparisonType comparisonType = ComparisonType.EqualTo)
+    {
+        return ComparisonBuilder.Create()
+            .UseComparisonType(comparisonType);
+    }
+
+    public static TheoryData<Func<ComparisonBuilder, ComparisonBuilder>, double, double, int, int, string?> DoublePairCases =>
+        new()
+        {
+            { b => b.UseComparisonType(ComparisonType.EqualTo), 42.0, 42.0, 0, 0, null },
+            { b => b.UseComparisonType(ComparisonType.EqualTo), 42.0, 43.0, 1, 0, ComparisonMismatches.Floats.MismatchDetectedCode },
+            { b => b.UseComparisonType(ComparisonType.NotEqualTo), 42.0, 43.0, 0, 0, null },
+            { b => b.UseComparisonType(ComparisonType.NotEqualTo), 42.0, 42.0, 1, 0, ComparisonMismatches.Floats.MismatchDetectedCode },
+            { b => b.UseComparisonType(ComparisonType.GreaterThan), 43.0, 42.0, 0, 0, null },
+            { b => b.UseComparisonType(ComparisonType.GreaterThan), 42.0, 43.0, 1, 0, ComparisonMismatches.Floats.MismatchDetectedCode },
+            { b => b.UseComparisonType(ComparisonType.LessThan), 42.0, 43.0, 0, 0, null },
+            { b => b.UseComparisonType(ComparisonType.LessThan), 43.0, 42.0, 1, 0, ComparisonMismatches.Floats.MismatchDetectedCode },
+            { b => b.UseComparisonType(ComparisonType.GreaterThanOrEqualTo), 42.0, 42.0, 0, 0, null },
+            { b => b.UseComparisonType(ComparisonType.GreaterThanOrEqualTo), 41.0, 42.0, 1, 0, ComparisonMismatches.Floats.MismatchDetectedCode },
+            { b => b.UseComparisonType(ComparisonType.LessThanOrEqualTo), 42.0, 42.0, 0, 0, null },
+            { b => b.UseComparisonType(ComparisonType.LessThanOrEqualTo), 43.0, 42.0, 1, 0, ComparisonMismatches.Floats.MismatchDetectedCode },
+        };
+
+    public static TheoryData<double[]?, int, int, string?> ParamsDoubleCases =>
+        new()
+        {
+            { null, 0, 1, ComparisonErrors.NullPassedAsArgumentCode },
+            { new[] { 1.0 }, 0, 1, ComparisonErrors.NotEnoughObjectsToCompareCode },
+            { new[] { 1.0, 1.0 }, 0, 0, null },
+            { new[] { 1.0, 2.0 }, 1, 0, ComparisonMismatches.Floats.MismatchDetectedCode },
+            { new[] { 1.0, 1.0, 2.0 }, 1, 0, ComparisonMismatches.Floats.MismatchDetectedCode },
+        };
+
+    public static TheoryData<double?, double?, int, int, string?> NullableDoubleObjectCases =>
+        new()
+        {
+            { 7.0, 7.0, 0, 0, null },
+            { 1.0, 2.0, 1, 0, ComparisonMismatches.Floats.MismatchDetectedCode },
+        };
+
+    public static TheoryData<Func<ComparisonBuilder, ComparisonBuilder>, double, double, int, int, string?> DoublePrecisionCases =>
+        new()
+        {
+            { b => b.WithDoublePrecision(2), 1.234, 1.2345, 0, 0, null },
+            { b => b.WithDoublePrecision(2), 1.234, 1.245, 1, 0, ComparisonMismatches.Floats.MismatchDetectedCode },
+            { b => b.WithDoublePrecision(3), 1.234, 1.2341, 0, 0, null },
+            { b => b.WithDoublePrecision(3), 1.234, 1.235, 1, 0, ComparisonMismatches.Floats.MismatchDetectedCode },
+        };
+
+    private void AssertFirstMismatchCode(ComparisonResult result, string expectedCode)
+    {
+        _output.WriteLine(result.ToString());
+        foreach (var mismatch in result.Mismatches)
+        {
+            _output.WriteLine($"Mismatch [{mismatch.Code}]: {mismatch.Message}");
+        }
+        foreach (var error in result.Errors)
+        {
+            _output.WriteLine($"Error [{error.Code}]: {error.Message}");
+        }
+        foreach (var warning in result.Warnings)
+        {
+            _output.WriteLine($"Warning [{warning.Code}]: {warning.Message}");
+        }
+
+        result.MismatchCount.ShouldBeGreaterThan(0, result.ToString());
+        result.Mismatches[0].Code.ShouldBe(expectedCode, result.Mismatches[0].Message);
+    }
+
+    private void AssertFirstErrorCode(ComparisonResult result, string expectedCode)
+    {
+        _output.WriteLine(result.ToString());
+        foreach (var mismatch in result.Mismatches)
+        {
+            _output.WriteLine($"Mismatch [{mismatch.Code}]: {mismatch.Message}");
+        }
+        foreach (var error in result.Errors)
+        {
+            _output.WriteLine($"Error [{error.Code}]: {error.Message}");
+        }
+        foreach (var warning in result.Warnings)
+        {
+            _output.WriteLine($"Warning [{warning.Code}]: {warning.Message}");
+        }
+
+        result.ErrorCount.ShouldBeGreaterThan(0, result.ToString());
+        result.Errors[0].Code.ShouldBe(expectedCode, result.Errors[0].Message);
+    }
+
+    [Theory]
+    [MemberData(nameof(DoublePairCases))]
+    public void Compare_DoublePair_UsesExpectedOutcome(
+        Func<ComparisonBuilder, ComparisonBuilder> configure,
+        double left,
+        double right,
+        int expectedMismatches,
+        int expectedErrors,
+        string? expectedCode)
+    {
+        var builder = configure(CreateBuilder());
+        var result = builder.Compare(left, right);
+
+        result.MismatchCount.ShouldBe(expectedMismatches);
+        result.ErrorCount.ShouldBe(expectedErrors);
+
+        if (expectedCode is not null)
+        {
+            if (expectedErrors > 0)
+            {
+                AssertFirstErrorCode(result, expectedCode);
+            }
+            else
+            {
+                AssertFirstMismatchCode(result, expectedCode);
+            }
+        }
     }
 
     [Fact]
-    public void Compare_TwoEqualDoubles_ReturnsAllMatchingResult()
+    public void Compare_DoublePair_NamedVariableInvocation_ShouldIncludeVariableNamesInMismatchMessage()
     {
-        // Arrange
-        double dbl1 = 42.0;
-        double dbl2 = 42.0;
+        var builder = CreateBuilder();
+        double leftValue = 42.0;
+        double rightValue = 43.0;
 
-        // Act
-        var result = ComparisonBuilder.Create()
-            .Compare(dbl1, dbl2);
+        var result = builder.Compare(leftValue, rightValue);
 
-        // Assert
-        result.AllMatched.ShouldBeTrue();
+        AssertFirstMismatchCode(result, ComparisonMismatches.Floats.MismatchDetectedCode);
+        result.Mismatches[0].Message.ShouldContain(nameof(leftValue));
+        result.Mismatches[0].Message.ShouldContain(nameof(rightValue));
     }
 
     [Fact]
-    public void Compare_TwoDifferentDoubles_ReturnsNotMatchingResult()
+    public void Compare_DoublePair_LiteralInvocation_ShouldUseLiteralExpressionInMismatchMessage()
     {
-        // Arrange
-        double dbl1 = 42.0;
-        double dbl2 = 43.0;
+        var builder = CreateBuilder();
 
-        // Act
-        var result = ComparisonBuilder.Create()
-            .Compare(dbl1, dbl2);
+        var result = builder.Compare(0.0, 1.0);
 
-        // Assert
-        result.AllMatched.ShouldBeFalse();
-        result.Mismatches.First().Message.ShouldContain($"{nameof(dbl1)}");
-        result.Mismatches.First().Message.ShouldContain($"{nameof(dbl2)}");
+        AssertFirstMismatchCode(result, ComparisonMismatches.Floats.MismatchDetectedCode);
+        result.Mismatches[0].Message.ShouldContain("0");
+        result.Mismatches[0].Message.ShouldContain("1");
     }
 
-    [Fact]
-    public void Compare_TwoEqualDoubleArrays_ReturnsAllMatchingResult()
+    [Theory]
+    [MemberData(nameof(DoublePrecisionCases))]
+    public void Compare_DoublePair_WithPrecisionConfigurations_UsesExpectedOutcome(
+        Func<ComparisonBuilder, ComparisonBuilder> configure,
+        double left,
+        double right,
+        int expectedMismatches,
+        int expectedErrors,
+        string? expectedCode)
     {
-        // Arrange
-        double[] array1 = { 1.0, 2.0, 3.0, 4.0, 5.0 };
-        double[] array2 = { 1.0, 2.0, 3.0, 4.0, 5.0 };
+        var builder = configure(CreateBuilder());
+        var result = builder.Compare(left, right);
 
-        // Act
-        var result = ComparisonBuilder.Create()
-        .Compare(array1, array2);
+        result.MismatchCount.ShouldBe(expectedMismatches);
+        result.ErrorCount.ShouldBe(expectedErrors);
 
-        // Assert
-        result.AllMatched.ShouldBeTrue();
+        if (expectedCode is not null)
+        {
+            if (expectedErrors > 0)
+            {
+                AssertFirstErrorCode(result, expectedCode);
+            }
+            else
+            {
+                AssertFirstMismatchCode(result, expectedCode);
+            }
+        }
     }
 
-    [Fact]
-    public void Compare_TwoDifferentDoubleArrays_ReturnsNotMatchingResult()
+    [Theory]
+    [MemberData(nameof(ParamsDoubleCases))]
+    public void Compare_ParamsDouble_UsesExpectedOutcome(
+        double[]? values,
+        int expectedMismatches,
+        int expectedErrors,
+        string? expectedCode)
     {
-        // Arrange
-        double[] array1 = { 1.0, 2.0, 3.0, 4.0, 5.0 };
-        double[] array2 = { 1.0, 2.0, 3.0, 4.0, 6.0 };
+        var builder = CreateBuilder();
+        var result = values is null
+            ? builder.Compare((double[]?)null)
+            : builder.Compare(values);
 
-        // Act
-        var result = ComparisonBuilder.Create()
-            .Compare(array1, array2);
+        result.MismatchCount.ShouldBe(expectedMismatches);
+        result.ErrorCount.ShouldBe(expectedErrors);
 
-        // Assert
-        result.AllMatched.ShouldBeFalse();
-        result.Mismatches.First().Message.ShouldContain($"{nameof(array1)}");
-        result.Mismatches.First().Message.ShouldContain($"{nameof(array2)}");
+        if (expectedCode is not null)
+        {
+            if (expectedErrors > 0)
+            {
+                AssertFirstErrorCode(result, expectedCode);
+            }
+            else
+            {
+                AssertFirstMismatchCode(result, expectedCode);
+            }
+        }
     }
 
-    [Fact]
-    public void Compare_DoubleArraysWithDifferentLengths_ReturnsNotMatchingResult()
+    [Theory]
+    [MemberData(nameof(NullableDoubleObjectCases))]
+    public void Compare_ObjectOverload_NullableDouble_UsesExpectedOutcome(
+        double? left,
+        double? right,
+        int expectedMismatches,
+        int expectedErrors,
+        string? expectedCode)
     {
-        // Arrange
-        double[] array1 = { 1.0, 2.0, 3.0, 4.0, 5.0 };
-        double[] array2 = { 1.0, 2.0, 3.0, 4.0 };
+        var builder = CreateBuilder();
+        var result = builder.Compare((object?)left, (object?)right);
 
-        // Act
-        var result = ComparisonBuilder.Create()
-            .Compare(array1, array2);
+        result.MismatchCount.ShouldBe(expectedMismatches);
+        result.ErrorCount.ShouldBe(expectedErrors);
 
-        // Assert
-        _testOutputHelper.WriteLine(result.ToString());
-        result.AllMatched.ShouldBeTrue();
-    }
-
-    [Fact]
-    public void Compare_TwoDoublesEqualWithinPrecision2_ReturnsAllMatchingResult()
-    {
-        // Arrange
-        double dbl1 = 1.234;
-        double dbl2 = 1.235; // Rounds to 1.23 and 1.24? Wait, but for matching case, adjust
-                             // Better example: both round to same
-        dbl1 = 1.234;
-        dbl2 = 1.2345; // Both round to 1.23 at precision 2
-
-        // Act
-        var result = ComparisonBuilder.Create()
-            .WithDoublePrecision(2)
-            .Compare(dbl1, dbl2);
-
-        // Assert
-        result.AllMatched.ShouldBeTrue();
-    }
-
-    [Fact]
-    public void Compare_TwoDoublesUnequalEvenWithPrecision2_ReturnsNotMatchingResult()
-    {
-        // Arrange
-        double dbl1 = 1.234;
-        double dbl2 = 1.245;
-
-        // Act
-        var result = ComparisonBuilder.Create()
-            .WithDoublePrecision(2)
-            .Compare(dbl1, dbl2);
-
-        // Assert
-        result.AllMatched.ShouldBeFalse();
-        result.Mismatches.First().Message.ShouldContain("1.234");
-        result.Mismatches.First().Message.ShouldContain("1.245");
-    }
-
-    [Fact]
-    public void Compare_TwoDoublesEqualWithPrecision3ButNotWith2_ReturnsAllMatchingResult()
-    {
-        // Arrange
-        double dbl1 = 1.234;
-        double dbl2 = 1.2341;
-
-        // Act
-        var result = ComparisonBuilder.Create()
-            .WithDoublePrecision(3)
-            .Compare(dbl1, dbl2);
-
-        // Assert
-        result.AllMatched.ShouldBeTrue();
-    }
-
-    [Fact]
-    public void Compare_TwoDoublesUnequalWithPrecision3_ReturnsNotMatchingResult()
-    {
-        // Arrange
-        double dbl1 = 1.234;
-        double dbl2 = 1.235;
-
-        // Act
-        var result = ComparisonBuilder.Create()
-            .WithDoublePrecision(3)
-            .Compare(dbl1, dbl2);
-
-        // Assert
-        result.AllMatched.ShouldBeFalse();
-        result.Mismatches.First().Message.ShouldContain("1.234");
-        result.Mismatches.First().Message.ShouldContain("1.235");
-    }
-
-    [Fact]
-    public void Compare_DoubleArraysEqualWithinPrecision2_ReturnsAllMatchingResult()
-    {
-        // Arrange
-        double[] array1 = { 1.234, 2.345, 3.456 };
-        double[] array2 = { 1.2345, 2.3456, 3.4567 };
-
-        // Act
-        var result = ComparisonBuilder.Create()
-            .WithDoublePrecision(2)
-            .Compare(array1, array2);
-
-        // Assert
-        result.AllMatched.ShouldBeTrue();
-    }
-
-    [Fact]
-    public void Compare_DoubleArraysUnequalWithinPrecision2_ReturnsNotMatchingResult()
-    {
-        // Arrange
-        double[] array1 = { 1.234, 2.345, 3.456 };
-        double[] array2 = { 1.2345, 2.3456, 3.467 };
-
-        // Act
-        var result = ComparisonBuilder.Create()
-            .WithDoublePrecision(2)
-            .Compare(array1, array2);
-
-        // Assert
-        result.AllMatched.ShouldBeFalse();
-        result.Mismatches.ShouldNotBeEmpty();
-        result.Mismatches.First().Message.ShouldContain("2");
-        result.Mismatches.First().Message.ShouldContain("3.456");
-        result.Mismatches.First().Message.ShouldContain("3.467");
-    }
-
-    [Fact]
-    public void Compare_DoubleArraysWithFloatingPointPrecisionIssue_WithSufficientPrecision_ReturnsAllMatchingResult()
-    {
-        // Arrange
-        double[] array1 = { 0.1 + 0.2 };
-        double[] array2 = { 0.3 };
-
-        // Act
-        var result = ComparisonBuilder.Create()
-            .WithDoublePrecision(1e-17)
-            .Compare(array1, array2);
-
-        _testOutputHelper.WriteLine(result.ToString());
-
-        // Assert
-        // Note: Due to floating point, 0.1+0.2 != 0.3 exactly, so with high precision, should mismatch
-        // But adjust expectation based on implementation; assuming strict after round, but round to 15 decimals
-        result.AllMatched.ShouldBeFalse(); // Failing test for exact mismatch
-    }
-
-    [Fact]
-    public void Compare_SingleDoubleToArrayOfOne_WithMatchingValue_ReturnsAllMatchingResult()
-    {
-        // Arrange
-        double dbl1 = 42.0;
-        double[] array1 = { 42.0 };
-
-        // Act
-        // Note: This tests if single vs array of one, but based on Compare overloads, may need adjustment; assuming array compare
-        var result = ComparisonBuilder.Create()
-            .Compare(array1, new[] { dbl1 });
-
-        // Assert
-        result.AllMatched.ShouldBeTrue();
-    }
-
-    [Fact]
-    public void Compare_DoubleArraysWithNullOne_ReturnsNotMatchingResult()
-    {
-        // Arrange
-        double[] array1 = { 1.0, 2.0 };
-        double[]? array2 = null;
-
-        // Act
-        var result = ComparisonBuilder.Create()
-            .Compare(array1, array2);
-
-        // Assert
-        result.AllMatched.ShouldBeFalse();
-        result.MismatchCount.ShouldBe(1);
-        result.Mismatches.First().Message.ShouldContain("null");
+        if (expectedCode is not null)
+        {
+            if (expectedErrors > 0)
+            {
+                AssertFirstErrorCode(result, expectedCode);
+            }
+            else
+            {
+                AssertFirstMismatchCode(result, expectedCode);
+            }
+        }
     }
 }

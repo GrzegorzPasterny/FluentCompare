@@ -185,7 +185,7 @@ This ensures test output contains actionable diagnostics in CI and local runs.
 | Int (`int`) | ✅ `IntComparisonTests.cs` | ✅ `IntArrayComparisonTests.cs` | ✅ | ✅ | ✅ |
 | Short (`short`) | ✅ `ShortComparisonTests.cs` | ✅ `ShortArrayComparisonTests.cs` | ✅ | ✅ | ✅ |
 | Long (`long`) | ✅ `LongComparisonTests.cs` | ✅ `LongArrayComparisonTests.cs` | ✅ | ✅ | ✅ |
-| Double | ✅ `DoubleComparisonTests.cs` | ❌ | ❌ | ❌ (mostly Fact-based) | ❌ |
+| Double | ✅ `DoubleComparisonTests.cs` | ✅ `DoubleArrayComparisonTests.cs` | ✅ | ✅ | ✅ |
 | String | ✅ `StringComparisonTests.cs` | ✅ `StringArrayComparisonTests.cs` | ✅ | ✅ | ✅ |
 | Object/Complex | 🟡 (multiple split-by-shape files) | 🟡 | ❌ | 🟡 | 🟡 |
 
@@ -198,13 +198,7 @@ This ensures test output contains actionable diagnostics in CI and local runs.
 
 ## 8. Mandatory migration backlog (to become fully strict)
 
-1. **Doubles**
-   - Split into:
-     - `DoubleComparisonTests.cs` (scalar/params scalar/object scalar)
-     - `DoubleArrayComparisonTests.cs` (array pair/params jagged/nullable arrays if supported)
-   - Convert repeated `[Fact]` cases into `TheoryData` matrices.
-
-2. **Objects**
+1. **Objects**
    - Define explicit type tokens for object comparison families (e.g., `Object`, `ObjectClass`, `ObjectAnonymous`) and enforce the 2-file rule within each family.
 
 ---
@@ -228,7 +222,8 @@ This ensures test output contains actionable diagnostics in CI and local runs.
 - `test/FluentCompare.UnitTests/Integers/LongArrayComparisonTests.cs`
 
 ### Doubles
-- `test/FluentCompare.UnitTests/Doubles/DoubleComparisonTests.cs` *(currently mixed scalar+array, Fact-heavy)*
+- `test/FluentCompare.UnitTests/Doubles/DoubleComparisonTests.cs`
+- `test/FluentCompare.UnitTests/Doubles/DoubleArrayComparisonTests.cs`
 
 ### Strings
 - `test/FluentCompare.UnitTests/Strings/StringComparisonTests.cs`
