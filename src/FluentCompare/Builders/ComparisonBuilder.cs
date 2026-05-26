@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 // TODO: Add async interface to allow comparison cancellation (in case of big objects)
 /// <summary>
@@ -136,6 +137,22 @@ public partial class ComparisonBuilder : IComparisonBuilder
             return new FloatingPointComparison<float>(Configuration)
                 .Compare((float[][])(object)t, result);
 
+        if (typeof(T) == typeof(Half))
+            return new FloatingPointComparison<Half>(Configuration)
+                .Compare((Half[])(object)t, result);
+
+        if (typeof(T) == typeof(Half[]))
+            return new FloatingPointComparison<Half>(Configuration)
+                .Compare((Half[][])(object)t, result);
+
+        if (typeof(T) == typeof(NFloat))
+            return new FloatingPointComparison<NFloat>(Configuration)
+                .Compare((NFloat[])(object)t, result);
+
+        if (typeof(T) == typeof(NFloat[]))
+            return new FloatingPointComparison<NFloat>(Configuration)
+                .Compare((NFloat[][])(object)t, result);
+
         if (typeof(T) == typeof(double))
             return new FloatingPointComparison<double>(Configuration)
                 .Compare((double[])(object)t, result);
@@ -143,6 +160,14 @@ public partial class ComparisonBuilder : IComparisonBuilder
         if (typeof(T) == typeof(double[]))
             return new FloatingPointComparison<double>(Configuration)
                 .Compare((double[][])(object)t, result);
+
+        if (typeof(T) == typeof(decimal))
+            return new FloatingPointComparison<decimal>(Configuration)
+                .Compare((decimal[])(object)t, result);
+
+        if (typeof(T) == typeof(decimal[]))
+            return new FloatingPointComparison<decimal>(Configuration)
+                .Compare((decimal[][])(object)t, result);
 
         if (typeof(T) == typeof(object[]))
             return new ObjectComparison(Configuration)
@@ -399,6 +424,46 @@ public partial class ComparisonBuilder : IComparisonBuilder
             return new FloatingPointComparison<float>(Configuration)
                 .Compare(oArr1, oArr2, t1ExprName, t2ExprName, result);
         }
+        if (typeof(T) == typeof(Half))
+        {
+            var o1 = Unsafe.As<T, Half>(ref t1);
+            var o2 = Unsafe.As<T, Half>(ref t2);
+            string t1ExprName = t1Expr ?? "HalfOne";
+            string t2ExprName = t2Expr ?? "HalfTwo";
+
+            return new FloatingPointComparison<Half>(Configuration)
+                .Compare(o1, o2, t1ExprName, t2ExprName, result);
+        }
+        if (typeof(T) == typeof(Half[]))
+        {
+            var oArr1 = Unsafe.As<T, Half[]>(ref t1);
+            var oArr2 = Unsafe.As<T, Half[]>(ref t2);
+            string t1ExprName = t1Expr ?? "HalfArrayOne";
+            string t2ExprName = t2Expr ?? "HalfArrayTwo";
+
+            return new FloatingPointComparison<Half>(Configuration)
+                .Compare(oArr1, oArr2, t1ExprName, t2ExprName, result);
+        }
+        if (typeof(T) == typeof(NFloat))
+        {
+            var o1 = Unsafe.As<T, NFloat>(ref t1);
+            var o2 = Unsafe.As<T, NFloat>(ref t2);
+            string t1ExprName = t1Expr ?? "NFloatOne";
+            string t2ExprName = t2Expr ?? "NFloatTwo";
+
+            return new FloatingPointComparison<NFloat>(Configuration)
+                .Compare(o1, o2, t1ExprName, t2ExprName, result);
+        }
+        if (typeof(T) == typeof(NFloat[]))
+        {
+            var oArr1 = Unsafe.As<T, NFloat[]>(ref t1);
+            var oArr2 = Unsafe.As<T, NFloat[]>(ref t2);
+            string t1ExprName = t1Expr ?? "NFloatArrayOne";
+            string t2ExprName = t2Expr ?? "NFloatArrayTwo";
+
+            return new FloatingPointComparison<NFloat>(Configuration)
+                .Compare(oArr1, oArr2, t1ExprName, t2ExprName, result);
+        }
         if (typeof(T) == typeof(double))
         {
             var o1 = Unsafe.As<T, double>(ref t1);
@@ -417,6 +482,26 @@ public partial class ComparisonBuilder : IComparisonBuilder
             string t2ExprName = t2Expr ?? "DoubleArrayTwo";
 
             return new FloatingPointComparison<double>(Configuration)
+                .Compare(oArr1, oArr2, t1ExprName, t2ExprName, result);
+        }
+        if (typeof(T) == typeof(decimal))
+        {
+            var o1 = Unsafe.As<T, decimal>(ref t1);
+            var o2 = Unsafe.As<T, decimal>(ref t2);
+            string t1ExprName = t1Expr ?? "DecimalOne";
+            string t2ExprName = t2Expr ?? "DecimalTwo";
+
+            return new FloatingPointComparison<decimal>(Configuration)
+                .Compare(o1, o2, t1ExprName, t2ExprName, result);
+        }
+        if (typeof(T) == typeof(decimal[]))
+        {
+            var oArr1 = Unsafe.As<T, decimal[]>(ref t1);
+            var oArr2 = Unsafe.As<T, decimal[]>(ref t2);
+            string t1ExprName = t1Expr ?? "DecimalArrayOne";
+            string t2ExprName = t2Expr ?? "DecimalArrayTwo";
+
+            return new FloatingPointComparison<decimal>(Configuration)
                 .Compare(oArr1, oArr2, t1ExprName, t2ExprName, result);
         }
         if (typeof(T) == typeof(object[]))
@@ -511,8 +596,17 @@ public partial class ComparisonBuilder : IComparisonBuilder
         if (type == typeof(float))
             return new FloatingPointComparison<float>(Configuration).Compare((float)o1, (float)o2!, t1ExprName, t2ExprName, result);
 
+        if (type == typeof(Half))
+            return new FloatingPointComparison<Half>(Configuration).Compare((Half)o1, (Half)o2!, t1ExprName, t2ExprName, result);
+
+        if (type == typeof(NFloat))
+            return new FloatingPointComparison<NFloat>(Configuration).Compare((NFloat)o1, (NFloat)o2!, t1ExprName, t2ExprName, result);
+
         if (type == typeof(double))
             return new FloatingPointComparison<double>(Configuration).Compare((double)o1, (double)o2!, t1ExprName, t2ExprName, result);
+
+        if (type == typeof(decimal))
+            return new FloatingPointComparison<decimal>(Configuration).Compare((decimal)o1, (decimal)o2!, t1ExprName, t2ExprName, result);
 
         // Array types
         if (type == typeof(string[]))
@@ -553,8 +647,17 @@ public partial class ComparisonBuilder : IComparisonBuilder
         if (type == typeof(float[]))
             return new FloatingPointComparison<float>(Configuration).Compare((float[])o1, (float[])o2!, t1ExprName, t2ExprName, result);
 
+        if (type == typeof(Half[]))
+            return new FloatingPointComparison<Half>(Configuration).Compare((Half[])o1, (Half[])o2!, t1ExprName, t2ExprName, result);
+
+        if (type == typeof(NFloat[]))
+            return new FloatingPointComparison<NFloat>(Configuration).Compare((NFloat[])o1, (NFloat[])o2!, t1ExprName, t2ExprName, result);
+
         if (type == typeof(double[]))
             return new FloatingPointComparison<double>(Configuration).Compare((double[])o1, (double[])o2!, t1ExprName, t2ExprName, result);
+
+        if (type == typeof(decimal[]))
+            return new FloatingPointComparison<decimal>(Configuration).Compare((decimal[])o1, (decimal[])o2!, t1ExprName, t2ExprName, result);
 
 
         if (type == typeof(object[]))

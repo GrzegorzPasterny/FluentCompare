@@ -186,6 +186,10 @@ This ensures test output contains actionable diagnostics in CI and local runs.
 | Short (`short`) | ✅ `ShortComparisonTests.cs` | ✅ `ShortArrayComparisonTests.cs` | ✅ | ✅ | ✅ |
 | Long (`long`) | ✅ `LongComparisonTests.cs` | ✅ `LongArrayComparisonTests.cs` | ✅ | ✅ | ✅ |
 | Double | ✅ `DoubleComparisonTests.cs` | ✅ `DoubleArrayComparisonTests.cs` | ✅ | ✅ | ✅ |
+| Float | ✅ `FloatComparisonTests.cs` | ✅ `FloatArrayComparisonTests.cs` | ✅ | ✅ | ✅ |
+| Half | ✅ `HalfComparisonTests.cs` | ✅ `HalfArrayComparisonTests.cs` | ✅ | ✅ | ✅ |
+| NFloat | ✅ `NFloatComparisonTests.cs` | ✅ `NFloatArrayComparisonTests.cs` | ✅ | ✅ | ✅ |
+| Decimal | ✅ `DecimalComparisonTests.cs` | ✅ `DecimalArrayComparisonTests.cs` | ✅ | ✅ | ✅ |
 | String | ✅ `StringComparisonTests.cs` | ✅ `StringArrayComparisonTests.cs` | ✅ | ✅ | ✅ |
 | Object/Complex | 🟡 (multiple split-by-shape files) | 🟡 | ❌ | 🟡 | 🟡 |
 
@@ -224,6 +228,22 @@ This ensures test output contains actionable diagnostics in CI and local runs.
 ### Doubles
 - `test/FluentCompare.UnitTests/Doubles/DoubleComparisonTests.cs`
 - `test/FluentCompare.UnitTests/Doubles/DoubleArrayComparisonTests.cs`
+
+### Floats
+- `test/FluentCompare.UnitTests/Floats/FloatComparisonTests.cs`
+- `test/FluentCompare.UnitTests/Floats/FloatArrayComparisonTests.cs`
+
+### Halfs
+- `test/FluentCompare.UnitTests/Halfs/HalfComparisonTests.cs`
+- `test/FluentCompare.UnitTests/Halfs/HalfArrayComparisonTests.cs`
+
+### NFloats
+- `test/FluentCompare.UnitTests/NFloats/NFloatComparisonTests.cs`
+- `test/FluentCompare.UnitTests/NFloats/NFloatArrayComparisonTests.cs`
+
+### Decimals
+- `test/FluentCompare.UnitTests/Decimals/DecimalComparisonTests.cs`
+- `test/FluentCompare.UnitTests/Decimals/DecimalArrayComparisonTests.cs`
 
 ### Strings
 - `test/FluentCompare.UnitTests/Strings/StringComparisonTests.cs`
