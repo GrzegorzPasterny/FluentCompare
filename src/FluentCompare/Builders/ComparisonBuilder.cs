@@ -98,6 +98,7 @@ public partial class ComparisonBuilder : IComparisonBuilder
                 .Compare((short?[][])(object)t, result);
 
         if (typeof(T) == typeof(int?[]))
+            // TODO: Code not reached by unit tests - need to add tests for this case
             return new NumericComparison<int>(Configuration)
                 .Compare((int?[][])(object)t, result);
 
@@ -561,45 +562,53 @@ public partial class ComparisonBuilder : IComparisonBuilder
 
         // Primitives
         if (type == typeof(string))
+            // TODO: Code not reached by unit tests - need to add tests for this case
             return new StringComparison(Configuration).Compare((string)o1, (string)o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(bool))
             return new BoolComparison(Configuration).Compare((bool)o1, (bool)o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(bool?))
+            // TODO: Code not reached by unit tests - need to add tests for this case
             return new BoolComparison(Configuration).CompareNullable((bool?)o1, (bool?)o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(byte))
             return new ByteComparison(Configuration).CompareNullable((byte)o1, (byte)o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(byte?))
+            // TODO: Code not reached by unit tests - need to add tests for this case
             return new ByteComparison(Configuration).CompareNullable((byte?)o1, (byte?)o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(short))
             return new NumericComparison<short>(Configuration).Compare((short)o1, (short)o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(short?))
+            // TODO: Code not reached by unit tests - need to add tests for this case
             return new NumericComparison<short>(Configuration).CompareNullable((short?)o1, (short?)o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(int))
             return new NumericComparison<int>(Configuration).Compare((int)o1, (int)o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(int?))
+            // TODO: Code not reached by unit tests - need to add tests for this case
             return new NumericComparison<int>(Configuration).CompareNullable((int?)o1, (int?)o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(long))
             return new NumericComparison<long>(Configuration).Compare((long)o1, (long)o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(long?))
+            // TODO: Code not reached by unit tests - need to add tests for this case
             return new NumericComparison<long>(Configuration).CompareNullable((long?)o1, (long?)o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(float))
             return new FloatingPointComparison<float>(Configuration).Compare((float)o1, (float)o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(Half))
+            // TODO: Code not reached by unit tests - need to add tests for this case
             return new FloatingPointComparison<Half>(Configuration).Compare((Half)o1, (Half)o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(NFloat))
+            // TODO: Code not reached by unit tests - need to add tests for this case
             return new FloatingPointComparison<NFloat>(Configuration).Compare((NFloat)o1, (NFloat)o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(double))
@@ -610,15 +619,18 @@ public partial class ComparisonBuilder : IComparisonBuilder
 
         // Array types
         if (type == typeof(string[]))
+            // TODO: Code not reached by unit tests - need to add tests for this case
             return new StringComparison(Configuration).Compare((string[])o1, (string[])o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(bool[]))
+            // TODO: Code not reached by unit tests - need to add tests for this case
             return new BoolComparison(Configuration).Compare((bool[])o1, (bool[])o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(bool?[]))
             return new BoolComparison(Configuration).Compare((bool?[]?)o1, (bool?[]?)o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(byte[]))
+            // TODO: Code not reached by unit tests - need to add tests for this case
             return new ByteComparison(Configuration).Compare((byte[])o1, (byte[])o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(byte?[]))
@@ -632,31 +644,36 @@ public partial class ComparisonBuilder : IComparisonBuilder
             return new NumericComparison<short>(Configuration).Compare((short?[]?)o1, (short?[]?)o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(int[]))
-            // TODO: Code not reached by unit tests - need to add tests for this case
             return new NumericComparison<int>(Configuration).Compare((int[])o1, (int[])o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(int?[]))
             return new NumericComparison<int>(Configuration).Compare((int?[]?)o1, (int?[]?)o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(long[]))
+            // TODO: Code not reached by unit tests - need to add tests for this case
             return new NumericComparison<long>(Configuration).Compare((long[])o1, (long[])o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(long?[]))
             return new NumericComparison<long>(Configuration).Compare((long?[]?)o1, (long?[]?)o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(float[]))
+            // TODO: Code not reached by unit tests - need to add tests for this case
             return new FloatingPointComparison<float>(Configuration).Compare((float[])o1, (float[])o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(Half[]))
+            // TODO: Code not reached by unit tests - need to add tests for this case
             return new FloatingPointComparison<Half>(Configuration).Compare((Half[])o1, (Half[])o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(NFloat[]))
+            // TODO: Code not reached by unit tests - need to add tests for this case
             return new FloatingPointComparison<NFloat>(Configuration).Compare((NFloat[])o1, (NFloat[])o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(double[]))
+            // TODO: Code not reached by unit tests - need to add tests for this case
             return new FloatingPointComparison<double>(Configuration).Compare((double[])o1, (double[])o2!, t1ExprName, t2ExprName, result);
 
         if (type == typeof(decimal[]))
+            // TODO: Code not reached by unit tests - need to add tests for this case
             return new FloatingPointComparison<decimal>(Configuration).Compare((decimal[])o1, (decimal[])o2!, t1ExprName, t2ExprName, result);
 
 
@@ -694,6 +711,7 @@ public partial class ComparisonBuilder : IComparisonBuilder
             // TODO: Code not reached by unit tests - need to add tests for this case
             return result;
         }
+
         if (result.AllMatched == false &&
             result.Mismatches.First().Code == ComparisonMismatches.NullPassedAsArgumentCode)
         {

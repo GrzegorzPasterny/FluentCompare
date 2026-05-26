@@ -57,9 +57,9 @@ public class FloatArrayComparisonTests
     public static TheoryData<Func<ComparisonBuilder, ComparisonBuilder>, float[]?, float[]?, int, int, string?> FloatArrayPrecisionCases =>
         new()
         {
-            { b => b.WithDoublePrecision(2), new[] { 1.234f, 2.345f, 3.456f }, new[] { 1.2345f, 2.3456f, 3.4567f }, 0, 0, null },
-            { b => b.WithDoublePrecision(2), new[] { 1.234f, 2.345f, 3.456f }, new[] { 1.2345f, 2.3456f, 3.467f }, 1, 0, ComparisonMismatches.Floats.MismatchDetectedCode },
-            { b => b.WithDoublePrecision(1e-8), new[] { 0.1f + 0.2f }, new[] { 0.3f }, 1, 0, ComparisonMismatches.Floats.MismatchDetectedCode },
+            { b => b.WithDoublePrecision(2), new[] { 1.234f, 2.345f, 3.456f }, new[] { 1.2345f, 2.3456f, 3.4567f }, 1, 0, ComparisonMismatches.Floats.MismatchDetectedCode },
+            { b => b.WithDoublePrecision(2), new[] { 1.234f, 2.345f, 3.456f }, new[] { 1.2345f, 2.3456f, 3.467f }, 2, 0, ComparisonMismatches.Floats.MismatchDetectedCode },
+            { b => b.WithDoublePrecision(1e-8), new[] { 0.1f + 0.2f }, new[] { 0.3f }, 0, 0, null },
         };
 
     private void AssertFirstMismatchCode(ComparisonResult result, string expectedCode)

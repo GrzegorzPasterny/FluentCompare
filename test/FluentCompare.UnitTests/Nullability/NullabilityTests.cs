@@ -13,6 +13,23 @@ public class NullabilityTests
         _testOutputHelper = testOutputHelper;
     }
 
+    private void WriteResultDetails(ComparisonResult result)
+    {
+        _testOutputHelper.WriteLine(result.ToString());
+        foreach (var mismatch in result.Mismatches)
+        {
+            _testOutputHelper.WriteLine($"Mismatch [{mismatch.Code}]: {mismatch.Message}");
+        }
+        foreach (var error in result.Errors)
+        {
+            _testOutputHelper.WriteLine($"Error [{error.Code}]: {error.Message}");
+        }
+        foreach (var warning in result.Warnings)
+        {
+            _testOutputHelper.WriteLine($"Warning [{warning.Code}]: {warning.Message}");
+        }
+    }
+
     [Theory]
     [InlineData(null, null, typeof(int?), nameof(ComparisonErrors.BothObjectsAreNullCode))]
     [InlineData(null, "test", typeof(string), nameof(ComparisonErrors.NullPassedAsArgumentCode))]
@@ -40,6 +57,37 @@ public class NullabilityTests
         result.WasSuccessful.ShouldBeFalse();
         result.ErrorCount.ShouldBe(1);
         result.Errors[0].Code.ShouldContain(string.Concat(expecterErrorCode.SkipLast(4)));
+    }
+
+    public static TheoryData<Func<ComparisonBuilder, ComparisonBuilder>, object?[]?, object?[]?, int, int, string?> ObjectArrayNullabilityCases =>
+        new()
+        {
+            { b => b.DisallowNullComparison(), new object?[] { "test" }, new object?[] { null }, 0, 1, ComparisonErrors.OneOfTheObjectsIsNullCode },
+            { b => b.DisallowNullComparison(), new object?[] { null }, new object?[] { "test" }, 0, 1, ComparisonErrors.OneOfTheObjectsIsNullCode },
+            { b => b.DisallowNullComparison(), new object?[] { null }, new object?[] { null }, 0, 1, ComparisonErrors.BothObjectsAreNullCode },
+        };
+
+    [Theory]
+    [MemberData(nameof(ObjectArrayNullabilityCases))]
+    public void Compare_ObjectArrayPair_Nullability_UsesExpectedOutcome(
+        Func<ComparisonBuilder, ComparisonBuilder> configure,
+        object?[]? first,
+        object?[]? second,
+        int expectedMismatches,
+        int expectedErrors,
+        string? expectedCode)
+    {
+        var builder = configure(ComparisonBuilder.Create());
+        var result = builder.Compare(first!, second!);
+
+        WriteResultDetails(result);
+        result.MismatchCount.ShouldBe(expectedMismatches);
+        result.ErrorCount.ShouldBe(expectedErrors);
+
+        if (expectedCode is not null)
+        {
+            result.Errors[0].Code.ShouldBe(expectedCode);
+        }
     }
 
     [Theory]
@@ -95,7 +143,7 @@ public class NullabilityTests
             .Compare(obj1, obj2);
 
         // Assert
-        _testOutputHelper.WriteLine(result.ToString());
+        WriteResultDetails(result);
         result.WasSuccessful.ShouldBeFalse();
         result.Errors[0].Code.ShouldBe(ComparisonErrors.OneOfTheObjectsIsNullCode);
     }

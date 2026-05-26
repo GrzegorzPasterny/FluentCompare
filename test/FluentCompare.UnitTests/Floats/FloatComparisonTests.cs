@@ -49,6 +49,14 @@ public class FloatComparisonTests
             { 1f, 2f, 1, 0, ComparisonMismatches.Floats.MismatchDetectedCode },
         };
 
+    public static TheoryData<Func<ComparisonBuilder, ComparisonBuilder>, float?, float?, int, int, string?> NullableFloatPairNullabilityCases =>
+        new()
+        {
+            { b => b.DisallowNullComparison(), 12.3f, null, 1, 1, ComparisonErrors.OneOfTheObjectsIsNullCode },
+            { b => b.DisallowNullComparison(), null, 12.3f, 1, 1, ComparisonErrors.OneOfTheObjectsIsNullCode },
+            { b => b.DisallowNullComparison(), null, null, 0, 1, ComparisonErrors.BothObjectsAreNullCode },
+        };
+
     public static TheoryData<Func<ComparisonBuilder, ComparisonBuilder>, float, float, int, int, string?> FloatPrecisionCases =>
         new()
         {
@@ -222,6 +230,35 @@ public class FloatComparisonTests
     {
         var builder = CreateBuilder();
         var result = builder.Compare((object?)left, (object?)right);
+
+        result.MismatchCount.ShouldBe(expectedMismatches);
+        result.ErrorCount.ShouldBe(expectedErrors);
+
+        if (expectedCode is not null)
+        {
+            if (expectedErrors > 0)
+            {
+                AssertFirstErrorCode(result, expectedCode);
+            }
+            else
+            {
+                AssertFirstMismatchCode(result, expectedCode);
+            }
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(NullableFloatPairNullabilityCases))]
+    public void Compare_NullableFloatPair_Nullability_UsesExpectedOutcome(
+        Func<ComparisonBuilder, ComparisonBuilder> configure,
+        float? left,
+        float? right,
+        int expectedMismatches,
+        int expectedErrors,
+        string? expectedCode)
+    {
+        var builder = configure(CreateBuilder());
+        var result = builder.Compare(left, right);
 
         result.MismatchCount.ShouldBe(expectedMismatches);
         result.ErrorCount.ShouldBe(expectedErrors);

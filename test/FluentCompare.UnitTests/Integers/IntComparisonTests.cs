@@ -66,6 +66,14 @@ public class IntComparisonTests
             { 1, 2, 1, 0, ComparisonMismatches<int>.MismatchDetectedCode },
         };
 
+    public static TheoryData<Func<ComparisonBuilder, ComparisonBuilder>, int?, int?, int, int, string?> NullableIntPairNullabilityCases =>
+        new()
+        {
+            { b => b.DisallowNullComparison(), 12, null, 1, 1, ComparisonErrors.OneOfTheObjectsIsNullCode },
+            { b => b.DisallowNullComparison(), null, 12, 1, 1, ComparisonErrors.OneOfTheObjectsIsNullCode },
+            { b => b.DisallowNullComparison(), null, null, 0, 1, ComparisonErrors.BothObjectsAreNullCode },
+        };
+
     private void AssertFirstMismatchCode(ComparisonResult result, string expectedCode)
     {
         _output.WriteLine(result.ToString());
@@ -219,6 +227,35 @@ public class IntComparisonTests
     {
         var builder = CreateBuilder();
         var result = builder.Compare((object?)left, (object?)right);
+
+        result.MismatchCount.ShouldBe(expectedMismatches);
+        result.ErrorCount.ShouldBe(expectedErrors);
+
+        if (expectedCode is not null)
+        {
+            if (expectedErrors > 0)
+            {
+                AssertFirstErrorCode(result, expectedCode);
+            }
+            else
+            {
+                AssertFirstMismatchCode(result, expectedCode);
+            }
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(NullableIntPairNullabilityCases))]
+    public void Compare_NullableIntPair_Nullability_UsesExpectedOutcome(
+        Func<ComparisonBuilder, ComparisonBuilder> configure,
+        int? left,
+        int? right,
+        int expectedMismatches,
+        int expectedErrors,
+        string? expectedCode)
+    {
+        var builder = configure(CreateBuilder());
+        var result = builder.Compare(left, right);
 
         result.MismatchCount.ShouldBe(expectedMismatches);
         result.ErrorCount.ShouldBe(expectedErrors);

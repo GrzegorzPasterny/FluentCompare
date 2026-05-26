@@ -54,6 +54,13 @@ public class StringArrayComparisonTests
             { new[] { new[] { "a", "b" }, new[] { "a", "x" } }, 1, 0, 0, ComparisonMismatches<string>.MismatchDetectedCode },
         };
 
+    public static TheoryData<Func<ComparisonBuilder, ComparisonBuilder>, string[]?, string[]?, int, int, int, string?> StringArrayComparisonModeCases =>
+        new()
+        {
+            { b => b.UseStringComparisonType(StringComparison.OrdinalIgnoreCase), new[] { "Hello" }, new[] { "hello" }, 0, 0, 0, null },
+            { b => b.UseStringComparisonType(StringComparison.Ordinal), new[] { "Hello" }, new[] { "hello" }, 1, 0, 0, ComparisonMismatches<string>.MismatchDetectedCode },
+        };
+
     private void AssertFirstMismatchCode(ComparisonResult result, string expectedCode)
     {
         _testOutputHelper.WriteLine(result.ToString());
@@ -125,6 +132,41 @@ public class StringArrayComparisonTests
         string? expectedCode)
     {
         var builder = CreateBuilder();
+        var result = builder.Compare(first, second);
+
+        result.MismatchCount.ShouldBe(expectedMismatches);
+        result.ErrorCount.ShouldBe(expectedErrors);
+        result.WarningCount.ShouldBe(expectedWarnings);
+
+        if (expectedCode is not null)
+        {
+            if (expectedErrors > 0)
+            {
+                AssertFirstErrorCode(result, expectedCode);
+            }
+            else if (expectedMismatches > 0)
+            {
+                AssertFirstMismatchCode(result, expectedCode);
+            }
+            else
+            {
+                AssertFirstWarningCode(result, expectedCode);
+            }
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(StringArrayComparisonModeCases))]
+    public void Compare_StringArrayPair_StringComparisonMode_UsesExpectedOutcome(
+        Func<ComparisonBuilder, ComparisonBuilder> configure,
+        string[]? first,
+        string[]? second,
+        int expectedMismatches,
+        int expectedErrors,
+        int expectedWarnings,
+        string? expectedCode)
+    {
+        var builder = configure(CreateBuilder());
         var result = builder.Compare(first, second);
 
         result.MismatchCount.ShouldBe(expectedMismatches);

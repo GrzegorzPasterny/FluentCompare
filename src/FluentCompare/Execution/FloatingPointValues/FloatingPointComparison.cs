@@ -38,6 +38,7 @@ internal class FloatingPointComparison<T> : FloatingPointComparisonBase<T> where
         return result;
     }
 
+    // TODO: Code not reached by unit tests - need to add tests for this case
     public ComparisonResult CompareNullable(T? d1, T? d2, string d1ExprName, string d2ExprName, ComparisonResult result)
     {
         if (d1 is null)
@@ -59,13 +60,13 @@ internal class FloatingPointComparison<T> : FloatingPointComparisonBase<T> where
     {
         bool matched;
 
-        // TODO: Code not reached by unit tests - need to add tests for this case
         switch (_comparisonConfiguration.FloatConfiguration.ToleranceMethod)
         {
             case DoubleToleranceMethods.Rounding:
                 matched = CompareWithRounding(d1, d2, comparisonType, _comparisonConfiguration.FloatConfiguration.RoundingPrecision);
                 break;
             case DoubleToleranceMethods.Epsilon:
+                // TODO: Code not reached by unit tests - need to add tests for this case
                 matched = CompareWithEpsilon(d1, d2, comparisonType, _comparisonConfiguration.FloatConfiguration.EpsilonPrecision);
                 break;
             default:
@@ -94,6 +95,7 @@ internal class FloatingPointComparison<T> : FloatingPointComparisonBase<T> where
         return result;
     }
 
+    // TODO: Code not reached by unit tests - need to add tests for this case
     public ComparisonResult Compare(T?[]? dArr1, T?[]? dArr2, string dArr1ExprName, string dArr2ExprName, ComparisonResult result)
     {
         if (dArr1 == null)
@@ -134,6 +136,7 @@ internal class FloatingPointComparison<T> : FloatingPointComparisonBase<T> where
         return result;
     }
 
+    // TODO: Code not reached by unit tests - need to add tests for this case
     public ComparisonResult Compare(T?[][]? doubleArrays, ComparisonResult result)
     {
         if (doubleArrays == null)
@@ -285,6 +288,7 @@ internal class FloatingPointComparison<T> : FloatingPointComparisonBase<T> where
                 }
                 break;
             case DoubleToleranceMethods.Epsilon:
+                // TODO: Code not reached by unit tests - need to add tests for this case
                 matched = CompareWithEpsilon(d1, d2, comparisonType, _comparisonConfiguration.FloatConfiguration.EpsilonPrecision);
                 if (!matched)
                 {

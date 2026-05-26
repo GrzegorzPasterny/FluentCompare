@@ -27,6 +27,14 @@ public class StringComparisonTests
             { b => b.UseStringComparisonType(System.StringComparison.OrdinalIgnoreCase), "Hello", "hello", 0, 0, 0, null },
         };
 
+    public static TheoryData<Func<ComparisonBuilder, ComparisonBuilder>, string?, string?, int, int, int, string?> StringPairNullabilityCases =>
+        new()
+        {
+            { b => b.DisallowNullComparison(), null, "test", 1, 1, 0, ComparisonErrors.OneOfTheObjectsIsNullCode },
+            { b => b.DisallowNullComparison(), "test", null, 1, 1, 0, ComparisonErrors.OneOfTheObjectsIsNullCode },
+            { b => b.DisallowNullComparison(), null, null, 0, 1, 0, ComparisonErrors.BothObjectsAreNullCode },
+        };
+
     public static TheoryData<ComparisonType, string, string, int, int, string?> StringPairComparisonTypeCases =>
         new()
         {
@@ -250,5 +258,40 @@ public class StringComparisonTests
         result.ErrorCount.ShouldBe(0);
         result.MismatchCount.ShouldBe(0);
         AssertFirstWarningCode(result, ComparisonErrors.BothObjectsAreNullCode);
+    }
+
+    [Theory]
+    [MemberData(nameof(StringPairNullabilityCases))]
+    public void Compare_StringPair_Nullability_UsesExpectedOutcome(
+        Func<ComparisonBuilder, ComparisonBuilder> configure,
+        string? left,
+        string? right,
+        int expectedMismatches,
+        int expectedErrors,
+        int expectedWarnings,
+        string? expectedCode)
+    {
+        var builder = configure(CreateBuilder());
+        var result = builder.Compare(left, right);
+
+        result.MismatchCount.ShouldBe(expectedMismatches);
+        result.ErrorCount.ShouldBe(expectedErrors);
+        result.WarningCount.ShouldBe(expectedWarnings);
+
+        if (expectedCode is not null)
+        {
+            if (expectedErrors > 0)
+            {
+                AssertFirstErrorCode(result, expectedCode);
+            }
+            else if (expectedMismatches > 0)
+            {
+                AssertFirstMismatchCode(result, expectedCode);
+            }
+            else
+            {
+                AssertFirstWarningCode(result, expectedCode);
+            }
+        }
     }
 }

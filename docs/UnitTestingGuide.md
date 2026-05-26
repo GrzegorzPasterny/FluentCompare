@@ -129,6 +129,70 @@ Each applicable entry point must include rows for:
   - named variables, and
   - literals/direct values.
 
+### Configuration API coverage (required)
+
+In addition to value scenarios, tests must explicitly cover relevant `ComparisonBuilder` configuration APIs.
+
+Use data rows with configurator delegates:
+
+`Func<ComparisonBuilder, ComparisonBuilder>`
+
+and include at least one **positive** and one **negative** outcome per applicable configuration.
+
+#### Cross-cutting configuration expectations
+
+1. `UseComparisonType(...)`
+   - Required for all primitive/numeric scalar pair and array pair entry points.
+   - Must include all enum values (`EqualTo`, `NotEqualTo`, `GreaterThan`, `LessThan`, `GreaterThanOrEqualTo`, `LessThanOrEqualTo`).
+
+2. Null behavior configuration
+   - `AllowNullComparison()` and `DisallowNullComparison()`
+   - `AllowNullsInArguments()` and `DisallowNullsInArguments()`
+   - Required where nullable or null-accepting overloads exist.
+
+3. Array behavior configuration
+   - `AllowArrayComparisonOfDifferentLengths()` and `DisallowArrayComparisonOfDifferentLengths()`
+   - Required for pair-array and params-jagged entry points.
+
+4. Aggregation behavior configuration
+   - `FinishComparisonOnFirstMismatch()` and `FinishComparisonCollectingAllMismatches()`
+   - Required for params and array scenarios where multiple mismatches can occur.
+
+#### Type-specific configuration expectations
+
+- Strings
+  - `UseStringComparisonType(...)` must cover at least:
+    - `Ordinal`
+    - one case-insensitive mode (for example `OrdinalIgnoreCase`)
+  - Include one pair that changes outcome only because of string comparison mode.
+
+- Floating-point family (`float`, `double`, `Half`, `NFloat`, `decimal`)
+  - `WithDoublePrecision(int)` (rounding path)
+  - `WithDoublePrecision(double)` (epsilon path)
+  - `UseDoubleToleranceMethod(...)` where needed to force explicit mode selection.
+  - Include threshold-boundary cases around configured precision.
+
+- Bytes
+  - `ApplyBitwiseOperation(...)` overloads:
+    - with `params int[]`
+    - with single excluded index
+    - with `BitwiseOperationModel`
+
+- Complex/Object comparison
+  - `UsePropertyEquality()` and `UseReferenceEquality()`
+  - `UseComplexTypeComparisonMode(...)`
+  - `SetComparisonDepth(...)`
+  - Include at least one case where result changes due to mode/depth.
+
+#### Configuration API entry points
+
+At minimum, add dedicated tests validating configuration plumbing for:
+
+- `Configure(Action<ComparisonConfiguration>)`
+- `UseConfiguration(ComparisonConfiguration)`
+
+These tests should verify the selected configuration actually influences comparison outcomes (not only property assignment).
+
 For primitive and numeric types, the scalar pair and array-pair entry points must include, for every `ComparisonType` value, at least one match case and one not-match case.
 
 For the integer family, apply this to all supported integer widths/signs (not only `int`), including `short`, `long`, and unsigned variants where supported by the API.
@@ -272,6 +336,39 @@ When adding support for a new primitive or comparable type:
 5. Ensure object-overload coverage where relevant.
 6. Ensure configuration-specific rows where relevant.
 7. Run full test suite and update status table in section 7.
+
+---
+
+## 12. Configuration test implementation plan (migration)
+
+Use this rollout plan when expanding existing suites to strict configuration coverage.
+
+1. **Per-type baseline completion**
+   - Status: 🟡 In progress.
+   - `UseComparisonType(...)` matrix is broadly implemented for primitive and floating-point scalar/array suites.
+   - Remaining work: finalize equivalent strict coverage for object families after object test suite reorganization.
+
+2. **Cross-cutting behavior completion**
+   - Status: 🟡 In progress.
+   - Null behavior rows are present in core primitive/floating suites.
+   - Array-length and finish-mode rows are present in integer array coverage.
+   - Remaining work: propagate finish-mode and array-length configuration coverage consistently to additional applicable type suites.
+
+3. **Type-specific behavior completion**
+   - Status: 🟡 In progress.
+   - Strings: scalar and array mode-driven rows are implemented.
+   - Floating-point family: rounding/epsilon precision rows are implemented for supported floating types.
+   - Bytes: bitwise coverage is implemented in byte scalar/array suites.
+   - Remaining work: complete object mode/depth deltas in strict, theory-data-first object suite structure.
+
+4. **Configuration API plumbing tests**
+   - Status: ✅ Completed.
+   - Focused tests validate both `UseConfiguration(...)` and `Configure(...)` by asserting configuration-driven outcome changes.
+
+5. **Definition of Done per file**
+   - Status: 🟡 In progress.
+   - New/modernized suites follow TheoryData-first and required logging helper patterns.
+   - Remaining work: migrate legacy object-focused tests to fully align with strict DoD requirements.
 
 ---
 

@@ -61,6 +61,20 @@ public class IntArrayComparisonTests
             { new int?[] { 1, 2, 3 }, new int?[] { 1, 9, 3 }, true, 1, 0, ComparisonMismatches<int>.MismatchDetectedCode },
         };
 
+    public static TheoryData<Func<ComparisonBuilder, ComparisonBuilder>, int[]?, int[]?, int, int, string?> IntArrayPairDifferentLengthsConfigurationCases =>
+        new()
+        {
+            { b => b.DisallowArrayComparisonOfDifferentLengths(), new[] { 1, 2, 3 }, new[] { 1, 2 }, 0, 1, ComparisonErrors.InputArrayLengthsDifferCode },
+            { b => b.AllowArrayComparisonOfDifferentLengths(), new[] { 1, 2, 3 }, new[] { 1, 2 }, 0, 1, ComparisonErrors.InputArrayLengthsDifferCode },
+        };
+
+    public static TheoryData<Func<ComparisonBuilder, ComparisonBuilder>, int[][]?, int, int, string?> IntArrayParamsFinishModeCases =>
+        new()
+        {
+            { b => b.FinishComparisonCollectingAllMismatches(), new[] { new[] { 1, 1, 1 }, new[] { 2, 2, 2 } }, 3, 0, ComparisonMismatches<int>.MismatchDetectedCode },
+            { b => b.FinishComparisonOnFirstMismatch(), new[] { new[] { 1, 1, 1 }, new[] { 2, 2, 2 } }, 1, 0, ComparisonMismatches<int>.MismatchDetectedCode },
+        };
+
     private void AssertFirstMismatchCode(ComparisonResult result, string expectedCode)
     {
         _output.WriteLine(result.ToString());
@@ -200,6 +214,63 @@ public class IntArrayComparisonTests
         var result = useObjectOverload
             ? builder.Compare((object?)first, (object?)second)
             : builder.Compare(first, second);
+
+        result.MismatchCount.ShouldBe(expectedMismatches);
+        result.ErrorCount.ShouldBe(expectedErrors);
+
+        if (expectedCode is not null)
+        {
+            if (expectedErrors > 0)
+            {
+                AssertFirstErrorCode(result, expectedCode);
+            }
+            else
+            {
+                AssertFirstMismatchCode(result, expectedCode);
+            }
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(IntArrayPairDifferentLengthsConfigurationCases))]
+    public void Compare_IntArrayPair_DifferentLengthsConfiguration_UsesExpectedOutcome(
+        Func<ComparisonBuilder, ComparisonBuilder> configure,
+        int[]? first,
+        int[]? second,
+        int expectedMismatches,
+        int expectedErrors,
+        string? expectedCode)
+    {
+        var builder = configure(CreateBuilder());
+        var result = builder.Compare(first, second);
+
+        result.MismatchCount.ShouldBe(expectedMismatches);
+        result.ErrorCount.ShouldBe(expectedErrors);
+
+        if (expectedCode is not null)
+        {
+            if (expectedErrors > 0)
+            {
+                AssertFirstErrorCode(result, expectedCode);
+            }
+            else
+            {
+                AssertFirstMismatchCode(result, expectedCode);
+            }
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(IntArrayParamsFinishModeCases))]
+    public void Compare_IntArrayParams_FinishMode_UsesExpectedOutcome(
+        Func<ComparisonBuilder, ComparisonBuilder> configure,
+        int[][]? values,
+        int expectedMismatches,
+        int expectedErrors,
+        string? expectedCode)
+    {
+        var builder = configure(CreateBuilder());
+        var result = builder.Compare(values);
 
         result.MismatchCount.ShouldBe(expectedMismatches);
         result.ErrorCount.ShouldBe(expectedErrors);

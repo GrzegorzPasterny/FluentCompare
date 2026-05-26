@@ -283,4 +283,145 @@ public class ClassComparisonTests
         result.WasSuccessful.ShouldBeTrue();
         result.AllMatched.ShouldBe(shouldAllMatch);
     }
+
+    public static TheoryData<Func<ComparisonBuilder, ComparisonBuilder>, object, object, int, int, string?> ObjectComparisonModeCases =>
+        new()
+        {
+            {
+                b => b.UsePropertyEquality(),
+                new ClassWithIntProperty(1),
+                new ClassWithIntProperty(1),
+                0,
+                0,
+                null
+            },
+            {
+                b => b.UseReferenceEquality(),
+                new ClassWithIntProperty(1),
+                new ClassWithIntProperty(1),
+                1,
+                0,
+                ComparisonMismatches.Object.MismatchDetectedByReferenceCode
+            },
+            {
+                b => b.UseComplexTypeComparisonMode(ComplexTypesComparisonMode.ReferenceEquality),
+                new ClassWithIntProperty(1),
+                new ClassWithIntProperty(1),
+                1,
+                0,
+                ComparisonMismatches.Object.MismatchDetectedByReferenceCode
+            },
+        };
+
+    public static TheoryData<int, int, int, int, string?> ObjectComparisonDepthCases =>
+        new()
+        {
+            { 5, 1, 0, 0, ComparisonMismatches<int>.MismatchDetectedCode },
+            { 1, 0, 0, 1, ComparisonErrors.DepthLimitReachedCode },
+        };
+
+    private void LogResult(ComparisonResult result)
+    {
+        _testOutputHelper.WriteLine(result.ToString());
+        foreach (var mismatch in result.Mismatches)
+        {
+            _testOutputHelper.WriteLine($"Mismatch [{mismatch.Code}]: {mismatch.Message}");
+        }
+        foreach (var error in result.Errors)
+        {
+            _testOutputHelper.WriteLine($"Error [{error.Code}]: {error.Message}");
+        }
+        foreach (var warning in result.Warnings)
+        {
+            _testOutputHelper.WriteLine($"Warning [{warning.Code}]: {warning.Message}");
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(ObjectComparisonModeCases))]
+    public void Compare_ObjectPair_ConfigurationMode_UsesExpectedOutcome(
+        Func<ComparisonBuilder, ComparisonBuilder> configure,
+        object left,
+        object right,
+        int expectedMismatches,
+        int expectedErrors,
+        string? expectedCode)
+    {
+        var builder = configure(ComparisonBuilder.Create());
+        var result = builder.Compare(left, right);
+
+        LogResult(result);
+        result.MismatchCount.ShouldBe(expectedMismatches);
+        result.ErrorCount.ShouldBe(expectedErrors);
+
+        if (expectedCode is not null)
+        {
+            if (expectedErrors > 0)
+            {
+                result.Errors[0].Code.ShouldBe(expectedCode);
+            }
+            else
+            {
+                result.Mismatches[0].Code.ShouldBe(expectedCode);
+            }
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(ObjectComparisonDepthCases))]
+    public void Compare_ObjectPair_ComparisonDepth_UsesExpectedOutcome(
+        int depth,
+        int expectedMismatches,
+        int expectedErrors,
+        int expectedWarnings,
+        string? expectedCode)
+    {
+        var left = new ClassWithAllSupportedTypes
+        {
+            NestedClass = new ClassWithAllSupportedTypes
+            {
+                Int = 1
+            }
+        };
+
+        var right = new ClassWithAllSupportedTypes
+        {
+            NestedClass = new ClassWithAllSupportedTypes
+            {
+                Int = 2
+            }
+        };
+
+        var result = ComparisonBuilder.Create()
+            .SetComparisonDepth(depth)
+            .Compare(left, right);
+
+        LogResult(result);
+        result.MismatchCount.ShouldBe(expectedMismatches);
+        result.ErrorCount.ShouldBe(expectedErrors);
+        if (expectedWarnings > 0)
+        {
+            result.WarningCount.ShouldBeGreaterThanOrEqualTo(expectedWarnings);
+        }
+        else
+        {
+            result.WarningCount.ShouldBe(0);
+        }
+
+        if (expectedCode is not null)
+        {
+            if (expectedWarnings > 0)
+            {
+                result.Warnings[0].Code.ShouldBe(expectedCode);
+            }
+            else if (expectedErrors > 0)
+            {
+                result.Errors[0].Code.ShouldBe(expectedCode);
+            }
+            else
+            {
+                result.Mismatches[0].Code.ShouldBe(expectedCode);
+            }
+        }
+    }
 }
