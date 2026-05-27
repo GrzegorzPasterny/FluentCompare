@@ -38,7 +38,6 @@ internal class StringComparison : StringComparisonBase
             return result;
         }
 
-        // TODO: Code not reached by unit tests - need to add tests for this case
         var sFirst = strings[0];
 
         for (int i = 1; i < strings.Length; i++)
@@ -54,11 +53,6 @@ internal class StringComparison : StringComparisonBase
             {
                 result.AddMismatch(ComparisonMismatches.NullPassedAsArgument(i, typeof(string)));
                 return result;
-            }
-            if (!Compare(sFirst, sCurrent, _comparisonConfiguration.ComparisonType, _comparisonConfiguration.StringConfiguration.StringComparisonType))
-            {
-                result.AddMismatch(ComparisonMismatches<string>.MismatchDetected(
-                    sFirst, sCurrent, i, _comparisonConfiguration.ComparisonType, s => s));
             }
 
             Compare(sFirst, sCurrent, "string[0]", $"string[{i}]", result);

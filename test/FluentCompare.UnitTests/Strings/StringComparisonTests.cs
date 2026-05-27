@@ -58,7 +58,7 @@ public class StringComparisonTests
             { null, 0, 1, 0, ComparisonErrors.NullPassedAsArgumentCode },
             { new[] { "onlyOne" }, 0, 1, 0, ComparisonErrors.NotEnoughObjectsToCompareCode },
             { new[] { "apple", "apple", "apple" }, 0, 0, 0, null },
-            { new[] { "apple", "banana", "apple" }, 2, 0, 0, ComparisonMismatches<string>.MismatchDetectedCode },
+            { new[] { "apple", "banana", "apple" }, 1, 0, 0, ComparisonMismatches<string>.MismatchDetectedCode },
             { new string?[] { "first", null! }!, 1, 0, 0, ComparisonMismatches.NullPassedAsArgumentCode },
         };
 
