@@ -1,5 +1,7 @@
 using System.Runtime.CompilerServices;
 
+namespace FluentCompare;
+
 public interface IComparisonBuilder
 {
     ComparisonResult Compare<T>(T[] t);

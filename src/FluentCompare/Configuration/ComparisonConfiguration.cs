@@ -1,3 +1,5 @@
+namespace FluentCompare;
+
 /// <summary>
 /// FluentCompare configuration object
 /// </summary>

@@ -1,6 +1,8 @@
 
 using System.Text;
 
+namespace FluentCompare;
+
 public class ComparisonResult
 {
     internal ComparisonResult() { }

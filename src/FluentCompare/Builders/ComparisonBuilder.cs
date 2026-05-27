@@ -1,6 +1,8 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
+namespace FluentCompare;
+
 // TODO: Add async interface to allow comparison cancellation (in case of big objects)
 /// <summary>
 /// Builder object to configure and perform comparisons.

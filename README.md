@@ -114,10 +114,9 @@ Console.WriteLine(result.AllMatched); // False, different object references
 
 **Primitive types:**
 - *numeric*: `int`, `long`, `short`, `byte`
-- *floating point*: `double`, `float`, `Half`, `NFloat` (with configurable precision or epsilon tolerance)
+- *floating point*: `double`, `float`, `Half`, `NFloat`, `decimal` (with configurable precision or epsilon tolerance)
 - `bool`
 - `string`
-- `enum` types
 
 **Arrays:**
 - Arrays of any supported primitive type, e.g. `int[]`, `double[]`, `string[]`
@@ -127,6 +126,40 @@ Console.WriteLine(result.AllMatched); // False, different object references
 - Classes, structs, and records
 - Objects containing primitive types, arrays, or other complex types
 - Supports recursive property-by-property comparison and reference equality comparison
+
+## ⚙️ Configuration options (implemented and test-covered)
+
+The following options are implemented and covered by unit tests:
+
+- `UseComparisonType(...)`
+  - `EqualTo`, `NotEqualTo`, `GreaterThan`, `LessThan`, `GreaterThanOrEqualTo`, `LessThanOrEqualTo`
+- `UseStringComparisonType(...)`
+  - including case-sensitive and case-insensitive modes (for example `Ordinal`, `OrdinalIgnoreCase`)
+- Floating-point tolerance configuration:
+  - `WithDoublePrecision(int roundingPrecision)`
+  - `WithDoublePrecision(double epsilonPrecision)`
+  - `UseDoubleToleranceMethod(...)`
+- Byte bitwise configuration:
+  - `ApplyBitwiseOperation(...)` (all overloads)
+- Null-handling options:
+  - `AllowNullComparison()` / `DisallowNullComparison()`
+  - `AllowNullsInArguments()` / `DisallowNullsInArguments()`
+- Complex-type comparison options:
+  - `UsePropertyEquality()` / `UseReferenceEquality()`
+  - `UseComplexTypeComparisonMode(...)`
+  - `SetComparisonDepth(...)`
+- Aggregation options:
+  - `FinishComparisonOnFirstMismatch()`
+  - `FinishComparisonCollectingAllMismatches()`
+- Configuration plumbing:
+  - `UseConfiguration(ComparisonConfiguration)`
+  - `Configure(Action<ComparisonConfiguration>)`
+  - static overload: `ComparisonBuilder.Compare(t1, t2, comparisonConfiguration)`
+
+### Notes
+
+- Some exposed APIs are still being aligned across all comparison paths (for example, some array-length policy scenarios).
+- For detailed coverage status and migration progress, see `docs/UnitTestingGuide.md`.
 
 **Special support for byte arrays:**
 - Bitwise operations like AND, OR, XOR, shifts, etc., can be applied before comparison

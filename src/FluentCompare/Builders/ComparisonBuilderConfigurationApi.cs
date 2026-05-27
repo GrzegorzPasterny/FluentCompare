@@ -1,3 +1,5 @@
+namespace FluentCompare;
+
 public partial class ComparisonBuilder
 {
     /// <summary>
