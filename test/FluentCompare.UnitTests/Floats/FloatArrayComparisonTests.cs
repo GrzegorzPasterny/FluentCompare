@@ -20,7 +20,7 @@ public class FloatArrayComparisonTests
         {
             { new[] { 1f, 2f, 3f }, new[] { 1f, 2f, 3f }, 0, 0, null },
             { new[] { 1f, 2f, 3f }, new[] { 1f, 9f, 3f }, 1, 0, ComparisonMismatches.Floats.MismatchDetectedCode },
-            { new[] { 1f, 2f, 3f }, new[] { 1f, 2f }, 0, 0, null },
+            { new[] { 1f, 2f, 3f }, new[] { 1f, 2f }, 1, 0, ComparisonMismatches.InputArrayLengthsDifferCode },
             { new[] { 1f, 2f }, null, 1, 0, ComparisonMismatches.NullPassedAsArgumentCode },
             { null, new[] { 1f, 2f }, 1, 0, ComparisonMismatches.NullPassedAsArgumentCode },
         };
@@ -60,6 +60,13 @@ public class FloatArrayComparisonTests
             { b => b.WithDoublePrecision(2), new[] { 1.234f, 2.345f, 3.456f }, new[] { 1.2345f, 2.3456f, 3.4567f }, 1, 0, ComparisonMismatches.Floats.MismatchDetectedCode },
             { b => b.WithDoublePrecision(2), new[] { 1.234f, 2.345f, 3.456f }, new[] { 1.2345f, 2.3456f, 3.467f }, 2, 0, ComparisonMismatches.Floats.MismatchDetectedCode },
             { b => b.WithDoublePrecision(1e-8), new[] { 0.1f + 0.2f }, new[] { 0.3f }, 0, 0, null },
+        };
+
+    public static TheoryData<Func<ComparisonBuilder, ComparisonBuilder>, float[]?, float[]?, int, int, int, string?> FloatArrayDifferentLengthConfigurationCases =>
+        new()
+        {
+            { b => b.DisallowArrayComparisonOfDifferentLengths(), new[] { 1f, 2f, 3f }, new[] { 1f, 2f }, 1, 0, 0, ComparisonMismatches.InputArrayLengthsDifferCode },
+            { b => b.AllowArrayComparisonOfDifferentLengths(), new[] { 1f, 2f, 3f }, new[] { 1f, 2f }, 0, 0, 1, ComparisonErrors.InputArrayLengthsDifferCode },
         };
 
     private void AssertFirstMismatchCode(ComparisonResult result, string expectedCode)
@@ -126,6 +133,43 @@ public class FloatArrayComparisonTests
             else
             {
                 AssertFirstMismatchCode(result, expectedCode);
+            }
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(FloatArrayDifferentLengthConfigurationCases))]
+    public void Compare_FloatArrayPair_DifferentLengthConfiguration_UsesExpectedOutcome(
+        Func<ComparisonBuilder, ComparisonBuilder> configure,
+        float[]? first,
+        float[]? second,
+        int expectedMismatches,
+        int expectedErrors,
+        int expectedWarnings,
+        string? expectedCode)
+    {
+        var builder = configure(CreateBuilder());
+        var result = builder.Compare(first, second);
+
+        result.MismatchCount.ShouldBe(expectedMismatches);
+        result.ErrorCount.ShouldBe(expectedErrors);
+        result.WarningCount.ShouldBe(expectedWarnings);
+
+        if (expectedCode is not null)
+        {
+            if (expectedErrors > 0)
+            {
+                AssertFirstErrorCode(result, expectedCode);
+            }
+            else if (expectedMismatches > 0)
+            {
+                AssertFirstMismatchCode(result, expectedCode);
+            }
+            else
+            {
+                _output.WriteLine(result.ToString());
+                result.WarningCount.ShouldBeGreaterThan(0, result.ToString());
+                result.Warnings[0].Code.ShouldBe(expectedCode, result.Warnings[0].Message);
             }
         }
     }

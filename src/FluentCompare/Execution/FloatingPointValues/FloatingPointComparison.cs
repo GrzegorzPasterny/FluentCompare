@@ -233,8 +233,14 @@ internal class FloatingPointComparison<T> : FloatingPointComparisonBase<T> where
 
         if (dArr1.Length != dArr2.Length)
         {
-            // TODO: Make it configurable to add warning, or error
-            result.AddWarning(ComparisonErrors.InputArrayLengthsDiffer(dArr1.Length, dArr2.Length, dArr1ExprName, dArr2ExprName, typeof(double[])));
+            if (_comparisonConfiguration.AllowArrayComparisonOfDifferentLengths)
+            {
+                result.AddWarning(ComparisonErrors.InputArrayLengthsDiffer(dArr1.Length, dArr2.Length, dArr1ExprName, dArr2ExprName, typeof(double[])));
+            }
+            else
+            {
+                result.AddMismatch(ComparisonMismatches.InputArrayLengthsDiffer(dArr1.Length, dArr2.Length, dArr1ExprName, dArr2ExprName, typeof(double[])));
+            }
 
             // TODO: Perform the comparison in case of warning
             return result;

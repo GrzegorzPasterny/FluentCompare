@@ -22,7 +22,7 @@ public class StringArrayComparisonTests
         {
             { new[] { "a", "b" }, new[] { "a", "b" }, 0, 0, 0, null },
             { new[] { "a", "b" }, new[] { "a", "x" }, 1, 0, 0, ComparisonMismatches<string>.MismatchDetectedCode },
-            { new[] { "a", "b" }, new[] { "a" }, 0, 0, 1, ComparisonErrors.InputArrayLengthsDifferCode },
+            { new[] { "a", "b" }, new[] { "a" }, 1, 0, 0, ComparisonMismatches.InputArrayLengthsDifferCode },
             { null, null, 0, 0, 1, ComparisonErrors.BothObjectsAreNullCode },
             { null, new[] { "a" }, 1, 0, 0, ComparisonMismatches.NullPassedAsArgumentCode },
             { new[] { "a" }, null, 1, 0, 0, ComparisonMismatches.NullPassedAsArgumentCode },
@@ -59,6 +59,13 @@ public class StringArrayComparisonTests
         {
             { b => b.UseStringComparisonType(StringComparison.OrdinalIgnoreCase), new[] { "Hello" }, new[] { "hello" }, 0, 0, 0, null },
             { b => b.UseStringComparisonType(StringComparison.Ordinal), new[] { "Hello" }, new[] { "hello" }, 1, 0, 0, ComparisonMismatches<string>.MismatchDetectedCode },
+        };
+
+    public static TheoryData<Func<ComparisonBuilder, ComparisonBuilder>, string[]?, string[]?, int, int, int, string?> StringArrayDifferentLengthConfigurationCases =>
+        new()
+        {
+            { b => b.DisallowArrayComparisonOfDifferentLengths(), new[] { "a", "b" }, new[] { "a" }, 1, 0, 0, ComparisonMismatches.InputArrayLengthsDifferCode },
+            { b => b.AllowArrayComparisonOfDifferentLengths(), new[] { "a", "b" }, new[] { "a" }, 0, 0, 1, ComparisonErrors.InputArrayLengthsDifferCode },
         };
 
     private void AssertFirstMismatchCode(ComparisonResult result, string expectedCode)
@@ -132,6 +139,41 @@ public class StringArrayComparisonTests
         string? expectedCode)
     {
         var builder = CreateBuilder();
+        var result = builder.Compare(first, second);
+
+        result.MismatchCount.ShouldBe(expectedMismatches);
+        result.ErrorCount.ShouldBe(expectedErrors);
+        result.WarningCount.ShouldBe(expectedWarnings);
+
+        if (expectedCode is not null)
+        {
+            if (expectedErrors > 0)
+            {
+                AssertFirstErrorCode(result, expectedCode);
+            }
+            else if (expectedMismatches > 0)
+            {
+                AssertFirstMismatchCode(result, expectedCode);
+            }
+            else
+            {
+                AssertFirstWarningCode(result, expectedCode);
+            }
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(StringArrayDifferentLengthConfigurationCases))]
+    public void Compare_StringArrayPair_DifferentLengthConfiguration_UsesExpectedOutcome(
+        Func<ComparisonBuilder, ComparisonBuilder> configure,
+        string[]? first,
+        string[]? second,
+        int expectedMismatches,
+        int expectedErrors,
+        int expectedWarnings,
+        string? expectedCode)
+    {
+        var builder = configure(CreateBuilder());
         var result = builder.Compare(first, second);
 
         result.MismatchCount.ShouldBe(expectedMismatches);

@@ -113,8 +113,14 @@ internal class StringComparison : StringComparisonBase
 
         if (sArr1.Length != sArr2.Length)
         {
-            // TODO: Make it configurable to add warning, or error
-            result.AddWarning(ComparisonErrors.InputArrayLengthsDiffer(sArr1.Length, sArr2.Length, sArr1ExprName, sArr2ExprName, typeof(string[])));
+            if (_comparisonConfiguration.AllowArrayComparisonOfDifferentLengths)
+            {
+                result.AddWarning(ComparisonErrors.InputArrayLengthsDiffer(sArr1.Length, sArr2.Length, sArr1ExprName, sArr2ExprName, typeof(string[])));
+            }
+            else
+            {
+                result.AddMismatch(ComparisonMismatches.InputArrayLengthsDiffer(sArr1.Length, sArr2.Length, sArr1ExprName, sArr2ExprName, typeof(string[])));
+            }
 
             // TODO: Perform the comparison in case of warning
             return result;

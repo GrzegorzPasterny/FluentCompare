@@ -31,10 +31,11 @@ public class ComparisonConfiguration
     public bool AllowNullsInArguments { get; set; } = true;
 
     /// <summary>
-    /// If true, allows arrays of different lengths to be compared without producing an error or mismatch.
-    /// Defaults to true.
+    /// If true, arrays of different lengths produce a warning instead of a mismatch.
+    /// If false, arrays of different lengths produce a mismatch.
+    /// Defaults to false.
     /// </summary>
-    public bool AllowArrayComparisonOfDifferentLengths { get; set; } = true;
+    public bool AllowArrayComparisonOfDifferentLengths { get; set; } = false;
 
     /// <summary>
     /// Maximum depth for recursive comparison of complex types.
