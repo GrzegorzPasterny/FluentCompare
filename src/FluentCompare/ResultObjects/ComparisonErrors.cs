@@ -4,7 +4,7 @@
 /// </summary>
 public static class ComparisonErrors
 {
-    public static string Namespace = "FluentCompare.Error";
+    public static string Namespace = "FluentCompare";
 
     /// <summary>
     /// Code for error indicating that not enough objects were provided for comparison
@@ -23,6 +23,10 @@ public static class ComparisonErrors
     public static string ConfigurationIsMissingCode => $"{Namespace}.{nameof(ConfigurationIsMissing)}";
     internal static ComparisonError ConfigurationIsMissing(Type type)
         => new(ConfigurationIsMissingCode, $"Configuration is missing [Type = {type.Name}]");
+
+    public static string NotImplementedCode => $"{Namespace}.{nameof(NotImplemented)}";
+    internal static ComparisonError NotImplemented(Type type)
+        => new(NotImplementedCode, $"Comparison for type is not implemented [Type = {type.Name}]");
 
     public static string InputArrayLengthsDifferCode => $"{Namespace}.{nameof(InputArrayLengthsDiffer)}";
     internal static ComparisonError InputArrayLengthsDiffer(int t1Length, int t2Length, string t1ArrExprName, string t2ArrExprName, Type type)

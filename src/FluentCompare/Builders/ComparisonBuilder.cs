@@ -37,7 +37,13 @@ public partial class ComparisonBuilder : IComparisonBuilder
     /// </remarks>
     public static ComparisonResult Compare<T>(T t1, T t2, ComparisonConfiguration? comparisonConfiguration = null)
     {
-        throw new NotImplementedException();
+        var builder = Create();
+        if (comparisonConfiguration is not null)
+        {
+            builder.UseConfiguration(comparisonConfiguration);
+        }
+
+        return builder.Compare(t1, t2);
     }
 
     /// <summary>
@@ -174,8 +180,17 @@ public partial class ComparisonBuilder : IComparisonBuilder
             return new ObjectComparison(Configuration)
                 .Compare((object[][])(object)t, result);
 
+        if (IsPrimitiveOrEnumArray(typeof(T)))
+        {
+            result.AddError(ComparisonErrors.NotImplemented(typeof(T)));
+            return result;
+        }
+
         if (IsPrimitiveOrEnum(typeof(T)))
-            throw new NotImplementedException(typeof(T).Name);
+        {
+            result.AddError(ComparisonErrors.NotImplemented(typeof(T)));
+            return result;
+        }
 
         return new ObjectComparison(Configuration)
             .Compare((object[])(object)t, result);
@@ -516,9 +531,15 @@ public partial class ComparisonBuilder : IComparisonBuilder
             return new ObjectComparison(Configuration)
                 .Compare(oArr1, oArr2, t1ExprName, t2ExprName, result);
         }
+        if (IsPrimitiveOrEnumArray(typeof(T)))
+        {
+            result.AddError(ComparisonErrors.NotImplemented(typeof(T)));
+            return result;
+        }
         if (IsPrimitiveOrEnum(typeof(T)))
         {
-            throw new NotImplementedException(typeof(T).Name);
+            result.AddError(ComparisonErrors.NotImplemented(typeof(T)));
+            return result;
         }
         else
         {
@@ -682,8 +703,18 @@ public partial class ComparisonBuilder : IComparisonBuilder
                 .Compare((object[])o1, (object[])o2!, t1ExprName, t2ExprName, result);
 
 
+        if (IsPrimitiveOrEnumArray(type))
+        {
+            result.AddError(ComparisonErrors.NotImplemented(type));
+            return result;
+        }
+
+
         if (IsPrimitiveOrEnum(type))
-            throw new NotImplementedException(type.Name);
+        {
+            result.AddError(ComparisonErrors.NotImplemented(type));
+            return result;
+        }
 
 
         return new ObjectComparison(Configuration)
@@ -843,4 +874,20 @@ public partial class ComparisonBuilder : IComparisonBuilder
     /// <param name="type1">The type to check.</param>
     /// <returns><c>true</c> if the type is primitive or enum; otherwise, <c>false</c>.</returns>
     private static bool IsPrimitiveOrEnum(Type type1) => type1.IsPrimitive || type1.IsEnum;
+
+    private static bool IsPrimitiveOrEnumArray(Type type)
+    {
+        if (!type.IsArray)
+        {
+            return false;
+        }
+
+        var elementType = type.GetElementType();
+        if (elementType is null)
+        {
+            return false;
+        }
+
+        return IsPrimitiveOrEnum(elementType);
+    }
 }

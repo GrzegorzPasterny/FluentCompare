@@ -1,3 +1,5 @@
+using System.Runtime.InteropServices;
+
 namespace FluentCompare.Tests.Shared.Models;
 
 public class ClassWithAllSupportedTypes
@@ -14,6 +16,10 @@ public class ClassWithAllSupportedTypes
     public double[]? DoubleArray { get; set; }
     public float Float { get; set; }
     public float[]? FloatArray { get; set; }
+    public Half Half { get; set; }
+    public Half[]? HalfArray { get; set; }
+    public NFloat NFloat { get; set; }
+    public NFloat[]? NFloatArray { get; set; }
     public decimal Decimal { get; set; }
     public decimal[]? DecimalArray { get; set; }
     public object? Object { get; set; }

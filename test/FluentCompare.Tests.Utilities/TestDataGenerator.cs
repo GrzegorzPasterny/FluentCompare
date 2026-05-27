@@ -1,4 +1,5 @@
 using Bogus;
+using System.Runtime.InteropServices;
 
 using FluentCompare.Tests.Shared.Models;
 
@@ -28,6 +29,10 @@ public static class TestDataGenerator
             .RuleFor(x => x.DoubleArray, f => f.Make(3, () => f.Random.Double(0, 100)).ToArray())
             .RuleFor(x => x.Float, f => f.Random.Float(0, 100))
             .RuleFor(x => x.FloatArray, f => f.Make(3, () => f.Random.Float(0, 100)).ToArray())
+            .RuleFor(x => x.Half, f => (Half)f.Random.Float(0, 100))
+            .RuleFor(x => x.HalfArray, f => f.Make(3, () => (Half)f.Random.Float(0, 100)).ToArray())
+            .RuleFor(x => x.NFloat, f => (NFloat)f.Random.Double(0, 100))
+            .RuleFor(x => x.NFloatArray, f => f.Make(3, () => (NFloat)f.Random.Double(0, 100)).ToArray())
             .RuleFor(x => x.Decimal, f => f.Random.Decimal(0, 100))
             .RuleFor(x => x.DecimalArray, f => f.Make(3, () => f.Random.Decimal(0, 100)).ToArray())
             .RuleFor(x => x.Object, f => f.Random.Word())
