@@ -580,8 +580,17 @@ public partial class ComparisonBuilder : IComparisonBuilder
         }
 
         Type type = o1!.GetType();
+        Type type2 = o2!.GetType();
         string t1ExprName = o1Expr ?? "ObjectOne";
         string t2ExprName = o2Expr ?? "ObjectTwo";
+
+        // TODO: Add Configuration parameter that overrides this behavior and allows some default type conversions (ex: int 1 should be considered equal to long 1, etc.)
+        if (type != type2)
+        {
+            result.AddMismatch(ComparisonMismatches.Object.MismatchDetectedByType(
+                o1, o2, t1ExprName, t2ExprName, type, type2));
+            return result;
+        }
 
         // Primitives
         if (type == typeof(string))
