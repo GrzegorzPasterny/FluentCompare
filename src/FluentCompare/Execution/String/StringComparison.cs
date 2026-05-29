@@ -56,6 +56,11 @@ internal class StringComparison : StringComparisonBase
             }
 
             Compare(sFirst, sCurrent, "string[0]", $"string[{i}]", result);
+
+            if (_comparisonConfiguration.FinishComparisonOnFirstMismatch && result.MismatchCount > 0)
+            {
+                return result;
+            }
         }
 
         return result;
@@ -77,6 +82,11 @@ internal class StringComparison : StringComparisonBase
         for (int i = 1; i < strings.Length; i++)
         {
             Compare(first, strings[i], $"strings[0]", $"strings[{i}]", result);
+
+            if (_comparisonConfiguration.FinishComparisonOnFirstMismatch && result.MismatchCount > 0)
+            {
+                return result;
+            }
         }
         return result;
     }
@@ -105,6 +115,8 @@ internal class StringComparison : StringComparisonBase
             return result;
         }
 
+        var length = Math.Min(sArr1.Length, sArr2.Length);
+
         if (sArr1.Length != sArr2.Length)
         {
             if (_comparisonConfiguration.AllowArrayComparisonOfDifferentLengths)
@@ -116,11 +128,13 @@ internal class StringComparison : StringComparisonBase
                 result.AddMismatch(ComparisonMismatches.InputArrayLengthsDiffer(sArr1.Length, sArr2.Length, sArr1ExprName, sArr2ExprName, typeof(string[])));
             }
 
-            // TODO: Perform the comparison in case of warning
-            return result;
+            if (!_comparisonConfiguration.AllowArrayComparisonOfDifferentLengths)
+            {
+                return result;
+            }
         }
 
-        for (int i = 0; i < sArr1.Length; i++)
+        for (int i = 0; i < length; i++)
         {
             var s1 = sArr1[i];
             var s2 = sArr2[i];
@@ -135,6 +149,12 @@ internal class StringComparison : StringComparisonBase
             {
                 result.AddMismatch(ComparisonMismatches.NullPassedAsArgument(
                     $"{sArr1ExprName}[{i}]", $"{sArr2ExprName}[{i}]", typeof(string)));
+
+                if (_comparisonConfiguration.FinishComparisonOnFirstMismatch)
+                {
+                    return result;
+                }
+
                 continue;
             }
 
@@ -143,6 +163,11 @@ internal class StringComparison : StringComparisonBase
             {
                 result.AddMismatch(ComparisonMismatches<string>.MismatchDetected(
                     s1, s2, $"{sArr1ExprName}[{i}]", $"{sArr2ExprName}[{i}]", _comparisonConfiguration.ComparisonType, s => s));
+
+                if (_comparisonConfiguration.FinishComparisonOnFirstMismatch)
+                {
+                    return result;
+                }
             }
         }
 

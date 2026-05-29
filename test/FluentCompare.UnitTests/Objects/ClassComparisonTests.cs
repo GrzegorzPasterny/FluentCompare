@@ -320,6 +320,35 @@ public class ClassComparisonTests
             { 1, 0, 0, 1, ComparisonErrors.DepthLimitReachedCode },
         };
 
+    public static TheoryData<Func<ComparisonBuilder, ComparisonBuilder>, object, object, int, int, string?> ObjectNestedPrimitiveConfigurationCases =>
+        new()
+        {
+            {
+                b => b.UseStringComparisonType(StringComparison.OrdinalIgnoreCase),
+                new ClassWithAllSupportedTypes { String = "CaseSensitive" },
+                new ClassWithAllSupportedTypes { String = "casesensitive" },
+                0,
+                0,
+                null
+            },
+            {
+                b => b.WithDoublePrecision(2),
+                new ClassWithAllSupportedTypes { Double = 1.234 },
+                new ClassWithAllSupportedTypes { Double = 1.2344 },
+                0,
+                0,
+                null
+            },
+            {
+                b => b.UseComparisonType(ComparisonType.NotEqualTo),
+                new ClassWithIntProperty(1),
+                new ClassWithIntProperty(2),
+                0,
+                0,
+                null
+            },
+        };
+
     private void LogResult(ComparisonResult result)
     {
         _testOutputHelper.WriteLine(result.ToString());
@@ -415,6 +444,36 @@ public class ClassComparisonTests
                 result.Warnings[0].Code.ShouldBe(expectedCode);
             }
             else if (expectedErrors > 0)
+            {
+                result.Errors[0].Code.ShouldBe(expectedCode);
+            }
+            else
+            {
+                result.Mismatches[0].Code.ShouldBe(expectedCode);
+            }
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(ObjectNestedPrimitiveConfigurationCases))]
+    public void Compare_ObjectPair_NestedPrimitiveSettings_UseActiveConfiguration(
+        Func<ComparisonBuilder, ComparisonBuilder> configure,
+        object left,
+        object right,
+        int expectedMismatches,
+        int expectedErrors,
+        string? expectedCode)
+    {
+        var builder = configure(ComparisonBuilder.Create());
+        var result = builder.Compare(left, right);
+
+        LogResult(result);
+        result.MismatchCount.ShouldBe(expectedMismatches);
+        result.ErrorCount.ShouldBe(expectedErrors);
+
+        if (expectedCode is not null)
+        {
+            if (expectedErrors > 0)
             {
                 result.Errors[0].Code.ShouldBe(expectedCode);
             }

@@ -261,22 +261,59 @@ internal class ObjectComparison : ObjectComparisonBase
         var properties = type1.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
         foreach (var prop in properties)
         {
-            var val1 = prop.GetValue(t1);
-            var val2 = prop.GetValue(t2);
-            ComparisonResult propResult;
+            if (prop.GetIndexParameters().Length > 0)
+            {
+                continue;
+            }
+
+            if (IsTypeExcluded(prop.PropertyType))
+            {
+                continue;
+            }
+
+            object? val1;
+            object? val2;
+            try
+            {
+                val1 = prop.GetValue(t1);
+                val2 = prop.GetValue(t2);
+            }
+            catch (Exception ex)
+            {
+                result.AddError(ComparisonErrors.ReflectionPropertyAccessFailed(prop.Name, type1, ex));
+                continue;
+            }
+
+            if ((val1 is not null && IsTypeExcluded(val1.GetType())) ||
+                (val2 is not null && IsTypeExcluded(val2.GetType())))
+            {
+                continue;
+            }
 
             if (t1ExprName is null || t2ExprName is null)
             {
-                propResult = Compare(val1, val2, prop.Name, prop.Name, result);
+                Compare(val1, val2, prop.Name, prop.Name, result);
             }
             else
             {
-                propResult = Compare(
+                Compare(
                     val1, val2,
                     $"{t1ExprName}.{prop.Name}", $"{t2ExprName}.{prop.Name}",
                     result);
             }
         }
+    }
+
+    private bool IsTypeExcluded(Type type)
+    {
+        if (_comparisonConfiguration.TypesExcludedFromComparison == null ||
+            _comparisonConfiguration.TypesExcludedFromComparison.Count == 0)
+        {
+            return false;
+        }
+
+        return _comparisonConfiguration.TypesExcludedFromComparison
+            .Any(excludedType => excludedType == type || excludedType.IsAssignableFrom(type));
     }
 
     private void CompareObjectsByReference(object obj1, object obj2, int i, ComparisonResult result)
@@ -306,7 +343,7 @@ internal class ObjectComparison : ObjectComparisonBase
         var method = compareMethod.MakeGenericMethod(type1);
 
         var subResult = (ComparisonResult)method.Invoke(
-            new ComparisonBuilder(),
+            ComparisonBuilder.Create().UseConfiguration(_comparisonConfiguration),
             new object?[] { t1, t2, t1ExprName, t2ExprName }
         )!;
 

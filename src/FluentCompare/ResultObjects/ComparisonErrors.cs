@@ -61,6 +61,12 @@ public static class ComparisonErrors
         // TODO: Should I put expression names in brackets like here? 
         => new(DepthLimitReachedCode, $"Comparison depth limit ({currentDepth}) has been reached for [{t1ExprName}] and [{t2ExprName}]");
 
+    public static string ReflectionPropertyAccessFailedCode => $"{Namespace}.{nameof(ReflectionPropertyAccessFailed)}";
+    internal static ComparisonError ReflectionPropertyAccessFailed(string propertyName, Type type, Exception exception)
+         => new(ReflectionPropertyAccessFailedCode,
+             $"Failed to access property via reflection [Property = {propertyName}, Type = {type.Name}]",
+             exception);
+
     public static class Object
     {
         public static string Namespace = "FluentCompare.Error.Object";

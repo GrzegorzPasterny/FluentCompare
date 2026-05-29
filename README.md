@@ -9,6 +9,14 @@ It supports primitive types, arrays, and complex objects — and even provides a
 - Null-handling and custom comparison rules
 - Fluent configuration for clear, expressive test or runtime comparisons
 
+## Why Fluent Compare?
+
+- **Single, consistent API** for primitives, arrays, and complex object graphs
+- **Detailed diagnostics** (`ComparisonResult`) with mismatches, errors, and warnings objects
+- **Configurable behavior** for comparison type, string rules, float tolerance, depth, and finish mode
+- **Practical object comparison features** like reference/property mode and excluded types
+- **Open-source friendly** (Apache 2.0)
+
 ---
 
 ## 🚀 Quick Start
@@ -148,6 +156,9 @@ The following options are implemented and covered by unit tests:
   - `UsePropertyEquality()` / `UseReferenceEquality()`
   - `UseComplexTypeComparisonMode(...)`
   - `SetComparisonDepth(...)`
+  - `TypesExcludedFromComparison`
+    - compared object properties of excluded types are skipped
+    - supports exact type and assignable/base-type matching
 - Aggregation options:
   - `FinishComparisonOnFirstMismatch()`
   - `FinishComparisonCollectingAllMismatches()`
@@ -158,7 +169,7 @@ The following options are implemented and covered by unit tests:
 
 ### Notes
 
-- Some exposed APIs are still being aligned across all comparison paths (for example, some array-length policy scenarios).
+- Some exposed APIs are still being aligned across all comparison paths.
 - For detailed coverage status and migration progress, see `docs/UnitTestingGuide.md`.
 
 **Special support for byte arrays:**
@@ -169,19 +180,29 @@ The following options are implemented and covered by unit tests:
 ### ⚡ Performance Benchmarks
 
 `FluentCompare` is designed to be efficient, even for complex or nested object comparisons.  
-The following benchmark compares `FluentCompare` against other popular .NET object comparison libraries:
+The following benchmark compares `FluentCompare` against other popular .NET object comparison libraries.
 
-| Method                        | Mean       | Error      | StdDev     | Gen0    | Gen1    | Allocated |
-|-------------------------------|-----------:|-----------:|-----------:|--------:|--------:|----------:|
-| CompareWith_FluentComparison  |   7.603 μs |  2.7598 μs |  1.4434 μs |  2.7161 |       - |  16.76 KB |
-| CompareWith_CompareNetObjects |   6.323 μs |  0.2566 μs |  0.1342 μs |  2.6398 |  0.0992 |   16.2 KB |
-| CompareWith_AnyDiff           | 402.616 μs | 57.0189 μs | 25.3167 μs | 70.3125 | 15.6250 | 434.91 KB |
+Latest run (`BenchmarkDotNet v0.15.8`, `.NET 8.0.27`, `Intel i7-1185G7`, Windows 11):
+
+| Method                        | DataSet | Mean          | Gen0      | Gen1     | Gen2    | Allocated  |
+|------------------------------ |-------- |--------------:|----------:|---------:|--------:|-----------:|
+| CompareWith_FluentComparison  | SetA    |      1.327 μs |    0.5302 |        - |       - |    3.25 KB |
+| CompareWith_CompareNetObjects | SetA    |      6.237 μs |    1.9073 |   0.0687 |       - |   11.72 KB |
+| CompareWith_AnyDiff           | SetA    |    510.511 μs |   27.3438 |   1.9531 |       - |  175.68 KB |
+| CompareWith_FluentComparison  | SetB    |  7,035.112 μs |  351.5625 | 164.0625 | 85.9375 | 2383.06 KB |
+| CompareWith_CompareNetObjects | SetB    | 15,635.812 μs | 1093.7500 |  31.2500 |       - | 6726.81 KB |
+| CompareWith_AnyDiff           | SetB    |  1,872.770 μs |   93.7500 |   7.8125 |       - |  596.75 KB |
 
 **Observations:**
 
 - `FluentCompare` is competitive with other fast object comparison libraries.
 - Memory usage remains low even with nested objects.
-- Libraries like `AnyDiff` are significantly slower and allocate much more memory.
+
+Run benchmarks locally:
+
+```powershell
+dotnet run --project .\test\FluentCompare.Benchmarks\FluentCompare.Benchmarks.csproj -c Release
+```
 
 ### License
 

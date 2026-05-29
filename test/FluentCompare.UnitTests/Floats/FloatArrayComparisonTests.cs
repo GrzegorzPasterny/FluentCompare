@@ -50,7 +50,7 @@ public class FloatArrayComparisonTests
             { b => b, new float[][] { null!, new[] { 1f } }, 0, 1, ComparisonErrors.NullPassedAsArgumentCode },
             { b => b, new float[][] { new[] { 1f }, null! }, 0, 1, ComparisonErrors.NullPassedAsArgumentCode },
             { b => b.DisallowNullComparison(), new float[][] { new[] { 1f }, null! }, 0, 1, ComparisonErrors.NullPassedAsArgumentCode },
-            { b => b, new[] { new[] { 1f, 2f }, new[] { 1f } }, 0, 0, null },
+            { b => b, new[] { new[] { 1f, 2f }, new[] { 1f } }, 1, 0, ComparisonMismatches.InputArrayLengthsDifferCode },
             { b => b, new[] { new[] { 1f, 2f }, new[] { 1f, 2f } }, 0, 0, null },
         };
 
@@ -67,6 +67,19 @@ public class FloatArrayComparisonTests
         {
             { b => b.DisallowArrayComparisonOfDifferentLengths(), new[] { 1f, 2f, 3f }, new[] { 1f, 2f }, 1, 0, 0, ComparisonMismatches.InputArrayLengthsDifferCode },
             { b => b.AllowArrayComparisonOfDifferentLengths(), new[] { 1f, 2f, 3f }, new[] { 1f, 2f }, 0, 0, 1, ComparisonErrors.InputArrayLengthsDifferCode },
+        };
+
+    public static TheoryData<Func<ComparisonBuilder, ComparisonBuilder>, float[]?, float[]?, int, int, int, string?> FloatArrayDifferentLengthWithPrefixMismatchCases =>
+        new()
+        {
+            { b => b.AllowArrayComparisonOfDifferentLengths(), new[] { 9f, 2f, 3f }, new[] { 1f, 2f }, 1, 0, 1, ComparisonMismatches.Floats.MismatchDetectedCode },
+        };
+
+    public static TheoryData<Func<ComparisonBuilder, ComparisonBuilder>, float[]?, float[]?, int, int, int, string?> FloatArrayFinishModeCases =>
+        new()
+        {
+            { b => b.FinishComparisonOnFirstMismatch(), new[] { 9f, 8f, 7f }, new[] { 1f, 2f, 3f }, 1, 0, 0, ComparisonMismatches.Floats.MismatchDetectedCode },
+            { b => b.FinishComparisonCollectingAllMismatches(), new[] { 9f, 8f, 7f }, new[] { 1f, 2f, 3f }, 3, 0, 0, ComparisonMismatches.Floats.MismatchDetectedCode },
         };
 
     private void AssertFirstMismatchCode(ComparisonResult result, string expectedCode)
@@ -134,6 +147,54 @@ public class FloatArrayComparisonTests
             {
                 AssertFirstMismatchCode(result, expectedCode);
             }
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(FloatArrayFinishModeCases))]
+    public void Compare_FloatArrayPair_FinishMode_UsesExpectedOutcome(
+        Func<ComparisonBuilder, ComparisonBuilder> configure,
+        float[]? first,
+        float[]? second,
+        int expectedMismatches,
+        int expectedErrors,
+        int expectedWarnings,
+        string? expectedCode)
+    {
+        var builder = configure(CreateBuilder());
+        var result = builder.Compare(first, second);
+
+        result.MismatchCount.ShouldBe(expectedMismatches);
+        result.ErrorCount.ShouldBe(expectedErrors);
+        result.WarningCount.ShouldBe(expectedWarnings);
+
+        if (expectedCode is not null)
+        {
+            AssertFirstMismatchCode(result, expectedCode);
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(FloatArrayDifferentLengthWithPrefixMismatchCases))]
+    public void Compare_FloatArrayPair_DifferentLengthAllowed_StillComparesSharedPrefix(
+        Func<ComparisonBuilder, ComparisonBuilder> configure,
+        float[]? first,
+        float[]? second,
+        int expectedMismatches,
+        int expectedErrors,
+        int expectedWarnings,
+        string? expectedCode)
+    {
+        var builder = configure(CreateBuilder());
+        var result = builder.Compare(first, second);
+
+        result.MismatchCount.ShouldBe(expectedMismatches);
+        result.ErrorCount.ShouldBe(expectedErrors);
+        result.WarningCount.ShouldBe(expectedWarnings);
+
+        if (expectedCode is not null)
+        {
+            AssertFirstMismatchCode(result, expectedCode);
         }
     }
 

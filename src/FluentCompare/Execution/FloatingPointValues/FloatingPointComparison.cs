@@ -33,6 +33,11 @@ internal class FloatingPointComparison<T> : FloatingPointComparisonBase<T> where
         for (int i = 0; i < floats.Length - 1; i++)
         {
             Compare(floats[i], floats[i + 1], comparisonType, result);
+
+            if (_comparisonConfiguration.FinishComparisonOnFirstMismatch && result.MismatchCount > 0)
+            {
+                return result;
+            }
         }
 
         return result;
@@ -131,6 +136,11 @@ internal class FloatingPointComparison<T> : FloatingPointComparisonBase<T> where
             }
 
             Compare(dArr1[i]!.Value, dArr2[i]!.Value, dArr1ExprName, dArr2ExprName, i, _comparisonConfiguration.ComparisonType, result);
+
+            if (_comparisonConfiguration.FinishComparisonOnFirstMismatch && result.MismatchCount > 0)
+            {
+                return result;
+            }
         }
 
         return result;
@@ -202,10 +212,11 @@ internal class FloatingPointComparison<T> : FloatingPointComparisonBase<T> where
         var first = doubleArrays[0];
         for (int i = 1; i < doubleArrays.Length; i++)
         {
-            var mismatch = Compare(first, doubleArrays[i], $"doubles[0]", $"doubles[{i}]", result);
-            foreach (var m in mismatch.Mismatches)
+            Compare(first, doubleArrays[i], $"doubles[0]", $"doubles[{i}]", result);
+
+            if (_comparisonConfiguration.FinishComparisonOnFirstMismatch && result.MismatchCount > 0)
             {
-                result.AddMismatch(m);
+                return result;
             }
         }
 
@@ -231,6 +242,8 @@ internal class FloatingPointComparison<T> : FloatingPointComparisonBase<T> where
             return result;
         }
 
+        var length = Math.Min(dArr1.Length, dArr2.Length);
+
         if (dArr1.Length != dArr2.Length)
         {
             if (_comparisonConfiguration.AllowArrayComparisonOfDifferentLengths)
@@ -242,13 +255,20 @@ internal class FloatingPointComparison<T> : FloatingPointComparisonBase<T> where
                 result.AddMismatch(ComparisonMismatches.InputArrayLengthsDiffer(dArr1.Length, dArr2.Length, dArr1ExprName, dArr2ExprName, typeof(double[])));
             }
 
-            // TODO: Perform the comparison in case of warning
-            return result;
+            if (!_comparisonConfiguration.AllowArrayComparisonOfDifferentLengths)
+            {
+                return result;
+            }
         }
 
-        for (int i = 0; i < dArr1.Length; i++)
+        for (int i = 0; i < length; i++)
         {
             Compare(dArr1[i], dArr2[i], dArr1ExprName, dArr2ExprName, i, _comparisonConfiguration.ComparisonType, result);
+
+            if (_comparisonConfiguration.FinishComparisonOnFirstMismatch && result.MismatchCount > 0)
+            {
+                return result;
+            }
         }
 
         return result;
