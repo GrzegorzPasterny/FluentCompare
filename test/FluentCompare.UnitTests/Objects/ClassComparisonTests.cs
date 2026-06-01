@@ -313,6 +313,47 @@ public class ClassComparisonTests
             },
         };
 
+    public static TheoryData<Func<ComparisonBuilder, ComparisonBuilder>, ClassWithAllSupportedTypes, ClassWithAllSupportedTypes, int, int, string?> ObjectGraphFinishModeCases =>
+        new()
+        {
+            {
+                b => b.FinishComparisonOnFirstMismatch(),
+                new ClassWithAllSupportedTypes
+                {
+                    Int = 1,
+                    String = "A",
+                    NestedClass = new ClassWithAllSupportedTypes { Double = 10.0 }
+                },
+                new ClassWithAllSupportedTypes
+                {
+                    Int = 2,
+                    String = "B",
+                    NestedClass = new ClassWithAllSupportedTypes { Double = 20.0 }
+                },
+                1,
+                0,
+                ComparisonMismatches<int>.MismatchDetectedCode
+            },
+            {
+                b => b.FinishComparisonCollectingAllMismatches(),
+                new ClassWithAllSupportedTypes
+                {
+                    Int = 1,
+                    String = "A",
+                    NestedClass = new ClassWithAllSupportedTypes { Double = 10.0 }
+                },
+                new ClassWithAllSupportedTypes
+                {
+                    Int = 2,
+                    String = "B",
+                    NestedClass = new ClassWithAllSupportedTypes { Double = 20.0 }
+                },
+                3,
+                0,
+                ComparisonMismatches<int>.MismatchDetectedCode
+            },
+        };
+
     public static TheoryData<int, int, int, int, string?> ObjectComparisonDepthCases =>
         new()
         {
@@ -481,6 +522,29 @@ public class ClassComparisonTests
             {
                 result.Mismatches[0].Code.ShouldBe(expectedCode);
             }
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(ObjectGraphFinishModeCases))]
+    public void Compare_ObjectGraph_FinishMode_UsesExpectedOutcome(
+        Func<ComparisonBuilder, ComparisonBuilder> configure,
+        ClassWithAllSupportedTypes left,
+        ClassWithAllSupportedTypes right,
+        int expectedMismatches,
+        int expectedErrors,
+        string? expectedCode)
+    {
+        var builder = configure(ComparisonBuilder.Create());
+        var result = builder.Compare(left, right);
+
+        LogResult(result);
+        result.MismatchCount.ShouldBe(expectedMismatches);
+        result.ErrorCount.ShouldBe(expectedErrors);
+
+        if (expectedCode is not null)
+        {
+            result.Mismatches[0].Code.ShouldBe(expectedCode);
         }
     }
 }

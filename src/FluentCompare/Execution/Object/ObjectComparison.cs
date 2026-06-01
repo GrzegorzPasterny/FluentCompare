@@ -32,6 +32,11 @@ internal class ObjectComparison : ObjectComparisonBase
 
         for (int i = 1; i < objects.Length; i++)
         {
+            if (ShouldFinishOnFirstMismatch(result))
+            {
+                return result;
+            }
+
             object? currentObj = objects[i];
 
             // Use the configured comparison mode for complex types
@@ -91,6 +96,11 @@ internal class ObjectComparison : ObjectComparisonBase
 
     public override ComparisonResult Compare(object? t1, object? t2, string t1ExprName, string t2ExprName, ComparisonResult result)
     {
+        if (ShouldFinishOnFirstMismatch(result))
+        {
+            return result;
+        }
+
         if (_depth >= _comparisonConfiguration.MaximumComparisonDepth)
         {
             result.AddWarning(ComparisonErrors.DepthLimitReached(_depth, t1ExprName, t2ExprName));
@@ -163,7 +173,12 @@ internal class ObjectComparison : ObjectComparisonBase
         var first = objects[0];
         for (int i = 1; i < objects.Length; i++)
         {
-            var comparisonResult = Compare(first, objects[i], $"objects[0]", $"objects[{i}]", result);
+            if (ShouldFinishOnFirstMismatch(result))
+            {
+                return result;
+            }
+
+            Compare(first, objects[i], $"objects[0]", $"objects[{i}]", result);
         }
 
         return result;
@@ -196,6 +211,11 @@ internal class ObjectComparison : ObjectComparisonBase
 
         for (int i = 0; i < t1.Length; i++)
         {
+            if (ShouldFinishOnFirstMismatch(result))
+            {
+                return result;
+            }
+
             var obj1 = t1[i];
             var obj2 = t2[i];
             // Use the configured comparison mode for complex types
@@ -249,6 +269,11 @@ internal class ObjectComparison : ObjectComparisonBase
                     _depth--;
                     break;
             }
+
+            if (ShouldFinishOnFirstMismatch(result))
+            {
+                return result;
+            }
         }
         return result;
     }
@@ -261,6 +286,11 @@ internal class ObjectComparison : ObjectComparisonBase
         var properties = type1.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
         foreach (var prop in properties)
         {
+            if (ShouldFinishOnFirstMismatch(result))
+            {
+                return;
+            }
+
             if (prop.GetIndexParameters().Length > 0)
             {
                 continue;
@@ -301,8 +331,16 @@ internal class ObjectComparison : ObjectComparisonBase
                     $"{t1ExprName}.{prop.Name}", $"{t2ExprName}.{prop.Name}",
                     result);
             }
+
+            if (ShouldFinishOnFirstMismatch(result))
+            {
+                return;
+            }
         }
     }
+
+    private bool ShouldFinishOnFirstMismatch(ComparisonResult result)
+        => _comparisonConfiguration.FinishComparisonOnFirstMismatch && result.MismatchCount > 0;
 
     private bool IsTypeExcluded(Type type)
     {
