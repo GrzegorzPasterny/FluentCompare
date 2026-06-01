@@ -20,7 +20,7 @@ public class FloatArrayComparisonTests
         {
             { new[] { 1f, 2f, 3f }, new[] { 1f, 2f, 3f }, 0, 0, null },
             { new[] { 1f, 2f, 3f }, new[] { 1f, 9f, 3f }, 1, 0, ComparisonMismatches.Floats.MismatchDetectedCode },
-            { new[] { 1f, 2f, 3f }, new[] { 1f, 2f }, 1, 0, ComparisonMismatches.InputArrayLengthsDifferCode },
+            { new[] { 1f, 2f, 3f }, new[] { 1f, 2f }, 0, 1, ComparisonErrors.InputArrayLengthsDifferCode },
             { new[] { 1f, 2f }, null, 1, 0, ComparisonMismatches.NullPassedAsArgumentCode },
             { null, new[] { 1f, 2f }, 1, 0, ComparisonMismatches.NullPassedAsArgumentCode },
         };
@@ -50,7 +50,7 @@ public class FloatArrayComparisonTests
             { b => b, new float[][] { null!, new[] { 1f } }, 0, 1, ComparisonErrors.NullPassedAsArgumentCode },
             { b => b, new float[][] { new[] { 1f }, null! }, 0, 1, ComparisonErrors.NullPassedAsArgumentCode },
             { b => b.DisallowNullComparison(), new float[][] { new[] { 1f }, null! }, 0, 1, ComparisonErrors.NullPassedAsArgumentCode },
-            { b => b, new[] { new[] { 1f, 2f }, new[] { 1f } }, 1, 0, ComparisonMismatches.InputArrayLengthsDifferCode },
+            { b => b, new[] { new[] { 1f, 2f }, new[] { 1f } }, 0, 1, ComparisonErrors.InputArrayLengthsDifferCode },
             { b => b, new[] { new[] { 1f, 2f }, new[] { 1f, 2f } }, 0, 0, null },
         };
 
@@ -65,7 +65,7 @@ public class FloatArrayComparisonTests
     public static TheoryData<Func<ComparisonBuilder, ComparisonBuilder>, float[]?, float[]?, int, int, int, string?> FloatArrayDifferentLengthConfigurationCases =>
         new()
         {
-            { b => b.DisallowArrayComparisonOfDifferentLengths(), new[] { 1f, 2f, 3f }, new[] { 1f, 2f }, 1, 0, 0, ComparisonMismatches.InputArrayLengthsDifferCode },
+            { b => b.DisallowArrayComparisonOfDifferentLengths(), new[] { 1f, 2f, 3f }, new[] { 1f, 2f }, 0, 1, 0, ComparisonErrors.InputArrayLengthsDifferCode },
             { b => b.AllowArrayComparisonOfDifferentLengths(), new[] { 1f, 2f, 3f }, new[] { 1f, 2f }, 0, 0, 1, ComparisonErrors.InputArrayLengthsDifferCode },
         };
 

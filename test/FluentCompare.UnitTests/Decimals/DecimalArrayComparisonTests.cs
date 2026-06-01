@@ -20,7 +20,7 @@ public class DecimalArrayComparisonTests
         {
             { new[] { 1m, 2m, 3m }, new[] { 1m, 2m, 3m }, 0, 0, null },
             { new[] { 1m, 2m, 3m }, new[] { 1m, 9m, 3m }, 1, 0, ComparisonMismatches.Floats.MismatchDetectedCode },
-            { new[] { 1m, 2m, 3m }, new[] { 1m, 2m }, 0, 0, null },
+            { new[] { 1m, 2m, 3m }, new[] { 1m, 2m }, 0, 1, ComparisonErrors.InputArrayLengthsDifferCode },
             { new[] { 1m, 2m }, null, 1, 0, ComparisonMismatches.NullPassedAsArgumentCode },
             { null, new[] { 1m, 2m }, 1, 0, ComparisonMismatches.NullPassedAsArgumentCode },
         };
@@ -50,7 +50,7 @@ public class DecimalArrayComparisonTests
             { b => b, new decimal[][] { null!, new[] { 1m } }, 0, 1, ComparisonErrors.NullPassedAsArgumentCode },
             { b => b, new decimal[][] { new[] { 1m }, null! }, 0, 1, ComparisonErrors.NullPassedAsArgumentCode },
             { b => b.DisallowNullComparison(), new decimal[][] { new[] { 1m }, null! }, 0, 1, ComparisonErrors.NullPassedAsArgumentCode },
-            { b => b, new[] { new[] { 1m, 2m }, new[] { 1m } }, 0, 0, null },
+            { b => b, new[] { new[] { 1m, 2m }, new[] { 1m } }, 0, 1, ComparisonErrors.InputArrayLengthsDifferCode },
             { b => b, new[] { new[] { 1m, 2m }, new[] { 1m, 2m } }, 0, 0, null },
         };
 

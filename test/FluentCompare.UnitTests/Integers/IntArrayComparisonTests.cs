@@ -65,7 +65,7 @@ public class IntArrayComparisonTests
         new()
         {
             { b => b.DisallowArrayComparisonOfDifferentLengths(), new[] { 1, 2, 3 }, new[] { 1, 2 }, 0, 1, ComparisonErrors.InputArrayLengthsDifferCode },
-            { b => b.AllowArrayComparisonOfDifferentLengths(), new[] { 1, 2, 3 }, new[] { 1, 2 }, 0, 1, ComparisonErrors.InputArrayLengthsDifferCode },
+            { b => b.AllowArrayComparisonOfDifferentLengths(), new[] { 1, 2, 3 }, new[] { 1, 2 }, 0, 0, ComparisonErrors.InputArrayLengthsDifferCode },
         };
 
     public static TheoryData<Func<ComparisonBuilder, ComparisonBuilder>, int[][]?, int, int, string?> IntArrayParamsFinishModeCases =>
@@ -136,6 +136,10 @@ public class IntArrayComparisonTests
             {
                 AssertFirstErrorCode(result, expectedCode);
             }
+            else if (result.WarningCount > 0)
+            {
+                result.Warnings[0].Code.ShouldBe(expectedCode, result.Warnings[0].Message);
+            }
             else
             {
                 AssertFirstMismatchCode(result, expectedCode);
@@ -165,6 +169,10 @@ public class IntArrayComparisonTests
             {
                 AssertFirstErrorCode(result, expectedCode);
             }
+            else if (result.WarningCount > 0)
+            {
+                result.Warnings[0].Code.ShouldBe(expectedCode, result.Warnings[0].Message);
+            }
             else
             {
                 AssertFirstMismatchCode(result, expectedCode);
@@ -192,6 +200,10 @@ public class IntArrayComparisonTests
             if (expectedErrors > 0)
             {
                 AssertFirstErrorCode(result, expectedCode);
+            }
+            else if (result.WarningCount > 0)
+            {
+                result.Warnings[0].Code.ShouldBe(expectedCode, result.Warnings[0].Message);
             }
             else
             {
@@ -224,6 +236,10 @@ public class IntArrayComparisonTests
             {
                 AssertFirstErrorCode(result, expectedCode);
             }
+            else if (result.WarningCount > 0)
+            {
+                result.Warnings[0].Code.ShouldBe(expectedCode, result.Warnings[0].Message);
+            }
             else
             {
                 AssertFirstMismatchCode(result, expectedCode);
@@ -252,6 +268,10 @@ public class IntArrayComparisonTests
             if (expectedErrors > 0)
             {
                 AssertFirstErrorCode(result, expectedCode);
+            }
+            else if (result.WarningCount > 0)
+            {
+                result.Warnings[0].Code.ShouldBe(expectedCode, result.Warnings[0].Message);
             }
             else
             {

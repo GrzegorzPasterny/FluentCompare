@@ -44,11 +44,6 @@ public static class ComparisonMismatches
 {
     public static string Namespace = "FluentCompare.Mismatch";
 
-    public static string InputArrayLengthsDifferCode => $"{Namespace}.{nameof(InputArrayLengthsDiffer)}";
-    internal static ComparisonMismatch InputArrayLengthsDiffer(int t1Length, int t2Length, string t1ArrExprName, string t2ArrExprName, Type type)
-        => new(InputArrayLengthsDifferCode,
-            $"Array lengths differ [{t1ArrExprName} Length = {t1Length}, {t2ArrExprName} Length = {t2Length}, Type = {type.Name}]");
-
     public static string NullPassedAsArgumentCode => $"{Namespace}.{nameof(NullPassedAsArgument)}";
     internal static ComparisonMismatch NullPassedAsArgument(int index, Type type)
         => new(NullPassedAsArgumentCode,

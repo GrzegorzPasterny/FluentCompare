@@ -118,7 +118,14 @@ internal class BoolComparison : BoolComparisonBase, IExecuteComparison<bool>
 
             if (first.Length != current.Length)
             {
-                result.AddError(ComparisonErrors.InputArrayLengthsDiffer(first.Length, current.Length, 0, i, typeof(bool[])));
+                if (_comparisonConfiguration.AllowArrayComparisonOfDifferentLengths)
+                {
+                    result.AddWarning(ComparisonErrors.InputArrayLengthsDiffer(first.Length, current.Length, 0, i, typeof(bool[])));
+                }
+                else
+                {
+                    result.AddError(ComparisonErrors.InputArrayLengthsDiffer(first.Length, current.Length, 0, i, typeof(bool[])));
+                }
                 return result;
             }
 
@@ -156,7 +163,14 @@ internal class BoolComparison : BoolComparisonBase, IExecuteComparison<bool>
 
         if (b1.Length != b2.Length)
         {
-            result.AddError(ComparisonErrors.InputArrayLengthsDiffer(b1.Length, b2.Length, t1ExprName, t2ExprName, typeof(bool[])));
+            if (_comparisonConfiguration.AllowArrayComparisonOfDifferentLengths)
+            {
+                result.AddWarning(ComparisonErrors.InputArrayLengthsDiffer(b1.Length, b2.Length, t1ExprName, t2ExprName, typeof(bool[])));
+            }
+            else
+            {
+                result.AddError(ComparisonErrors.InputArrayLengthsDiffer(b1.Length, b2.Length, t1ExprName, t2ExprName, typeof(bool[])));
+            }
             return result;
         }
 
@@ -193,8 +207,16 @@ internal class BoolComparison : BoolComparisonBase, IExecuteComparison<bool>
 
         if (boolArr1.Length != boolArr2.Length)
         {
-            result.AddError(ComparisonErrors.InputArrayLengthsDiffer(
-                boolArr1.Length, boolArr2.Length, boolArr1ExprName, boolArr2ExprName, typeof(bool?[])));
+            if (_comparisonConfiguration.AllowArrayComparisonOfDifferentLengths)
+            {
+                result.AddWarning(ComparisonErrors.InputArrayLengthsDiffer(
+                    boolArr1.Length, boolArr2.Length, boolArr1ExprName, boolArr2ExprName, typeof(bool?[])));
+            }
+            else
+            {
+                result.AddError(ComparisonErrors.InputArrayLengthsDiffer(
+                    boolArr1.Length, boolArr2.Length, boolArr1ExprName, boolArr2ExprName, typeof(bool?[])));
+            }
             return result;
         }
 

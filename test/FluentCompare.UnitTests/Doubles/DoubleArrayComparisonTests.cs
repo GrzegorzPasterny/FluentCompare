@@ -20,7 +20,7 @@ public class DoubleArrayComparisonTests
         {
             { new[] { 1.0, 2.0, 3.0 }, new[] { 1.0, 2.0, 3.0 }, 0, 0, null },
             { new[] { 1.0, 2.0, 3.0 }, new[] { 1.0, 9.0, 3.0 }, 1, 0, ComparisonMismatches.Floats.MismatchDetectedCode },
-            { new[] { 1.0, 2.0, 3.0 }, new[] { 1.0, 2.0 }, 0, 0, null },
+            { new[] { 1.0, 2.0, 3.0 }, new[] { 1.0, 2.0 }, 0, 1, ComparisonErrors.InputArrayLengthsDifferCode },
             { new[] { 1.0, 2.0 }, null, 1, 0, ComparisonMismatches.NullPassedAsArgumentCode },
             { null, new[] { 1.0, 2.0 }, 1, 0, ComparisonMismatches.NullPassedAsArgumentCode },
         };
@@ -50,7 +50,7 @@ public class DoubleArrayComparisonTests
             { b => b, new double[][] { null!, new[] { 1.0 } }, 0, 1, ComparisonErrors.NullPassedAsArgumentCode },
             { b => b, new double[][] { new[] { 1.0 }, null! }, 0, 1, ComparisonErrors.NullPassedAsArgumentCode },
             { b => b.DisallowNullComparison(), new double[][] { new[] { 1.0 }, null! }, 0, 1, ComparisonErrors.NullPassedAsArgumentCode },
-            { b => b, new[] { new[] { 1.0, 2.0 }, new[] { 1.0 } }, 0, 0, null },
+            { b => b, new[] { new[] { 1.0, 2.0 }, new[] { 1.0 } }, 0, 1, ComparisonErrors.InputArrayLengthsDifferCode },
             { b => b, new[] { new[] { 1.0, 2.0 }, new[] { 1.0, 2.0 } }, 0, 0, null },
         };
 

@@ -20,7 +20,7 @@ public class HalfArrayComparisonTests
         {
             { new[] { (Half)1, (Half)2, (Half)3 }, new[] { (Half)1, (Half)2, (Half)3 }, 0, 0, null },
             { new[] { (Half)1, (Half)2, (Half)3 }, new[] { (Half)1, (Half)9, (Half)3 }, 1, 0, ComparisonMismatches.Floats.MismatchDetectedCode },
-            { new[] { (Half)1, (Half)2, (Half)3 }, new[] { (Half)1, (Half)2 }, 0, 0, null },
+            { new[] { (Half)1, (Half)2, (Half)3 }, new[] { (Half)1, (Half)2 }, 0, 1, ComparisonErrors.InputArrayLengthsDifferCode },
             { new[] { (Half)1, (Half)2 }, null, 1, 0, ComparisonMismatches.NullPassedAsArgumentCode },
             { null, new[] { (Half)1, (Half)2 }, 1, 0, ComparisonMismatches.NullPassedAsArgumentCode },
         };
@@ -50,7 +50,7 @@ public class HalfArrayComparisonTests
             { b => b, new Half[][] { null!, new[] { (Half)1 } }, 0, 1, ComparisonErrors.NullPassedAsArgumentCode },
             { b => b, new Half[][] { new[] { (Half)1 }, null! }, 0, 1, ComparisonErrors.NullPassedAsArgumentCode },
             { b => b.DisallowNullComparison(), new Half[][] { new[] { (Half)1 }, null! }, 0, 1, ComparisonErrors.NullPassedAsArgumentCode },
-            { b => b, new[] { new[] { (Half)1, (Half)2 }, new[] { (Half)1 } }, 0, 0, null },
+            { b => b, new[] { new[] { (Half)1, (Half)2 }, new[] { (Half)1 } }, 0, 1, ComparisonErrors.InputArrayLengthsDifferCode },
             { b => b, new[] { new[] { (Half)1, (Half)2 }, new[] { (Half)1, (Half)2 } }, 0, 0, null },
         };
 

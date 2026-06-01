@@ -252,7 +252,7 @@ internal class FloatingPointComparison<T> : FloatingPointComparisonBase<T> where
             }
             else
             {
-                result.AddMismatch(ComparisonMismatches.InputArrayLengthsDiffer(dArr1.Length, dArr2.Length, dArr1ExprName, dArr2ExprName, typeof(double[])));
+                result.AddError(ComparisonErrors.InputArrayLengthsDiffer(dArr1.Length, dArr2.Length, dArr1ExprName, dArr2ExprName, typeof(double[])));
             }
 
             if (!_comparisonConfiguration.AllowArrayComparisonOfDifferentLengths)

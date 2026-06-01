@@ -45,6 +45,13 @@ public class ByteArrayComparisonTests
             { b => b.DisallowNullComparison(), new byte[2][] { new byte[] { 1, 2 }, null! }, 0, 1, ComparisonErrors.OneOfTheObjectsIsNullCode },
         };
 
+    public static TheoryData<Func<ComparisonBuilder, ComparisonBuilder>, byte[]?, byte[]?, int, int, int, string?> ByteArrayDifferentLengthConfigurationCases =>
+        new()
+        {
+            { b => b.DisallowArrayComparisonOfDifferentLengths(), new byte[] { 1, 2 }, new byte[] { 1, 2, 3 }, 0, 1, 0, ComparisonErrors.InputArrayLengthsDifferCode },
+            { b => b.AllowArrayComparisonOfDifferentLengths(), new byte[] { 1, 2 }, new byte[] { 1, 2, 3 }, 0, 0, 1, ComparisonErrors.InputArrayLengthsDifferCode },
+        };
+
     public static TheoryData<byte?[]?, byte?[]?, bool, int, int, string?> NullableByteArrayPairCases =>
         new()
         {
@@ -98,6 +105,13 @@ public class ByteArrayComparisonTests
         result.Errors[0].Code.ShouldBe(expectedCode, result.Errors[0].Message);
     }
 
+    private void AssertFirstWarningCode(ComparisonResult result, string expectedCode)
+    {
+        LogResult(result);
+        result.WarningCount.ShouldBeGreaterThan(0, result.ToString());
+        result.Warnings[0].Code.ShouldBe(expectedCode, result.Warnings[0].Message);
+    }
+
     [Theory]
     [MemberData(nameof(ByteArrayPairCases))]
     public void Compare_ByteArrayPair_UsesExpectedOutcome(
@@ -119,6 +133,41 @@ public class ByteArrayComparisonTests
             if (expectedErrors > 0)
             {
                 AssertFirstErrorCode(result, expectedCode);
+            }
+            else
+            {
+                AssertFirstMismatchCode(result, expectedCode);
+            }
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(ByteArrayDifferentLengthConfigurationCases))]
+    public void Compare_ByteArrayPair_DifferentLengthConfiguration_UsesExpectedOutcome(
+        Func<ComparisonBuilder, ComparisonBuilder> configure,
+        byte[]? first,
+        byte[]? second,
+        int expectedMismatches,
+        int expectedErrors,
+        int expectedWarnings,
+        string? expectedCode)
+    {
+        var builder = configure(CreateBuilder());
+        var result = builder.Compare(first, second);
+
+        result.MismatchCount.ShouldBe(expectedMismatches);
+        result.ErrorCount.ShouldBe(expectedErrors);
+        result.WarningCount.ShouldBe(expectedWarnings);
+
+        if (expectedCode is not null)
+        {
+            if (expectedErrors > 0)
+            {
+                AssertFirstErrorCode(result, expectedCode);
+            }
+            else if (expectedWarnings > 0)
+            {
+                AssertFirstWarningCode(result, expectedCode);
             }
             else
             {

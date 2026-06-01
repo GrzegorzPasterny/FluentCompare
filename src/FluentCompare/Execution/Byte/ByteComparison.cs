@@ -133,7 +133,14 @@ internal class ByteComparison : ByteComparisonBase
 
             if (first.Length != current.Length)
             {
-                result.AddError(ComparisonErrors.InputArrayLengthsDiffer(first.Length, current.Length, 0, i, typeof(byte[])));
+                if (_comparisonConfiguration.AllowArrayComparisonOfDifferentLengths)
+                {
+                    result.AddWarning(ComparisonErrors.InputArrayLengthsDiffer(first.Length, current.Length, 0, i, typeof(byte[])));
+                }
+                else
+                {
+                    result.AddError(ComparisonErrors.InputArrayLengthsDiffer(first.Length, current.Length, 0, i, typeof(byte[])));
+                }
                 return result;
             }
 
@@ -176,8 +183,16 @@ internal class ByteComparison : ByteComparisonBase
 
         if (byteArr1.Length != byteArr2.Length)
         {
-            result.AddError(ComparisonErrors.InputArrayLengthsDiffer(
-                byteArr1.Length, byteArr2.Length, byteArr1ExprName, byteArr2ExprName, typeof(byte[])));
+            if (_comparisonConfiguration.AllowArrayComparisonOfDifferentLengths)
+            {
+                result.AddWarning(ComparisonErrors.InputArrayLengthsDiffer(
+                    byteArr1.Length, byteArr2.Length, byteArr1ExprName, byteArr2ExprName, typeof(byte[])));
+            }
+            else
+            {
+                result.AddError(ComparisonErrors.InputArrayLengthsDiffer(
+                    byteArr1.Length, byteArr2.Length, byteArr1ExprName, byteArr2ExprName, typeof(byte[])));
+            }
             return result;
         }
 
@@ -220,8 +235,16 @@ internal class ByteComparison : ByteComparisonBase
 
         if (byteArr1.Length != byteArr2.Length)
         {
-            result.AddError(ComparisonErrors.InputArrayLengthsDiffer(
-                byteArr1.Length, byteArr2.Length, byteArr1ExprName, byteArr2ExprName, typeof(byte?[])));
+            if (_comparisonConfiguration.AllowArrayComparisonOfDifferentLengths)
+            {
+                result.AddWarning(ComparisonErrors.InputArrayLengthsDiffer(
+                    byteArr1.Length, byteArr2.Length, byteArr1ExprName, byteArr2ExprName, typeof(byte?[])));
+            }
+            else
+            {
+                result.AddError(ComparisonErrors.InputArrayLengthsDiffer(
+                    byteArr1.Length, byteArr2.Length, byteArr1ExprName, byteArr2ExprName, typeof(byte?[])));
+            }
             return result;
         }
 

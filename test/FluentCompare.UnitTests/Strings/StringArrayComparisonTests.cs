@@ -22,7 +22,7 @@ public class StringArrayComparisonTests
         {
             { new[] { "a", "b" }, new[] { "a", "b" }, 0, 0, 0, null },
             { new[] { "a", "b" }, new[] { "a", "x" }, 1, 0, 0, ComparisonMismatches<string>.MismatchDetectedCode },
-            { new[] { "a", "b" }, new[] { "a" }, 1, 0, 0, ComparisonMismatches.InputArrayLengthsDifferCode },
+            { new[] { "a", "b" }, new[] { "a" }, 0, 1, 0, ComparisonErrors.InputArrayLengthsDifferCode },
             { null, null, 0, 0, 1, ComparisonErrors.BothObjectsAreNullCode },
             { null, new[] { "a" }, 1, 0, 0, ComparisonMismatches.NullPassedAsArgumentCode },
             { new[] { "a" }, null, 1, 0, 0, ComparisonMismatches.NullPassedAsArgumentCode },
@@ -64,7 +64,7 @@ public class StringArrayComparisonTests
     public static TheoryData<Func<ComparisonBuilder, ComparisonBuilder>, string[]?, string[]?, int, int, int, string?> StringArrayDifferentLengthConfigurationCases =>
         new()
         {
-            { b => b.DisallowArrayComparisonOfDifferentLengths(), new[] { "a", "b" }, new[] { "a" }, 1, 0, 0, ComparisonMismatches.InputArrayLengthsDifferCode },
+            { b => b.DisallowArrayComparisonOfDifferentLengths(), new[] { "a", "b" }, new[] { "a" }, 0, 1, 0, ComparisonErrors.InputArrayLengthsDifferCode },
             { b => b.AllowArrayComparisonOfDifferentLengths(), new[] { "a", "b" }, new[] { "a" }, 0, 0, 1, ComparisonErrors.InputArrayLengthsDifferCode },
         };
 

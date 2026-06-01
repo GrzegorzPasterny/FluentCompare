@@ -22,7 +22,7 @@ public class NFloatArrayComparisonTests
         {
             { new[] { (NFloat)1, (NFloat)2, (NFloat)3 }, new[] { (NFloat)1, (NFloat)2, (NFloat)3 }, 0, 0, null },
             { new[] { (NFloat)1, (NFloat)2, (NFloat)3 }, new[] { (NFloat)1, (NFloat)9, (NFloat)3 }, 1, 0, ComparisonMismatches.Floats.MismatchDetectedCode },
-            { new[] { (NFloat)1, (NFloat)2, (NFloat)3 }, new[] { (NFloat)1, (NFloat)2 }, 0, 0, null },
+            { new[] { (NFloat)1, (NFloat)2, (NFloat)3 }, new[] { (NFloat)1, (NFloat)2 }, 0, 1, ComparisonErrors.InputArrayLengthsDifferCode },
             { new[] { (NFloat)1, (NFloat)2 }, null, 1, 0, ComparisonMismatches.NullPassedAsArgumentCode },
             { null, new[] { (NFloat)1, (NFloat)2 }, 1, 0, ComparisonMismatches.NullPassedAsArgumentCode },
         };
@@ -52,7 +52,7 @@ public class NFloatArrayComparisonTests
             { b => b, new NFloat[][] { null!, new[] { (NFloat)1 } }, 0, 1, ComparisonErrors.NullPassedAsArgumentCode },
             { b => b, new NFloat[][] { new[] { (NFloat)1 }, null! }, 0, 1, ComparisonErrors.NullPassedAsArgumentCode },
             { b => b.DisallowNullComparison(), new NFloat[][] { new[] { (NFloat)1 }, null! }, 0, 1, ComparisonErrors.NullPassedAsArgumentCode },
-            { b => b, new[] { new[] { (NFloat)1, (NFloat)2 }, new[] { (NFloat)1 } }, 0, 0, null },
+            { b => b, new[] { new[] { (NFloat)1, (NFloat)2 }, new[] { (NFloat)1 } }, 0, 1, ComparisonErrors.InputArrayLengthsDifferCode },
             { b => b, new[] { new[] { (NFloat)1, (NFloat)2 }, new[] { (NFloat)1, (NFloat)2 } }, 0, 0, null },
         };
 

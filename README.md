@@ -43,7 +43,7 @@ Console.WriteLine(result.AllMatched); // True
 ```csharp
 var result = ComparisonBuilder.Create()
     .Compare(
-        new[] { 1, 2, 3 },
+        new[] { 1, 2, 3 }, // all arrays are compared against the first one
         new[] { 1, 2, 3 },
         new[] { 1, 2, 3 }
     );
@@ -78,6 +78,49 @@ var result = ComparisonBuilder.Create()
 
 Console.WriteLine(result.AllMatched); // True
 ```
+
+## 📦 Understanding `ComparisonResult`
+
+Every comparison returns a **structured** `ComparisonResult` object (not just a boolean), so you can make decisions in tests, runtime validation, pipelines, or logs.
+
+`ComparisonResult` contains:
+
+- `AllMatched` — `true` when there are no mismatches and no errors
+- `WasSuccessful` — `true` when there are no errors
+- `MismatchCount`, `ErrorCount`, `WarningCount`
+- `Mismatches` (`IReadOnlyList<ComparisonMismatch>`)
+- `Errors` (`IReadOnlyList<ComparisonError>`)
+- `Warnings` (`IReadOnlyList<ComparisonError>`)
+
+Example:
+
+```csharp
+var result = ComparisonBuilder.Create()
+    .UseComparisonType(ComparisonType.EqualTo)
+    .Compare(new[] { 1, 2, 3 }, new[] { 1, 9, 3 });
+
+if (!result.AllMatched)
+{
+    foreach (var mismatch in result.Mismatches)
+    {
+        Console.WriteLine($"{mismatch.Code}: {mismatch.Message}");
+    }
+}
+```
+
+### Example messages and non-obvious cases
+
+Typical mismatch/error/warning messages include:
+
+- `FluentCompare.Mismatch.Int32.MismatchDetected: ...`
+- `FluentCompare.NullPassedAsArgument: Null value was provided for comparison [VariableName = ..., Type = ...]`
+- `FluentCompare.InputArrayLengthsDiffer: Array lengths differ [...]`
+
+Non-obvious behavior worth knowing:
+
+- `AllMatched` can be `true` **with warnings** (for example, when both objects are null and null comparison is allowed).
+- With `AllowArrayComparisonOfDifferentLengths = true`, a length warning is emitted and shared-prefix elements are still compared.
+- `WasSuccessful` is based on errors only; mismatches make `AllMatched` false but do not make `WasSuccessful` false.
 
 ## 🧩 Comparing Complex Types
 
@@ -137,35 +180,45 @@ Console.WriteLine(result.AllMatched); // False, different object references
 
 ## ⚙️ Configuration options (implemented and test-covered)
 
-The following options are implemented and covered by unit tests:
+`FluentCompare` is configured through `ComparisonConfiguration` (directly, or via fluent builder methods).
+
+### Top-level configuration defaults
+
+| Parameter | Default | What it does |
+|---|---:|---|
+| `ComparisonType` | `EqualTo` | Primitive comparison operator (`EqualTo`, `NotEqualTo`, `GreaterThan`, etc.) |
+| `ComplexTypesComparisonMode` | `PropertyEquality` | Compare complex objects by recursive property values or by reference |
+| `AllowNullComparison` | `true` | If false, null-vs-null and one-null cases produce errors/mismatches instead of permissive behavior |
+| `AllowNullsInArguments` | `true` | If false, null inputs are treated as errors |
+| `AllowArrayComparisonOfDifferentLengths` | `false` | If true, length difference produces warning; if false, mismatch |
+| `MaximumComparisonDepth` | `5` | Recursion depth limit for complex object graphs |
+| `FinishComparisonOnFirstMismatch` | `false` | If true, short-circuit on first mismatch; if false, collect all mismatches |
+| `TypesExcludedFromComparison` | empty list | Excludes matching property/runtime types in object recursion (exact or assignable type match) |
+
+### Nested configuration defaults
+
+| Configuration | Parameter | Default | Meaning |
+|---|---|---:|---|
+| `StringConfiguration` | `StringComparisonType` | `Ordinal` | Controls case/culture behavior for string comparison |
+| `FloatConfiguration` | `RoundingPrecision` | `15` | Decimal precision for rounding-based float comparison |
+| `FloatConfiguration` | `EpsilonPrecision` | `1e-17` | Epsilon threshold for epsilon-based float comparison |
+| `FloatConfiguration` | `ToleranceMethod` | `Rounding` | Float tolerance strategy (`Rounding` or `Epsilon`) |
+| `ByteConfiguration` | `BitwiseOperations` | empty list | Optional pre-compare bitwise transformations for byte values |
+
+### Fluent API mapping
 
 - `UseComparisonType(...)`
-  - `EqualTo`, `NotEqualTo`, `GreaterThan`, `LessThan`, `GreaterThanOrEqualTo`, `LessThanOrEqualTo`
 - `UseStringComparisonType(...)`
-  - including case-sensitive and case-insensitive modes (for example `Ordinal`, `OrdinalIgnoreCase`)
-- Floating-point tolerance configuration:
-  - `WithDoublePrecision(int roundingPrecision)`
-  - `WithDoublePrecision(double epsilonPrecision)`
-  - `UseDoubleToleranceMethod(...)`
-- Byte bitwise configuration:
-  - `ApplyBitwiseOperation(...)` (all overloads)
-- Null-handling options:
-  - `AllowNullComparison()` / `DisallowNullComparison()`
-  - `AllowNullsInArguments()` / `DisallowNullsInArguments()`
-- Complex-type comparison options:
-  - `UsePropertyEquality()` / `UseReferenceEquality()`
-  - `UseComplexTypeComparisonMode(...)`
-  - `SetComparisonDepth(...)`
-  - `TypesExcludedFromComparison`
-    - compared object properties of excluded types are skipped
-    - supports exact type and assignable/base-type matching
-- Aggregation options:
-  - `FinishComparisonOnFirstMismatch()`
-  - `FinishComparisonCollectingAllMismatches()`
-- Configuration plumbing:
-  - `UseConfiguration(ComparisonConfiguration)`
-  - `Configure(Action<ComparisonConfiguration>)`
-  - static overload: `ComparisonBuilder.Compare(t1, t2, comparisonConfiguration)`
+- `WithDoublePrecision(int)` / `WithDoublePrecision(double)` / `UseDoubleToleranceMethod(...)`
+- `ApplyBitwiseOperation(...)`
+- `AllowNullComparison()` / `DisallowNullComparison()`
+- `AllowNullsInArguments()` / `DisallowNullsInArguments()`
+- `AllowArrayComparisonOfDifferentLengths()` / `DisallowArrayComparisonOfDifferentLengths()`
+- `UsePropertyEquality()` / `UseReferenceEquality()` / `UseComplexTypeComparisonMode(...)`
+- `SetComparisonDepth(...)`
+- `FinishComparisonOnFirstMismatch()` / `FinishComparisonCollectingAllMismatches()`
+- `UseConfiguration(ComparisonConfiguration)` / `Configure(Action<ComparisonConfiguration>)`
+- Static overload: `ComparisonBuilder.Compare(t1, t2, comparisonConfiguration)`
 
 ### Notes
 

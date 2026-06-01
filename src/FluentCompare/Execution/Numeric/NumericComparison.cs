@@ -124,7 +124,14 @@ internal class NumericComparison<T> : NumericComparisonBase<T>, IExecuteComparis
 
             if (first.Length != current.Length)
             {
-                result.AddError(ComparisonErrors.InputArrayLengthsDiffer(first.Length, current.Length, 0, i, typeof(T[])));
+                if (_comparisonConfiguration.AllowArrayComparisonOfDifferentLengths)
+                {
+                    result.AddWarning(ComparisonErrors.InputArrayLengthsDiffer(first.Length, current.Length, 0, i, typeof(T[])));
+                }
+                else
+                {
+                    result.AddError(ComparisonErrors.InputArrayLengthsDiffer(first.Length, current.Length, 0, i, typeof(T[])));
+                }
                 return result;
             }
 
@@ -162,8 +169,16 @@ internal class NumericComparison<T> : NumericComparisonBase<T>, IExecuteComparis
 
         if (intArr1.Length != intArr2.Length)
         {
-            result.AddError(ComparisonErrors.InputArrayLengthsDiffer(
-                intArr1.Length, intArr2.Length, intArr1ExprName, intArr2ExprName, typeof(T[])));
+            if (_comparisonConfiguration.AllowArrayComparisonOfDifferentLengths)
+            {
+                result.AddWarning(ComparisonErrors.InputArrayLengthsDiffer(
+                    intArr1.Length, intArr2.Length, intArr1ExprName, intArr2ExprName, typeof(T[])));
+            }
+            else
+            {
+                result.AddError(ComparisonErrors.InputArrayLengthsDiffer(
+                    intArr1.Length, intArr2.Length, intArr1ExprName, intArr2ExprName, typeof(T[])));
+            }
             return result;
         }
 
@@ -200,8 +215,16 @@ internal class NumericComparison<T> : NumericComparisonBase<T>, IExecuteComparis
 
         if (intArr1.Length != intArr2.Length)
         {
-            result.AddError(ComparisonErrors.InputArrayLengthsDiffer(
-                intArr1.Length, intArr2.Length, intArr1ExprName, intArr2ExprName, typeof(T?[])));
+            if (_comparisonConfiguration.AllowArrayComparisonOfDifferentLengths)
+            {
+                result.AddWarning(ComparisonErrors.InputArrayLengthsDiffer(
+                    intArr1.Length, intArr2.Length, intArr1ExprName, intArr2ExprName, typeof(T?[])));
+            }
+            else
+            {
+                result.AddError(ComparisonErrors.InputArrayLengthsDiffer(
+                    intArr1.Length, intArr2.Length, intArr1ExprName, intArr2ExprName, typeof(T?[])));
+            }
             return result;
         }
 

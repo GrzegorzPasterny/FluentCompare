@@ -125,7 +125,7 @@ internal class StringComparison : StringComparisonBase
             }
             else
             {
-                result.AddMismatch(ComparisonMismatches.InputArrayLengthsDiffer(sArr1.Length, sArr2.Length, sArr1ExprName, sArr2ExprName, typeof(string[])));
+                result.AddError(ComparisonErrors.InputArrayLengthsDiffer(sArr1.Length, sArr2.Length, sArr1ExprName, sArr2ExprName, typeof(string[])));
             }
 
             if (!_comparisonConfiguration.AllowArrayComparisonOfDifferentLengths)
