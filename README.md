@@ -239,12 +239,12 @@ Latest run (`BenchmarkDotNet v0.15.8`, `.NET 8.0.27`, `Intel i7-1185G7`, Windows
 
 | Method                        | DataSet | Mean          | Gen0      | Gen1     | Gen2    | Allocated  |
 |------------------------------ |-------- |--------------:|----------:|---------:|--------:|-----------:|
-| CompareWith_FluentComparison  | SetA    |      1.327 μs |    0.5302 |        - |       - |    3.25 KB |
-| CompareWith_CompareNetObjects | SetA    |      6.237 μs |    1.9073 |   0.0687 |       - |   11.72 KB |
-| CompareWith_AnyDiff           | SetA    |    510.511 μs |   27.3438 |   1.9531 |       - |  175.68 KB |
-| CompareWith_FluentComparison  | SetB    |  7,035.112 μs |  351.5625 | 164.0625 | 85.9375 | 2383.06 KB |
-| CompareWith_CompareNetObjects | SetB    | 15,635.812 μs | 1093.7500 |  31.2500 |       - | 6726.81 KB |
-| CompareWith_AnyDiff           | SetB    |  1,872.770 μs |   93.7500 |   7.8125 |       - |  596.75 KB |
+| CompareWith_FluentComparison  | SetA    |      1.257 μs |    0.5302 |        - |       - |    3.25 KB |
+| CompareWith_CompareNetObjects | SetA    |      3.820 μs |    1.9073 |   0.0687 |       - |   11.72 KB |
+| CompareWith_AnyDiff           | SetA    |    233.289 μs |   28.3203 |   2.9297 |       - |  175.42 KB |
+| CompareWith_FluentComparison  | SetB    |  1,763.205 μs |  257.8125 | 171.8750 | 85.9375 | 1521.18 KB |
+| CompareWith_CompareNetObjects | SetB    |  6,678.865 μs | 1093.7500 |   7.8125 |       - |  6719.7 KB |
+| CompareWith_AnyDiff           | SetB    |    597.523 μs |   95.7031 |   3.9063 |       - |  595.77 KB |
 
 **Observations:**
 

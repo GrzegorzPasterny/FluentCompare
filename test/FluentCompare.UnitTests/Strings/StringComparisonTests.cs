@@ -30,8 +30,8 @@ public class StringComparisonTests
     public static TheoryData<Func<ComparisonBuilder, ComparisonBuilder>, string?, string?, int, int, int, string?> StringPairNullabilityCases =>
         new()
         {
-            { b => b.DisallowNullComparison(), null, "test", 1, 1, 0, ComparisonErrors.OneOfTheObjectsIsNullCode },
-            { b => b.DisallowNullComparison(), "test", null, 1, 1, 0, ComparisonErrors.OneOfTheObjectsIsNullCode },
+            { b => b.DisallowNullComparison(), null, "test", 0, 1, 0, ComparisonErrors.OneOfTheObjectsIsNullCode },
+            { b => b.DisallowNullComparison(), "test", null, 0, 1, 0, ComparisonErrors.OneOfTheObjectsIsNullCode },
             { b => b.DisallowNullComparison(), null, null, 0, 1, 0, ComparisonErrors.BothObjectsAreNullCode },
         };
 

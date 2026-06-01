@@ -67,7 +67,6 @@ public class ComparisonConfiguration
     public ByteComparisonConfiguration ByteConfiguration { get; set; }
         = new ByteComparisonConfiguration();
 
-    // TODO: Implement
     /// <summary>
     /// A list of types that will be excluded from comparison operations. 
     /// Any type in this list will not be compared when performing object comparisons.

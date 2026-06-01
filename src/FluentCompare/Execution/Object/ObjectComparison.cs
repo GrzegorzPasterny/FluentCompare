@@ -1,5 +1,10 @@
+using System.Collections.Concurrent;
+using System.Reflection;
+
 internal class ObjectComparison : ObjectComparisonBase
 {
+    private static readonly ConcurrentDictionary<Type, MethodInfo> _genericCompareMethodCache = new();
+
     private int _depth = -1;
 
     internal ObjectComparison(
@@ -269,11 +274,6 @@ internal class ObjectComparison : ObjectComparisonBase
                     _depth--;
                     break;
             }
-
-            if (ShouldFinishOnFirstMismatch(result))
-            {
-                return result;
-            }
         }
         return result;
     }
@@ -331,11 +331,6 @@ internal class ObjectComparison : ObjectComparisonBase
                     $"{t1ExprName}.{prop.Name}", $"{t2ExprName}.{prop.Name}",
                     result);
             }
-
-            if (ShouldFinishOnFirstMismatch(result))
-            {
-                return;
-            }
         }
     }
 
@@ -366,19 +361,21 @@ internal class ObjectComparison : ObjectComparisonBase
 
     private void CompareObjectsWhenPrimitive(object t1, object t2, string t1ExprName, string t2ExprName, ComparisonResult result, Type type1)
     {
-        var compareMethod = typeof(ComparisonBuilder)
-                                .GetMethods()
-                                .Where(m => m.Name == nameof(Compare))
-                                .Where(m => m.IsGenericMethodDefinition)
-                                .Where(m => m.IsStatic == false)
-                                .First(m =>
-                                {
-                                    var p = m.GetParameters();
-                                    return p.Length >= 2 && p[0].ParameterType.IsGenericParameter && p[1].ParameterType.IsGenericParameter;
-                                });
+        var method = _genericCompareMethodCache.GetOrAdd(type1, static primitiveType =>
+        {
+            var compareMethod = typeof(ComparisonBuilder)
+                .GetMethods()
+                .Where(m => m.Name == nameof(ComparisonBuilder.Compare))
+                .Where(m => m.IsGenericMethodDefinition)
+                .Where(m => m.IsStatic == false)
+                .First(m =>
+                {
+                    var p = m.GetParameters();
+                    return p.Length >= 2 && p[0].ParameterType.IsGenericParameter && p[1].ParameterType.IsGenericParameter;
+                });
 
-        // Dynamically call the generic Compare<T> with the real type
-        var method = compareMethod.MakeGenericMethod(type1);
+            return compareMethod.MakeGenericMethod(primitiveType);
+        });
 
         var subResult = (ComparisonResult)method.Invoke(
             ComparisonBuilder.Create().UseConfiguration(_comparisonConfiguration),

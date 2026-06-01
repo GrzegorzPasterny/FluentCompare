@@ -4,7 +4,7 @@
 /// </summary>
 public static class ComparisonErrors
 {
-    public static string Namespace = "FluentCompare";
+    public static readonly string Namespace = "FluentCompare";
 
     /// <summary>
     /// Code for error indicating that not enough objects were provided for comparison
@@ -69,7 +69,7 @@ public static class ComparisonErrors
 
     public static class Object
     {
-        public static string Namespace = "FluentCompare.Error.Object";
+        public static readonly string Namespace = "FluentCompare.Error.Object";
 
         public static string BothObjectsAreNullCode => $"{Namespace}.{nameof(BothObjectsAreNull)}";
         internal static ComparisonError BothObjectsAreNull(object? o1, object? o2, int o1Index, int o2Index)

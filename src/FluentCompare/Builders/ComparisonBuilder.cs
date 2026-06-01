@@ -855,20 +855,20 @@ public partial class ComparisonBuilder : IComparisonBuilder
             }
 
             string t1ExprName = t1Expr ?? $"{typeof(T).Name}One";
-            string t2ExprName = t1Expr ?? $"{typeof(T).Name}Two";
+            string t2ExprName = t2Expr ?? $"{typeof(T).Name}Two";
 
             if (t1 is null || t2 is null)
             {
                 if (Configuration.AllowNullsInArguments == false)
                 {
-                    // TODO: Code not reached by unit tests - need to add tests for this case
-                    result.AddError(ComparisonErrors.NullPassedAsArgument(t1ExprName, typeof(T)));
+                    result.AddError(ComparisonErrors.NullPassedAsArgument(t1 is null ? t1ExprName : t2ExprName, typeof(T)));
                     return result;
                 }
 
                 if (Configuration.AllowNullComparison == false)
                 {
                     result.AddError(ComparisonErrors.OneOfTheObjectsIsNull(t1ExprName, t2ExprName));
+                    return result;
                 }
 
                 result.AddMismatch(ComparisonMismatches.NullPassedAsArgument(t1ExprName, t2ExprName, typeof(T)));

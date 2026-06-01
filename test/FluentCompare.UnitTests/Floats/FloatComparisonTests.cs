@@ -52,8 +52,8 @@ public class FloatComparisonTests
     public static TheoryData<Func<ComparisonBuilder, ComparisonBuilder>, float?, float?, int, int, string?> NullableFloatPairNullabilityCases =>
         new()
         {
-            { b => b.DisallowNullComparison(), 12.3f, null, 1, 1, ComparisonErrors.OneOfTheObjectsIsNullCode },
-            { b => b.DisallowNullComparison(), null, 12.3f, 1, 1, ComparisonErrors.OneOfTheObjectsIsNullCode },
+            { b => b.DisallowNullComparison(), 12.3f, null, 0, 1, ComparisonErrors.OneOfTheObjectsIsNullCode },
+            { b => b.DisallowNullComparison(), null, 12.3f, 0, 1, ComparisonErrors.OneOfTheObjectsIsNullCode },
             { b => b.DisallowNullComparison(), null, null, 0, 1, ComparisonErrors.BothObjectsAreNullCode },
         };
 

@@ -69,8 +69,8 @@ public class IntComparisonTests
     public static TheoryData<Func<ComparisonBuilder, ComparisonBuilder>, int?, int?, int, int, string?> NullableIntPairNullabilityCases =>
         new()
         {
-            { b => b.DisallowNullComparison(), 12, null, 1, 1, ComparisonErrors.OneOfTheObjectsIsNullCode },
-            { b => b.DisallowNullComparison(), null, 12, 1, 1, ComparisonErrors.OneOfTheObjectsIsNullCode },
+            { b => b.DisallowNullComparison(), 12, null, 0, 1, ComparisonErrors.OneOfTheObjectsIsNullCode },
+            { b => b.DisallowNullComparison(), null, 12, 0, 1, ComparisonErrors.OneOfTheObjectsIsNullCode },
             { b => b.DisallowNullComparison(), null, null, 0, 1, ComparisonErrors.BothObjectsAreNullCode },
         };
 

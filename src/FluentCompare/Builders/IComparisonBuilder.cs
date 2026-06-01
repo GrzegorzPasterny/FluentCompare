@@ -15,6 +15,6 @@ public interface IComparisonBuilder
         [CallerArgumentExpression(nameof(o2Arr))] string? o2ArrExpr = null);
 
     ComparisonResult Compare<T>(T t1, T t2,
-        string? t1Expr = null,
-        string? t2Expr = null);
+        [CallerArgumentExpression(nameof(t1))] string? t1Expr = null,
+        [CallerArgumentExpression(nameof(t2))] string? t2Expr = null);
 }

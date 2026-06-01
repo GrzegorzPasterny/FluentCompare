@@ -4,7 +4,7 @@
 /// <typeparam name="T"></typeparam>
 public static class ComparisonMismatches<T>
 {
-    public static string Namespace = $"FluentCompare.Mismatch.{typeof(T).Name}";
+    public static readonly string Namespace = $"FluentCompare.Mismatch.{typeof(T).Name}";
 
     public static string MismatchDetectedCode => $"{Namespace}.{nameof(MismatchDetected)}";
     internal static ComparisonMismatch MismatchDetected(T v1, T v2, int index, ComparisonType comparisonType, Func<T, string> toStringFunc)
@@ -42,7 +42,7 @@ public static class ComparisonMismatches<T>
 /// </summary>
 public static class ComparisonMismatches
 {
-    public static string Namespace = "FluentCompare.Mismatch";
+    public static readonly string Namespace = "FluentCompare.Mismatch";
 
     public static string NullPassedAsArgumentCode => $"{Namespace}.{nameof(NullPassedAsArgument)}";
     internal static ComparisonMismatch NullPassedAsArgument(int index, Type type)
@@ -60,7 +60,7 @@ public static class ComparisonMismatches
     /// </summary>
     public static class Floats
     {
-        public static string Namespace = "FluentCompare.Mismatch.Float";
+        public static readonly string Namespace = "FluentCompare.Mismatch.Float";
 
         public static string MismatchDetectedCode => $"{Namespace}.{nameof(MismatchDetected)}";
         internal static ComparisonMismatch MismatchDetected(string f1, string f2, int precision, DoubleToleranceMethods doubleToleranceMethods)
@@ -92,9 +92,9 @@ public static class ComparisonMismatches
     /// <summary>
     /// Byte-related comparison mismatches repository
     /// </summary>
-    public class Byte
+    public static class Byte
     {
-        public static string Namespace = "FluentCompare.Mismatch.Byte";
+        public static readonly string Namespace = "FluentCompare.Mismatch.Byte";
         public static string MismatchDetectedCode => $"{Namespace}.{nameof(MismatchDetected)}";
         internal static ComparisonMismatch MismatchDetected(byte b1, byte b2, byte bTransformed1, byte bTransformed2, int index, ComparisonType comparisonType, Func<byte, string> toStringFunc)
             => new(MismatchDetectedCode,
@@ -134,7 +134,7 @@ public static class ComparisonMismatches
 
     public static class Bool
     {
-        public static string Namespace = "FluentCompare.Mismatch.Bool";
+        public static readonly string Namespace = "FluentCompare.Mismatch.Bool";
         public static string MismatchDetectedCode => $"{Namespace}.{nameof(MismatchDetected)}";
         internal static ComparisonMismatch MismatchDetected(bool b1, bool b2, int index)
             => new(MismatchDetectedCode,
@@ -172,7 +172,7 @@ public static class ComparisonMismatches
     /// </summary>
     public static class Object
     {
-        public static string Namespace = "FluentCompare.Mismatch.Object";
+        public static readonly string Namespace = "FluentCompare.Mismatch.Object";
 
         public static string MismatchDetectedByReferenceCode => $"{Namespace}.{nameof(MismatchDetectedByReference)}";
         internal static ComparisonMismatch MismatchDetectedByReference(object? o1, object? o2, int o1Index, int o2Index)
